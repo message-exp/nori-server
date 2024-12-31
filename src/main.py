@@ -27,7 +27,7 @@ class NoriServiceServicer(ServiceServicer):
         logging.info(f"Create user {request.username}")
         db.new_user(request.username, "")
         logging.debug(
-            f"rooms of {request.username}: {db.get_user(request.username)["rooms"]}"
+            f"rooms of {request.username}: {db.get_user(request.username)['rooms']}"
         )
         return Empty()
 
