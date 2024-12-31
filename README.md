@@ -18,8 +18,39 @@
     poetry install
     ```
 
-3. Run
+3. Start the server
 
     ```sh
-    uvicorn src.main:app --reload
+    python src/main.py
     ```
+
+## Update API version
+
+If you, as a developer, want to implement the API of another version, follow the instructions:
+
+1. Setup the environment
+
+    ```sh
+    poetry install --with dev
+    poetry shell
+    ```
+
+2. Change the API version
+
+    ```sh
+    cd protos
+    git checkout <version>
+    ```
+
+    Change `<version>` to the version you want.
+
+3. Generate codes from .proto files
+
+    ```sh
+    python scripts/generate.py
+    ```
+
+    > [!NOTE]
+    > The generate script use the [Protoletariat](https://github.com/cpcloud/protoletariat) to fix the path problem. If you encounter the "File Not Found Error" (especially in Windows), try to add the parent directory path of the `protol` command execution file to the `PATH` environment variable. (Or just copy the file into your Python bin directory, though it's not a good idea.)
+
+4. Dev, Commit, Open PR
