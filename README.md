@@ -2,58 +2,60 @@
 
 ## Setup
 
-1. Install Poetry
+### 1. Install Poetry
 
-    Follow the instructions of the [official installation guide](https://python-poetry.org/docs/#installation).
+Follow the instructions of the [official installation guide](https://python-poetry.org/docs/#installation).
 
-2. Start the virtual environment
+### 2. Start the virtual environment
 
-    ```sh
-    poetry shell
-    ```
+```sh
+poetry shell
+```
 
-3. Install dependencies
+### 3. Install dependencies
 
-    ```sh
-    poetry install
-    ```
+```sh
+poetry install
+```
 
-3. Start the server
+### 4. Start the server
 
-    ```sh
-    python src/main.py
-    ```
+```sh
+python src/main.py
+```
 
 ## Update API version
 
 If you, as a developer, want to implement the API of another version, follow the instructions:
 
-1. Setup the environment
+### 1. Setup the environment
 
-    ```sh
-    poetry install --with dev
-    poetry shell
-    ```
+```sh
+poetry install --with dev
+poetry shell
+```
 
-2. Change the API version
+### 2. Change the API version
 
-    ```sh
-    cd protos
-    git checkout <version>
-    ```
+```sh
+cd protos
+git checkout <version>
+```
 
-    Change `<version>` to the version you want.
+Change `<version>` to the version you want.
 
-3. Generate codes from .proto files
+### 3. Generate codes from .proto files
 
-    ```sh
-    python scripts/generate.py
-    ```
+```sh
+python scripts/generate.py
+```
 
-    > [!NOTE]
-    > The generate script use the [Protoletariat](https://github.com/cpcloud/protoletariat) to fix the path problem. If you encounter the "File Not Found Error" (especially in Windows), try to add the parent directory path of the `protol` command execution file to the `PATH` environment variable. (Or just copy the file into your Python bin directory, though it's not a good idea.)
+> [!NOTE]
+> The generate script use the [Protoletariat](https://github.com/cpcloud/protoletariat) to fix the path problem. If you encounter the "File Not Found Error" (especially in Windows), try to add the parent directory path of the `protol` command execution file to the `PATH` environment variable. (Or just copy the file into your Python bin directory, though it's not a good idea.)
 
-4. Dev, Commit, Open PR
+### 4. Development
+
+Programming, Commit, Open PR.
 
 ## Lint and format
 
