@@ -54,3 +54,7 @@ If you, as a developer, want to implement the API of another version, follow the
     > The generate script use the [Protoletariat](https://github.com/cpcloud/protoletariat) to fix the path problem. If you encounter the "File Not Found Error" (especially in Windows), try to add the parent directory path of the `protol` command execution file to the `PATH` environment variable. (Or just copy the file into your Python bin directory, though it's not a good idea.)
 
 4. Dev, Commit, Open PR
+
+## Lint and format
+
+Before commit and PR, please run `ruff check`, `ruff format`, `mypy .` to check and format the code.
