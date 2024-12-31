@@ -2,7 +2,7 @@ import os
 
 proto_path = "protos"
 output_dir = "src/proto_gen"
-proto_target = "protos/**/*.proto"
+proto_target = "protos/nori/**/*.proto"
 
 # generate the python files from the proto files
 os.system(
