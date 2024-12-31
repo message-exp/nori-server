@@ -1,18 +1,26 @@
 [tool.poetry]
 name = "nori-server"
 version = "0.1.0"
-description = ""
-authors = ["nori-team"]
+description = "A Python server of NORI, a communication API"
+authors = ["message-exp"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.114.2"
-uvicorn = {extras = ["standard"], version = "^0.30.6"}
-loguru = "^0.7.2"
-pydantic-settings = "^2.5.2"
-pydantic = "^2.9.1"
+python = "^3.12"
+grpcio-tools = "^1.67.1"
 
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.13.0"
+ruff = "^0.7.1"
+protoletariat = "^3.3.2"
+types-protobuf = "^5.28.3.20241030"
+
+[tool.ruff.lint]
+# default + flake8-annotations(ANN)
+select = ["E4", "E7", "E9", "F", "ANN"]
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]
