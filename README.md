@@ -6,19 +6,26 @@
 
 Follow the instructions of the [official installation guide](https://python-poetry.org/docs/#installation).
 
-### 2. Start the virtual environment
+### 2. (Optional) Configure Poetry
+
+```sh
+poetry config virtualenvs.in-project true
+poetry env use $(which python)
+```
+
+### 3. Start the virtual environment
 
 ```sh
 poetry env activate
 ```
 
-### 3. Install dependencies
+### 4. Install dependencies
 
 ```sh
 poetry sync --no-root
 ```
 
-### 4. Start the server
+### 5. Start the server
 
 ```sh
 python src/main.py
