@@ -9,13 +9,13 @@ Follow the instructions of the [official installation guide](https://python-poet
 ### 2. Start the virtual environment
 
 ```sh
-poetry shell
+poetry env activate
 ```
 
 ### 3. Install dependencies
 
 ```sh
-poetry install
+poetry sync --no-root
 ```
 
 ### 4. Start the server
@@ -31,8 +31,8 @@ If you, as a developer, want to implement the API of another version, follow the
 ### 1. Setup the environment
 
 ```sh
-poetry install --with dev
-poetry shell
+poetry sync --no-root
+poetry env activate
 ```
 
 ### 2. Change the API version
