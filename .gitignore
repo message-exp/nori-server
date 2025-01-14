@@ -163,6 +163,3 @@ cython_debug/
 
 # sqlite files
 *.db
-
-# Protobuffer generated code
-src/proto_gen/
