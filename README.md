@@ -31,7 +31,7 @@ If you, as a developer, want to implement the API of another version, follow the
 ### 1. Setup the environment
 
 ```sh
-poetry sync --no-root
+poetry sync --no-root --extras dev
 poetry env activate
 ```
 
@@ -47,7 +47,7 @@ Change `<version>` to the version you want.
 ### 3. Generate codes from .proto files
 
 ```sh
-python scripts/generate.py
+poetry run python scripts/generate.py
 ```
 
 > [!NOTE]
