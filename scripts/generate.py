@@ -1,7 +1,7 @@
 import os
 
 proto_path = "src/protos"
-output_dir = "src/proto_gen"
+output_dir = "src/proto_generated"
 proto_target = "src/protos/nori/**/*.proto"
 
 # generate the python files from the proto files

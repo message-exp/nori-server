@@ -165,4 +165,5 @@ cython_debug/
 *.db
 
 # Protobuffer generated code
-src/proto_gen/
+src/proto_generated/*
+!src/proto_generated/.gitkeep
