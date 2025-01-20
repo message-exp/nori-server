@@ -7,7 +7,11 @@ import grpc
 from proto_generated.nori.v0.message_pb2 import Message
 from proto_generated.nori.v0.room_pb2 import Room
 from proto_generated.nori.v0.user_pb2 import User
-from proto_generated.nori.v0.service_pb2 import UserRequest, RoomRequest, JoinRoomRequest
+from proto_generated.nori.v0.service_pb2 import (
+    UserRequest,
+    RoomRequest,
+    JoinRoomRequest,
+)
 from proto_generated.nori.v0.service_pb2_grpc import (
     ServiceServicer,
     add_ServiceServicer_to_server,
