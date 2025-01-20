@@ -28,7 +28,7 @@ poetry sync --no-root
 ### 5. Start the server
 
 ```sh
-python src/main.py
+poetry run python src/main.py
 ```
 
 ## Update API version
