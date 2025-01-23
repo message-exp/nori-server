@@ -1,5 +1,5 @@
 name: Mypy
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   mypy:
     runs-on: ubuntu-latest
