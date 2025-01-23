@@ -22,7 +22,7 @@ poetry env activate
 ### 4. Install dependencies
 
 ```sh
-poetry sync --no-root
+poetry sync
 ```
 
 ### 5. Start the server
@@ -38,7 +38,7 @@ If you, as a developer, want to implement the API of another version, follow the
 ### 1. Setup the environment
 
 ```sh
-poetry sync --no-root --extras dev
+poetry install --extras dev
 poetry env activate
 ```
 

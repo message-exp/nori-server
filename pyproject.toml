@@ -18,6 +18,9 @@ dev = [
     "types-protobuf (>=5.29.1.20241207,<6.0.0.0)"
 ]
 
+[tool.poetry]
+package-mode = false
+
 [tool.ruff]
 extend-exclude = ["src/proto_gen/*"]
 
