@@ -5,7 +5,7 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "postCreateCommand": "poetry install --extras dev && poetry env activate",
+  "postCreateCommand": "poetry install --extras dev",
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
 
