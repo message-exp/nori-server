@@ -6,22 +6,29 @@
 
 Follow the instructions of the [official installation guide](https://python-poetry.org/docs/#installation).
 
-### 2. Start the virtual environment
+### 2. (Optional) Configure Poetry
 
 ```sh
-poetry shell
+poetry config virtualenvs.in-project true
+poetry env use $(which python)
 ```
 
-### 3. Install dependencies
+### 3. Start the virtual environment
 
 ```sh
-poetry install
+poetry env activate
 ```
 
-### 4. Start the server
+### 4. Install dependencies
 
 ```sh
-python src/main.py
+poetry sync
+```
+
+### 5. Start the server
+
+```sh
+poetry run python src/main.py
 ```
 
 ## Update API version
@@ -31,8 +38,8 @@ If you, as a developer, want to implement the API of another version, follow the
 ### 1. Setup the environment
 
 ```sh
-poetry install --with dev
-poetry shell
+poetry install --extras dev
+poetry env activate
 ```
 
 ### 2. Change the API version
@@ -47,7 +54,7 @@ Change `<version>` to the version you want.
 ### 3. Generate codes from .proto files
 
 ```sh
-python scripts/generate.py
+poetry run python scripts/generate.py
 ```
 
 > [!NOTE]
