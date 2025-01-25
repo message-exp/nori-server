@@ -1,64 +1,89 @@
-# NORI-server
+# nori-server
 
-## Setup
+## Setup the environment
 
-### 1. Install Poetry
+### Dev container (recommend)
 
-Follow the instructions of the [official installation guide](https://python-poetry.org/docs/#installation).
+1. Install [Docker](https://www.docker.com/).
 
-### 2. (Optional) Configure Poetry
+2. If you're using Windows OS, connect to WSL first.
 
-```sh
-poetry config virtualenvs.in-project true
-poetry env use $(which python)
-```
+3. Open the project directory.
 
-### 3. Start the virtual environment
+4. Select "Reopen in Container" and wait until the process is complete.
 
-```sh
-poetry env activate
-```
+### Local
 
-### 4. Install dependencies
+1. Install Python (recommend using [pyenv](https://github.com/pyenv/pyenv) or [uv](https://docs.astral.sh/uv/concepts/python-versions/#requesting-a-version)).
 
-```sh
-poetry sync
-```
+2. Install [Poetry](https://python-poetry.org/docs/#installation).
 
-### 5. Start the server
+3. (Optional) Configure Poetry.
 
-```sh
-poetry run python src/main.py
-```
+    ```sh
+    poetry config virtualenvs.in-project true
+    poetry env use $(which python)
+    ```
 
-## Update API version
+4. Install dependencies.
+
+    ```sh
+    poetry install --extras dev
+    ```
+
+## Start the server
+
+1. Activate the Python virtual environment.
+
+    ```sh
+    eval $(poetry env activate)
+    ```
+
+2. Pull files in git submodule.
+
+    ```sh
+    git submodule update --init --recursive
+    ```
+
+3. Generate codes from protos.
+
+    ```sh
+    python scripts/generate.py
+    ```
+
+4. Start the server.
+
+    ```sh
+    python src/main.py
+    ```
+
+## Update Nori API version
 
 If you, as a developer, want to implement the API of another version, follow the instructions:
 
-### 1. Setup the environment
+1. Setup the environment (follow the instructions above).
 
-```sh
-poetry install --extras dev
-poetry env activate
-```
+2. Start the server to ensure your dev environment has been set up. You can stop the server once it starts successfully.
 
-### 2. Change the API version
+3. Change the API version.
 
-```sh
-cd protos
-git checkout <version>
-```
+    ```sh
+    cd protos
+    git checkout <version>
+    ```
 
-Change `<version>` to the version you want.
+    Change `<version>` to the version you want.
 
-### 3. Generate codes from .proto files
+4. Generate codes from .proto files.
 
-```sh
-poetry run python scripts/generate.py
-```
+    ```sh
+    python scripts/generate.py
+    ```
 
 > [!NOTE]
 > The generate script use the [Protoletariat](https://github.com/cpcloud/protoletariat) to fix the path problem. If you encounter the "File Not Found Error" (especially in Windows), try to add the parent directory path of the `protol` command execution file to the `PATH` environment variable. (Or just copy the file into your Python bin directory, though it's not a good idea.)
+
+5. Modify the code and implement the new features in the new version.
 
 ### 4. Development
 
