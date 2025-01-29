@@ -22,7 +22,7 @@ dev = [
 package-mode = false
 
 [tool.ruff]
-extend-exclude = ["src/proto_gen/*"]
+extend-exclude = ["src/proto_generated/*"]
 
 [tool.ruff.lint]
 # default + flake8-annotations(ANN)
