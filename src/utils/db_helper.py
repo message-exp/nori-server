@@ -26,6 +26,6 @@ def get_db() -> Generator[Session, Any, None]:
         yield session
 
 
-def check_database_has_create()-> None:
+def check_database_has_create() -> None:
     if not database_exists(engine.url):
         create_database(engine.url)
