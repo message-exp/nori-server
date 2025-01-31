@@ -19,7 +19,7 @@ def generate_snowflake_id() -> int:
     return next(snowflake_gen)
 
 
-class Users(SQLModel, table=True):
+class Users(SQLModel, table=True): # type: ignore
     __tablename__ = "users"
     id: int | None = Field(
         sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
@@ -42,7 +42,7 @@ class Users(SQLModel, table=True):
     )
 
 
-class Rooms(SQLModel, table=True):
+class Rooms(SQLModel, table=True): # type: ignore
     __tablename__ = "rooms"
     id: int | None = Field(
         sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
@@ -66,7 +66,7 @@ class Rooms(SQLModel, table=True):
     )  # for user profile
 
 
-class RoomMembers(SQLModel, table=True):
+class RoomMembers(SQLModel, table=True): # type: ignore
     __tablename__ = "room_members"
     id: int | None = Field(
         sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
@@ -97,7 +97,7 @@ class RoomMembers(SQLModel, table=True):
     user: Users = Relationship()
 
 
-class Messages(SQLModel, table=True):
+class Messages(SQLModel, table=True): # type: ignore
     __tablename__ = "messages"
     id: int | None = Field(
         sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
