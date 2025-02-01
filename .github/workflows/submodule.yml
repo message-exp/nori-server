@@ -23,7 +23,5 @@ jobs:
           path: src/protos
           branch: main
           first_parent: true
-          fetch_depth: 10
           require_head: true
           disable_progression: true
-          sub_fetch_depth: 10
