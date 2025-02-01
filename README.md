@@ -85,9 +85,50 @@ If you, as a developer, want to implement the API of another version, follow the
 
 5. Modify the code and implement the new features in the new version.
 
-### 4. Development
+## Development
 
 Programming, Commit, Open PR.
+
+## Database Migration
+
+1. Create a New Migration Script  
+
+```bash
+cd src
+alembic revision --autogenerate -m "{message}"
+```
+
+- Generates a new migration script based on changes in your SQLAlchemy models.  
+- `-m "{message}"` adds a description to track changes.  
+
+
+1. Upgrade the Database
+
+```bash
+cd src
+alembic upgrade {revision_id}
+```
+
+- Upgrades the database schema to a specific migration version.  
+- Use `head` to apply all migrations to the latest version:  
+  ```bash
+  alembic upgrade head
+  ```
+
+
+1. Downgrade the Database
+
+```bash
+cd src
+alembic downgrade {revision_id}
+```
+
+- Rolls back the database schema to a specific migration version.  
+- Use `-1` to revert only the last migration:  
+  ```bash
+  alembic downgrade -1
+  ```
+
 
 ## Lint and format
 
