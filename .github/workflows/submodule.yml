@@ -1,12 +1,6 @@
 name: Check submodule on main
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [pull_request]
 
 jobs:
   check-submodules:
