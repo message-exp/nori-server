@@ -1,4 +1,4 @@
-name: Check Specific Submodule
+name: Check submodule on main
 
 on:
   push:
