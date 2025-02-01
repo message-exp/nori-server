@@ -12,15 +12,19 @@ auth_config.update(UserServicer.auth_config)
 auth_config.update(RoomServicer.auth_config)
 auth_config.update(MessageServicer.auth_config)
 
-class UserAuthInterceptor(grpc.ServerInterceptor):
 
+class UserAuthInterceptor(grpc.ServerInterceptor):
     def __init__(self) -> None:
         # def abort(ignored_request, context) -> None:
         #     context.abort(grpc.StatusCode.UNAUTHENTICATED, 'Invalid token')
         # self._abortion = grpc.unary_unary_rpc_method_handler(abort)
         pass
 
-    def intercept_service(self, continuation: grpc.ServerInterceptor, handler_call_details: grpc.HandlerCallDetails) -> grpc.RpcMethodHandler:
+    def intercept_service(
+        self,
+        continuation: grpc.ServerInterceptor,
+        handler_call_details: grpc.HandlerCallDetails,
+    ) -> grpc.RpcMethodHandler:
         metadata = dict(handler_call_details.invocation_metadata)
         method = handler_call_details.method  # /package.Service/Method
 
@@ -33,15 +37,21 @@ class UserAuthInterceptor(grpc.ServerInterceptor):
 
         # Check if a token is provided
         if token is None:
-            return grpc.unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, "No token provided")
+            return grpc.unary_unary_rpc_terminator(
+                grpc.StatusCode.UNAUTHENTICATED, "No token provided"
+            )
 
         # Validate token
         try:
             get_token(token)
         except jwt.ExpiredSignatureError:
-            return grpc.unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, "Token expired")
+            return grpc.unary_unary_rpc_terminator(
+                grpc.StatusCode.UNAUTHENTICATED, "Token expired"
+            )
         except jwt.InvalidTokenError:
-            return grpc.unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, "Invalid token")
+            return grpc.unary_unary_rpc_terminator(
+                grpc.StatusCode.UNAUTHENTICATED, "Invalid token"
+            )
 
         return continuation(handler_call_details)
 

@@ -1,17 +1,21 @@
-import grpc
 from grpc.aio import Server, ServicerContext
 
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.message.message_pb2 import Message
 from proto_generated.nori.v0.room.room_id_pb2 import RoomId
 
-from proto_generated.nori.v0.message.message_service_pb2_grpc import MessageServiceServicer, add_MessageServiceServicer_to_server
+from proto_generated.nori.v0.message.message_service_pb2_grpc import (
+    MessageServiceServicer,
+    add_MessageServiceServicer_to_server,
+)
+
 
 class MessageServicer(MessageServiceServicer):
     service_namespace = "nori.v0.MessageService"
     auth_config: dict[str, bool] = dict()
-    
+
     auth_config[f"/{service_namespace}/SendMessage"] = True
+
     def SendMessage(self, request: Message, context: ServicerContext) -> Empty:
         # TODO: ...... (implement send message logic)
 
@@ -20,9 +24,11 @@ class MessageServicer(MessageServiceServicer):
         return Empty()
 
     auth_config[f"/{service_namespace}/GetMessages"] = True
+
     def GetMessages(self, request: RoomId, context: ServicerContext) -> Message:
         # TODO: ...... (implement get messages logic)
         return Message()
+
 
 def add_service_to_server(server: Server) -> None:
     add_MessageServiceServicer_to_server(MessageServicer(), server)
