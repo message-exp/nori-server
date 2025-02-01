@@ -15,22 +15,16 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import UserServiceServic
 
 class UserServicer(UserServiceServicer):
     service_namespace = "nori.v0.UserService"
-    auth_list = {
-        f"/{service_namespace}/GetUser": True,
-        f"/{service_namespace}/Login": False,
-        f"/{service_namespace}/Logout": True,
-        f"/{service_namespace}/Signup": False,
-        f"/{service_namespace}/DeleteUser": True,
-        f"/{service_namespace}/UpdateUserProfile": True,
-        f"/{service_namespace}/GetUserRoomList": True,
-    }
+    auth_list: dict[str, bool] = dict()
 
+    auth_list[f"/{service_namespace}/GetUser"] = True
     def GetUser(self, request: UserId, context: ServicerContext) -> User:
         # TODO: check user_id format
         # TODO: get user data from database
         # TODO: return user data
         return User()
 
+    auth_list[f"/{service_namespace}/Login"] = False
     def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> Empty:
         """Login with email and password.
         """
@@ -38,6 +32,7 @@ class UserServicer(UserServiceServicer):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    auth_list[f"/{service_namespace}/Logout"] = True
     def Logout(self, request: UserId, context: ServicerContext) -> Empty:
         """Authentication: Required. Log out the user.
         """
@@ -45,6 +40,7 @@ class UserServicer(UserServiceServicer):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    auth_list[f"/{service_namespace}/Signup"] = False
     def Signup(self, request: User, context: ServicerContext) -> Empty:
         """Authentication: Not required. Sign up a new user.
         """
@@ -52,6 +48,7 @@ class UserServicer(UserServiceServicer):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    auth_list[f"/{service_namespace}/DeleteUser"] = True
     def DeleteUser(self, request: UserId, context: ServicerContext) -> Empty:
         """Authentication: Required. Delete a user.
         """
@@ -59,6 +56,7 @@ class UserServicer(UserServiceServicer):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    auth_list[f"/{service_namespace}/UpdateUserProfile"] = True
     def UpdateUserProfile(self, request: UserProfile, context: ServicerContext) -> Empty:
         """Authentication: Required. Update user profile information.
         """
@@ -66,6 +64,7 @@ class UserServicer(UserServiceServicer):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    auth_list[f"/{service_namespace}/GetUserRoomList"] = True
     def GetUserRoomList(self, request: UserId, context: ServicerContext) -> RoomList:
         """Authentication: Required. Get user room list.
         """
