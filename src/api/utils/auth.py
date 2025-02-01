@@ -1,6 +1,5 @@
-import jwt
 import os
-from jwt import ExpiredSignatureError, InvalidTokenError
+import jwt
 
 from api.utils.grpc_exception import Unauthenticated
 
@@ -12,9 +11,9 @@ def get_token(token: str | bytes | None) -> dict:
         raise Unauthenticated(details="No token provided")
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:
         raise Unauthenticated(details="Token has expired")
-    except InvalidTokenError:
+    except jwt.InvalidTokenError:
         raise Unauthenticated(details="Invalid token")
 
 def generate_token(user_id: str) -> str:

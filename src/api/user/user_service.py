@@ -1,9 +1,6 @@
 import grpc
 from grpc.aio import Server, ServicerContext
 
-# from api.utils.auth import get_token, generate_token
-# from api.utils.grpc_exception import GrpcException
-
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.user_pb2 import User
 from proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
@@ -15,62 +12,48 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import UserServiceServic
 
 class UserServicer(UserServiceServicer):
     service_namespace = "nori.v0.UserService"
-    auth_list: dict[str, bool] = dict()
+    auth_config: dict[str, bool] = dict()
 
-    auth_list[f"/{service_namespace}/GetUser"] = True
+    auth_config[f"/{service_namespace}/GetUser"] = True
     def GetUser(self, request: UserId, context: ServicerContext) -> User:
         # TODO: check user_id format
         # TODO: get user data from database
         # TODO: return user data
         return User()
 
-    auth_list[f"/{service_namespace}/Login"] = False
+    auth_config[f"/{service_namespace}/Login"] = False
     def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> Empty:
-        """Login with email and password.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        # TODO: check email format
+        # TODO: ...... (implement login logic)
 
-    auth_list[f"/{service_namespace}/Logout"] = True
+        # context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        # context.set_details('Method not implemented!')
+        return Empty()
+
+    auth_config[f"/{service_namespace}/Logout"] = True
     def Logout(self, request: UserId, context: ServicerContext) -> Empty:
-        """Authentication: Required. Log out the user.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        # TODO: ...... (implement logout logic)
+        return Empty()
 
-    auth_list[f"/{service_namespace}/Signup"] = False
+    auth_config[f"/{service_namespace}/Signup"] = False
     def Signup(self, request: User, context: ServicerContext) -> Empty:
-        """Authentication: Not required. Sign up a new user.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        # TODO: ...... (implement signup logic)
+        return Empty()
 
-    auth_list[f"/{service_namespace}/DeleteUser"] = True
+    auth_config[f"/{service_namespace}/DeleteUser"] = True
     def DeleteUser(self, request: UserId, context: ServicerContext) -> Empty:
-        """Authentication: Required. Delete a user.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        # TODO: ...... (implement delete user logic)
+        return Empty()
 
-    auth_list[f"/{service_namespace}/UpdateUserProfile"] = True
+    auth_config[f"/{service_namespace}/UpdateUserProfile"] = True
     def UpdateUserProfile(self, request: UserProfile, context: ServicerContext) -> Empty:
-        """Authentication: Required. Update user profile information.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        # TODO: ...... (implement update user profile logic)
+        return Empty()
 
-    auth_list[f"/{service_namespace}/GetUserRoomList"] = True
+    auth_config[f"/{service_namespace}/GetUserRoomList"] = True
     def GetUserRoomList(self, request: UserId, context: ServicerContext) -> RoomList:
-        """Authentication: Required. Get user room list.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
+        # TODO: ...... (implement get user room list logic)
+        return RoomList()
     
 def add_service_to_server(server: Server) -> None:
     add_UserServiceServicer_to_server(UserServicer(), server)

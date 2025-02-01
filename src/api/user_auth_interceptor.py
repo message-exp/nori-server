@@ -1,16 +1,18 @@
 import grpc
-from grpc import ServerInterceptor, HandlerCallDetails, RpcMethodHandler
 from api.utils.auth import get_token, Unauthenticated
 
 from api.user.user_service import UserServicer
+from api.room.room_service import RoomServicer
+from api.message.message_service import MessageServicer
 
 # NO_TOKEN = grpc.unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, 'No token provided')
 # INVALID_TOKEN = grpc.unary_unary_rpc_terminator(grpc.StatusCode.UNAUTHENTICATED, 'Invalid token')
 # NO_PERMISSION = grpc.unary_unary_rpc_terminator(grpc.StatusCode.PERMISSION_DENIED, 'No permission to access this resource')
 
-auth_list: dict[str, bool] = {}
-auth_list.update(UserServicer.auth_list)
-# TODO: add other services
+auth_config: dict[str, bool] = {}
+auth_config.update(UserServicer.auth_config)
+auth_config.update(RoomServicer.auth_config)
+auth_config.update(MessageServicer.auth_config)
 
 class UserAuthInterceptor(grpc.ServerInterceptor):
 
@@ -20,12 +22,12 @@ class UserAuthInterceptor(grpc.ServerInterceptor):
         # self._abortion = grpc.unary_unary_rpc_method_handler(abort)
         pass
 
-    def intercept_service(self, continuation: ServerInterceptor, handler_call_details: HandlerCallDetails) -> RpcMethodHandler:
+    def intercept_service(self, continuation: grpc.ServerInterceptor, handler_call_details: grpc.HandlerCallDetails) -> grpc.RpcMethodHandler:
         metadata = dict(handler_call_details.invocation_metadata)
         method = handler_call_details.method  # /package.Service/Method
         
         # check if the endpoint needs authentication
-        if (method not in auth_list) or (not auth_list[method]):
+        if (method not in auth_config) or (not auth_config[method]):
             return continuation(handler_call_details)
 
         # Grab token
