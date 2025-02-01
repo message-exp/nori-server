@@ -1,0 +1,27 @@
+name: Check Specific Submodule
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-submodules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Check submodule on main/HEAD
+        uses: jtmullen/submodule-branch-check-action@v1
+        with:
+          path: src/protos
+          branch: main
+          first_parent: true
+          require_head: true
+          sub_fetch_depth: 10
