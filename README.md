@@ -10,7 +10,9 @@
 
 3. Open the project directory.
 
-4. Select "Reopen in Container" and wait until the process is complete.
+4. Duplicate `.env.sample` and rename as `.env`.
+
+5. Select "Reopen in Container" and wait until the process is complete.
 
 ### Local
 
@@ -24,8 +26,14 @@
     poetry config virtualenvs.in-project true
     poetry env use $(which python)
     ```
+4. Install `libpq-dev`
 
-4. Install dependencies.
+    ```sh
+    sudo apt update
+    sudo apt install libpq-dev
+    ```
+
+5. Install dependencies.
 
     ```sh
     poetry install --extras dev
