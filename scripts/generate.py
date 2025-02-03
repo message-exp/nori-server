@@ -2,7 +2,7 @@ import os
 
 proto_path = "src/protos"
 output_dir = "src/proto_generated"
-proto_target = "src/protos/nori/**/*.proto"
+proto_target = '$(find src/protos/nori -name "*.proto")'
 
 # generate the python files from the proto files
 os.system(
