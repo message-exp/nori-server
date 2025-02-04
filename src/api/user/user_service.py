@@ -14,6 +14,13 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import (
 
 
 class UserServicer(UserServiceServicer):
+    """
+    UserServicer implements the UserService interface from user_service.proto.
+
+    Attributes:
+        service_namespace (str): The namespace of the service.
+        auth_config (dict[str, bool]): A dictionary that maps the RPC path to a boolean value indicating whether the RPC requires authentication.
+    """
     service_namespace = "nori.v0.UserService"
     auth_config: dict[str, bool] = dict()
 
