@@ -1,3 +1,4 @@
+import grpc
 from grpc.aio import ServicerContext
 
 from google.protobuf.empty_pb2 import Empty
@@ -12,13 +13,44 @@ from proto_generated.nori.v0.room.room_service_pb2_grpc import (
     RoomServiceServicer,
 )
 
+from utils.db_helper import get_db
+from model import Rooms, RoomMembers
+
+from repositories.user_repository import UserRepository
+from repositories.room_member_repository import RoomMemberRepository
+from repositories.room_repostitory import RoomRepository
+
 
 class RoomServicer(RoomServiceServicer):
-    def CreateRoom(self, request: RoomCreateRequest, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement create room logic)
-        # context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        # context.set_details('Method not implemented!')
-        return Empty()
+    def CreateRoom(
+        self, request: RoomCreateRequest, context: ServicerContext
+    ) -> RoomId:
+        user_id = request.user_id.user_id
+        room_name = request.name
+        user_repository = UserRepository(next(get_db))
+        user = user_repository.get_user(user_id=user_id)
+
+        # check user exist
+        if user is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"User with ID {user_id} not found.")
+            return RoomId()
+
+        # create room
+        room_repository = RoomRepository(next(get_db))
+        room_id = room_repository.create_room(Rooms(name=room_name))
+
+        # create room_member for user in the room
+        room_member_repository = RoomMemberRepository(next(get_db))
+        room_member_repository.create_room_member(
+            RoomMembers(
+                room_id=room_id,
+                user_id=user_id,
+                user_name=user.display_name,
+                room_name=room_name,
+            )
+        )
+        return RoomId(room_id=room_id)
 
     def InviteToRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement invite to room logic)
