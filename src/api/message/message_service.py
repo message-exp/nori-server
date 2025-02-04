@@ -7,6 +7,7 @@ from proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
+from repositories.message_repository import MessageRepository
 
 
 class MessageServicer(MessageServiceServicer):
@@ -19,4 +20,6 @@ class MessageServicer(MessageServiceServicer):
 
     def GetMessages(self, request: RoomId, context: ServicerContext) -> Message:
         # TODO: ...... (implement get messages logic)
+        roomId : bytes = request.room_id
+        
         return Message()
