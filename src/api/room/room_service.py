@@ -27,7 +27,7 @@ class RoomServicer(RoomServiceServicer):
     ) -> RoomId:
         user_id = request.user_id.user_id
         room_name = request.name
-        user_repository = UserRepository(next(get_db))
+        user_repository = UserRepository(next(get_db()))
         user = user_repository.get_user(user_id=user_id)
 
         # check user exist
@@ -37,11 +37,11 @@ class RoomServicer(RoomServiceServicer):
             return RoomId()
 
         # create room
-        room_repository = RoomRepository(next(get_db))
+        room_repository = RoomRepository(next(get_db()))
         room_id = room_repository.create_room(Rooms(name=room_name))
 
         # create room_member for user in the room
-        room_member_repository = RoomMemberRepository(next(get_db))
+        room_member_repository = RoomMemberRepository(next(get_db()))
         room_member_repository.create_room_member(
             RoomMembers(
                 room_id=room_id,
