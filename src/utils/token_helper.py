@@ -10,7 +10,14 @@ ALGORITHM = "HS512"
 def get_token(token: str | bytes) -> dict:
     """
     Decode the token and return the payload.
+    
     Need to catch the exceptions from jwt.decode(), including jwt.ExpiredSignatureError, jwt.InvalidTokenError, etc.
+
+    Parameters:
+        token (str | bytes): encoded token
+
+    Returns:
+        dict: decoded payload
     """
     return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
@@ -24,6 +31,9 @@ def generate_token(
     Parameters:
         subject (str, optional): user_id to be encoded in the token
         expire (datetime, optional): expiration time of the token
+
+    Returns:
+        str: encoded token
     """
     payload: dict[str, Any] = dict()
 
