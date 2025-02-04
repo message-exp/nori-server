@@ -2,6 +2,7 @@ import grpc
 import jwt
 
 from src.utils.token_helper import get_token
+from src.utils.token_context import token_payload
 
 from api.user.user_service import UserServicer
 from api.room.room_service import RoomServicer
@@ -41,7 +42,10 @@ class UserAuthInterceptor(grpc.ServerInterceptor):
 
         # Validate token
         try:
-            get_token(token)
+            # Decode and verify JWT; expected to return payload
+            payload = get_token(token)
+            # Store the payload in a context variable so service methods can access it (e.g., payload["sub"])
+            token_payload.set(payload)
         except jwt.ExpiredSignatureError:
             return self._abortion  # Token expired
         except jwt.InvalidTokenError:

@@ -1,5 +1,7 @@
 from grpc.aio import Server, ServicerContext
 
+from src.utils.token_context import token_payload
+
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.user_pb2 import User
 from proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
@@ -21,12 +23,20 @@ class UserServicer(UserServiceServicer):
         service_namespace (str): The namespace of the service.
         auth_config (dict[str, bool]): A dictionary that maps the RPC path to a boolean value indicating whether the RPC requires authentication.
     """
+
     service_namespace = "nori.v0.UserService"
     auth_config: dict[str, bool] = dict()
 
     auth_config[f"/{service_namespace}/GetUser"] = True
 
     def GetUser(self, request: UserId, context: ServicerContext) -> User:
+        # get user_id from token
+        try:
+            payload = token_payload.get()
+            user_id = payload.get("sub")
+        except LookupError:
+            user_id = None
+
         # TODO: check user_id format
         # TODO: get user data from database
         # TODO: return user data
