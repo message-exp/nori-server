@@ -16,7 +16,8 @@ dependencies = [
     "psycopg2 (>=2.9.10,<3.0.0)",
     "pytest[dev] (>=8.3.4,<9.0.0)",
     "pytest-asyncio[dev] (>=0.25.3,<0.26.0)",
-    "pytest-mock[dev] (>=3.14.0,<4.0.0)"
+    "pytest-mock[dev] (>=3.14.0,<4.0.0)",
+    "grpcio-reflection (>=1.70.0,<2.0.0)"
 ]
 
 [project.optional-dependencies]
