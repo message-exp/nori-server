@@ -35,9 +35,9 @@ class UserServicer(UserServiceServicer):
             payload = token_payload.get()
             user_id = payload.get("sub")
         except LookupError:
-            user_id = None
+            user_id = None  # noqa: F841
 
-        # TODO: check user_id format
+        # TODO: check user_id format (remove "noqa: F841" which disables linter warning temporarily)
         # TODO: get user data from database
         # TODO: return user data
         return User()

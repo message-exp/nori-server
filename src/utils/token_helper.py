@@ -10,7 +10,7 @@ ALGORITHM = "HS512"
 def get_token(token: str | bytes) -> dict:
     """
     Decode the token and return the payload.
-    
+
     Need to catch the exceptions from jwt.decode(), including jwt.ExpiredSignatureError, jwt.InvalidTokenError, etc.
 
     Parameters:

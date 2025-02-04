@@ -16,7 +16,9 @@ auth_config.update(MessageServicer.auth_config)
 
 class UserAuthInterceptor(grpc.ServerInterceptor):
     def __init__(self) -> None:
-        def abort(ignored_request, context) -> None:
+        def abort(
+            ignored_request: grpc.RpcMethodHandler, context: grpc.ServicerContext
+        ) -> None:
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Access denied")
 
         self._abortion = grpc.unary_unary_rpc_method_handler(abort)
