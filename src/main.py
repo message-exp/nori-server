@@ -1,10 +1,11 @@
 import asyncio
 import logging
-
-from api.server import server
+from api.server import get_server
 
 
 async def serve() -> None:
+    # server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = get_server()
     server.add_insecure_port("[::]:3000")
     await server.start()
     await server.wait_for_termination()

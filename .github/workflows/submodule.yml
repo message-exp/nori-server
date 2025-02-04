@@ -1,12 +1,6 @@
 name: Check submodule on main
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [pull_request]
 
 jobs:
   check-submodules:
@@ -23,7 +17,5 @@ jobs:
           path: src/protos
           branch: main
           first_parent: true
-          fetch_depth: 10
           require_head: true
           disable_progression: true
-          sub_fetch_depth: 10
