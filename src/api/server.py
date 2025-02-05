@@ -10,15 +10,14 @@ from proto_generated.nori.v0.room.room_service_pb2_grpc import (
     add_RoomServiceServicer_to_server,
 )
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
-    add_MessageServiceServicer_to_server
+    add_MessageServiceServicer_to_server,
 )
 from proto_generated.nori.v0.room import room_service_pb2
 from grpc_reflection.v1alpha import reflection
 
 
-
-# server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 def get_server() -> grpc.Server:
+    # server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     server = grpc.aio.server()
 
     add_UserServiceServicer_to_server(servicer=UserServicer(), server=server)
