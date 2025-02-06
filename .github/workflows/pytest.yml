@@ -31,7 +31,7 @@ jobs:
       - name: Install poetry
         uses: abatilo/actions-poetry@v4
       - name: Install dependencies
-        run: poetry install --extras dev
+        run: poetry sync --extras dev
       - name: Generate files from protos
         run: poetry run python scripts/generate.py
       - name: Test with pytest
