@@ -12,7 +12,7 @@ jobs:
         run: |
           # Load environment variables from .env.sample
           set -a
-          source ../.env.sample
+          source .env.sample
           set +a
           # Start PostgreSQL container using environment variables from .env.sample
           docker run --name postgres -e POSTGRES_USER=$POSTGRES_USER -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD -e POSTGRES_DB=$POSTGRES_DB -p $POSTGRES_PORT:$POSTGRES_PORT -d postgres:latest
