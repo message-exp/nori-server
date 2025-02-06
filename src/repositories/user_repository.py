@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from sqlalchemy.orm import selectinload, load_only
+from sqlalchemy.orm import selectinload
 from model import Users, Rooms
 
 
