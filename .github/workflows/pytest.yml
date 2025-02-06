@@ -16,6 +16,11 @@ jobs:
           set -a
           source .env.sample
           set +a
+          # Debug environment variables
+          echo "POSTGRES_USER=$POSTGRES_USER"
+          echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
+          echo "POSTGRES_DB=$POSTGRES_DB"
+          echo "POSTGRES_PORT=$POSTGRES_PORT"
           # Start PostgreSQL container using environment variables from .env.sample
           docker run --name postgres -e POSTGRES_USER=$POSTGRES_USER -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD -e POSTGRES_DB=$POSTGRES_DB -p $POSTGRES_PORT:$POSTGRES_PORT -d postgres:latest
           echo "Waiting for PostgreSQL to be ready..."
