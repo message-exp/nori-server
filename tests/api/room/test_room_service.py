@@ -50,7 +50,7 @@ def test_create_room_success(
     servicer: RoomServicer = RoomServicer()
 
     request: RoomCreateRequest = RoomCreateRequest(
-        user_id=UserId(user_id=2), name="Test Room"
+        user_id=UserId(id=1), name="Test Room"
     )
 
     response: RoomId = servicer.CreateRoom(request, grpc_context)
