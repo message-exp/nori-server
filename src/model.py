@@ -38,7 +38,8 @@ class Users(SQLModel, table=True):  # type: ignore
     )
 
     rooms: list["Rooms"] = Relationship(
-        back_populates="users", sa_relationship_kwargs={"secondary": "room_members"}
+        back_populates="users",
+        sa_relationship_kwargs={"secondary": "room_members", "viewonly": True},
     )
 
 
@@ -58,11 +59,12 @@ class Rooms(SQLModel, table=True):  # type: ignore
     )
 
     members: list["RoomMembers"] = Relationship(
-        back_populates="room"
+        back_populates="room", sa_relationship_kwargs={"viewonly": True}
     )  # for custom misc
 
     users: list["Users"] = Relationship(
-        back_populates="rooms", sa_relationship_kwargs={"secondary": "room_members"}
+        back_populates="rooms",
+        sa_relationship_kwargs={"secondary": "room_members", "viewonly": True},
     )  # for user profile
 
 
@@ -93,8 +95,10 @@ class RoomMembers(SQLModel, table=True):  # type: ignore
         )
     )
 
-    room: Rooms = Relationship(back_populates="members")
-    user: Users = Relationship()
+    room: Rooms = Relationship(
+        back_populates="members", sa_relationship_kwargs={"viewonly": True}
+    )
+    user: Users = Relationship(sa_relationship_kwargs={"viewonly": True})
 
 
 class Messages(SQLModel, table=True):  # type: ignore
@@ -114,4 +118,6 @@ class Messages(SQLModel, table=True):  # type: ignore
         )
     )
     room_member: RoomMembers = Relationship()
-    user: Users = Relationship(sa_relationship_kwargs={"secondary": "room_members"})
+    user: Users = Relationship(
+        sa_relationship_kwargs={"secondary": "room_members", "viewonly": True}
+    )

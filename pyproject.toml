@@ -14,7 +14,8 @@ dependencies = [
     "sqlalchemy (>=2.0.37,<3.0.0)",
     "python-dotenv (>=1.0.1,<2.0.0)",
     "sqlalchemy-utils (>=0.41.2,<0.42.0)",
-    "psycopg2 (>=2.9.10,<3.0.0)"
+    "psycopg2 (>=2.9.10,<3.0.0)",
+    "grpcio-reflection (>=1.70.0,<2.0.0)"
 ]
 
 [project.optional-dependencies]
@@ -23,8 +24,10 @@ dev = [
     "ruff (>=0.9.1,<0.10.0)",
     "protoletariat (>=3.3.8,<4.0.0)",
     "types-protobuf (>=5.29.1.20241207,<6.0.0.0)",
-    "pytest (>=8.3.4,<9.0.0)",
-    "pytest-cov (>=6.0.0,<7.0.0)"
+    "pytest[dev] (>=8.3.4,<9.0.0)",
+    "pytest-asyncio[dev] (>=0.25.3,<0.26.0)",
+    "pytest-cov (>=6.0.0,<7.0.0)",
+    "pytest-mock[dev] (>=3.14.0,<4.0.0)"
 ]
 
 [tool.poetry]

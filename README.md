@@ -10,7 +10,9 @@
 
 3. Open the project directory.
 
-4. Select "Reopen in Container" and wait until the process is complete.
+4. Duplicate `.env.sample` and rename as `.env`.
+
+5. Select "Reopen in Container" and wait until the process is complete.
 
 ### Local
 
@@ -24,8 +26,14 @@
     poetry config virtualenvs.in-project true
     poetry env use $(which python)
     ```
+4. Install `libpq-dev`
 
-4. Install dependencies.
+    ```sh
+    sudo apt update
+    sudo apt install libpq-dev
+    ```
+
+5. Install dependencies.
 
     ```sh
     poetry install --extras dev
@@ -81,55 +89,81 @@ If you, as a developer, want to implement the API of another version, follow the
     ```
 
 > [!NOTE]
-> The generate script use the [Protoletariat](https://github.com/cpcloud/protoletariat) to fix the path problem. If you encounter the "File Not Found Error" (especially in Windows), try to add the parent directory path of the `protol` command execution file to the `PATH` environment variable. (Or just copy the file into your Python bin directory, though it's not a good idea.)
+> The generate script use [Protoletariat](https://github.com/cpcloud/protoletariat) to fix the path problem. If you encounter the "File Not Found Error" (especially in Windows), try to add the parent directory path of the `protol` command execution file to the `PATH` environment variable.
 
 5. Modify the code and implement the new features in the new version.
 
-## Development
-
-Programming, Commit, Open PR.
 
 ## Database Migration
 
-1. Create a New Migration Script  
+### Create a New Migration Script  
 
-```bash
+```sh
 cd src
 alembic revision --autogenerate -m "{message}"
 ```
 
-- Generates a new migration script based on changes in your SQLAlchemy models.  
-- `-m "{message}"` adds a description to track changes.  
+- Generates a new migration script based on changes in your SQLAlchemy models.
+
+- `-m "{message}"` adds a description to track changes.
 
 
-1. Upgrade the Database
+### Upgrade the Database
 
-```bash
+```sh
 cd src
 alembic upgrade {revision_id}
 ```
 
-- Upgrades the database schema to a specific migration version.  
-- Use `head` to apply all migrations to the latest version:  
-  ```bash
-  alembic upgrade head
-  ```
+- Upgrades the database schema to a specific migration version.
 
+- Use `head` to apply all migrations to the latest version:
 
-1. Downgrade the Database
+    ```sh
+    alembic upgrade head
+    ```
 
-```bash
+### Downgrade the Database
+
+```sh
 cd src
 alembic downgrade {revision_id}
 ```
 
-- Rolls back the database schema to a specific migration version.  
-- Use `-1` to revert only the last migration:  
-  ```bash
-  alembic downgrade -1
-  ```
+- Rolls back the database schema to a specific migration version.
+
+- Use `-1` to revert only the last migration:
+
+    ```sh
+    alembic downgrade -1
+    ```
 
 
-## Lint and format
+## Repository structure
 
-Before commit and PR, please run `ruff check`, `ruff format`, `mypy .` to check and format the code.
+- `scripts/`
+  
+    - `generate.py`: Generate gRPC Python codes from `sc/protos/` and put into `src/proto_generated/`.
+
+- `src/`
+    
+    - `protos/`: gRPC ProtoBuf files. A git submodule.
+
+    - `proto_generated/`: Generated codes from `src/protos/`.
+
+    - `api/`: gRPC API logic.
+
+    - `migrate/`: Contains database migration scripts that manage the evolution of the database schema.
+
+    - `repositories`: Contains repository classes responsible for data access and abstraction of database operations.
+
+    - `utils/`: Useful utilities.
+
+    - `main.py`: Entry point of the server.
+
+
+## Contribution
+
+Code, Commit, Open PR.
+
+Before commit and PR, please run `ruff check`, `ruff format`, and `mypy .` to check and format the code.
