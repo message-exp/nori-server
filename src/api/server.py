@@ -18,8 +18,6 @@ from proto_generated.nori.v0.user import user_service_pb2
 from grpc_reflection.v1alpha import reflection
 
 
-
-
 def get_server() -> grpc.Server:
     # server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     server = grpc.aio.server()
