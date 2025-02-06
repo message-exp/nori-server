@@ -26,5 +26,7 @@ jobs:
         uses: abatilo/actions-poetry@v4
       - name: Install dependencies
         run: poetry install --extras dev
+      - name: Generate files from protos
+        run: poetry run python scripts/generate.py
       - name: Test with pytest
         run: poetry run pytest
