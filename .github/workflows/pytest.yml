@@ -26,7 +26,5 @@ jobs:
         uses: abatilo/actions-poetry@v4
       - name: Install dependencies
         run: poetry install --extras dev
-      - name: Activate Python virtual environment
-        run: eval $(poetry env activate)
       - name: Test with pytest
-        run: pytest
+        run: poetry run pytest
