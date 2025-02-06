@@ -34,7 +34,7 @@ def test_get_user_success(
 
     # Patch the UserRepository.get_user method to return our fake_user.
     get_user_patch = mocker.patch(
-        "src.repositories.user_repository.UserRepository.get_user",
+        "src.repositories.user_repository.UserRepository.get_user_only_ids",
         return_value=fake_user,
     )
 
@@ -67,7 +67,7 @@ def test_get_user_not_found(
 
     # Patch the repository method to return None.
     mocker.patch(
-        "src.repositories.user_repository.UserRepository.get_user",
+        "src.repositories.user_repository.UserRepository.get_user_only_ids",
         return_value=None,
     )
 

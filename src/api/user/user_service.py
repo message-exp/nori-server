@@ -25,7 +25,7 @@ class UserServicer(UserServiceServicer):
 
         # get user data from database
         user_repository = UserRepository(next(get_db()))
-        user = user_repository.get_user(user_id)
+        user = user_repository.get_user_only_ids(user_id)
 
         # check if user exists in database
         if user is None:

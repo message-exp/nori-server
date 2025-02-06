@@ -7,7 +7,7 @@ class UserRepository:
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def get_user_only(self, user_id: int) -> Users | None:
+    def get_user_only_ids(self, user_id: int) -> Users | None:
         stmt = (
             select(Users)
             .options(selectinload(Users.rooms).load_only(Rooms.id))
