@@ -56,7 +56,7 @@ def test_create_room_success(
     response: RoomId = servicer.CreateRoom(request, grpc_context)
 
     assert isinstance(response, RoomId)
-    assert response.room_id == 123
+    assert response.id == 123
 
     mock_user_repo.return_value.get_user.assert_called_once_with(user_id=1)
     mock_room_repo.return_value.create_room.assert_called_once_with(
@@ -81,12 +81,12 @@ def test_create_room_user_not_found(
     mock_user_repo.return_value.get_user.return_value = None
 
     request: RoomCreateRequest = RoomCreateRequest(
-        user_id=UserId(user_id=999), name="Test Room"
+        creator=UserId(id=999), name="Test Room"
     )
     response: RoomId = servicer.CreateRoom(request, grpc_context)
 
     assert isinstance(response, RoomId)
-    assert response.room_id == 0
+    assert response.id == 0
 
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("User with ID 999 not found.")
