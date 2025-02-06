@@ -24,6 +24,8 @@ jobs:
             docker exec postgres pg_isready -U $POSTGRES_USER && break || sleep 1
           done
           docker exec postgres pg_isready -U $POSTGRES_USER || (echo "PostgreSQL not ready" && exit 1)
+      - name: Install protoc
+        run: sudo apt install -y protobuf-compiler
       - name: Install poetry
         uses: abatilo/actions-poetry@v4
       - name: Install dependencies
