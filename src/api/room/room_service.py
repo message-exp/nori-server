@@ -25,7 +25,7 @@ class RoomServicer(RoomServiceServicer):
     def CreateRoom(
         self, request: RoomCreateRequest, context: ServicerContext
     ) -> RoomId:
-        user_id = request.user_id.user_id
+        user_id = request.creator.id
         room_name = request.name
         user_repository = UserRepository(next(get_db()))
         user = user_repository.get_user(user_id=user_id)
@@ -50,7 +50,7 @@ class RoomServicer(RoomServiceServicer):
                 room_name=room_name,
             )
         )
-        return RoomId(room_id=room_id)
+        return RoomId(id=room_id)
 
     def InviteToRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement invite to room logic)
