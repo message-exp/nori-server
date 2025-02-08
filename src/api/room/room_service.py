@@ -13,9 +13,7 @@ from proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import InviteU
 from utils.db_helper import get_db
 from model import Rooms, RoomMembers
 
-from repositories.user_repository import UserRepository
-from repositories.room_member_repository import RoomMemberRepository
-from repositories.room_repostitory import RoomRepository
+from repositories import RoomRepo,RoomMemberRepo,UserRepo
 
 
 class RoomServicer(RoomServiceServicer):
@@ -24,8 +22,8 @@ class RoomServicer(RoomServiceServicer):
     ) -> RoomId:
         user_id = request.creator.id
         room_name = request.name
-        user_repository = UserRepository(next(get_db()))
-        user = user_repository.get_user(user_id)
+        user_repo = UserRepo(next(get_db()))
+        user = user_repo.get_user(user_id)
 
         # check user exist
         if user is None:
@@ -34,12 +32,12 @@ class RoomServicer(RoomServiceServicer):
             return RoomId()
 
         # create room
-        room_repository = RoomRepository(next(get_db()))
-        room_id = room_repository.create_room(Rooms(name=room_name))
+        room_repo = RoomRepo(next(get_db()))
+        room_id = room_repo.create_room(Rooms(name=room_name))
 
         # create room_member for user in the room
-        room_member_repository = RoomMemberRepository(next(get_db()))
-        room_member_repository.create_room_member(
+        room_member_repo = RoomMemberRepo(next(get_db()))
+        room_member_repo.create_room_member(
             RoomMembers(
                 room_id=room_id,
                 user_id=user_id,
@@ -55,28 +53,28 @@ class RoomServicer(RoomServiceServicer):
         invitees_id:list[int] = [invitees_id.id for invitees_id in request.invitees]  # noqa: F841
 
         #check room exist
-        room_repository = RoomRepository(next(get_db()))
-        if not room_repository.exists_room(room_id):
+        room_repo = RoomRepo(next(get_db()))
+        if not room_repo.exists_room(room_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
             return Empty() 
         
         #check inviter exist
-        user_repository = UserRepository(next(get_db()))
-        if not user_repository.exists_user(inviter_id):
+        user_repo = UserRepo(next(get_db()))
+        if not user_repo.exists_user(inviter_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {inviter_id} not found.")
             return Empty() 
         
         #check all invitees exist
-        if not user_repository.exists_all_users(invitees_id):
+        if not user_repo.exists_all_users(invitees_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Users with some IDs in {invitees_id} not found.")
             return Empty()
         
         # create room_members for all invitees in the room
-        room_member_repository = RoomMemberRepository(next(get_db()))
-        room_member_repository.create_room_members(room_id,invitees_id)
+        room_member_repo = RoomMemberRepo(next(get_db()))
+        room_member_repo.create_room_members(room_id,invitees_id)
         
         return Empty()
 
