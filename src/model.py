@@ -49,7 +49,7 @@ class Rooms(SQLModel, table=True):  # type: ignore
         sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
     )
     name: str = Field(sa_column=Column(String(256)))
-    avater_url: str = Field(sa_column=Column(TEXT))
+    avatar_url: str = Field(sa_column=Column(TEXT))
 
     created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
     updated_at: datetime = Field(
@@ -78,15 +78,15 @@ class RoomMembers(SQLModel, table=True):  # type: ignore
     room_name: str = Field(
         sa_column=Column(String(256))
     )  # user customize room name (show only user)
-    room_avater_url: str = Field(
+    room_avatar_url: str = Field(
         sa_column=Column(TEXT)
-    )  # user customize room avater (show only user)
+    )  # user customize room avatar (show only user)
     user_name: str = Field(
         sa_column=Column(String(256))
     )  # custom user name in room (show all room user)
-    user_avater_url: str = Field(
+    user_avatar_url: str = Field(
         sa_column=Column(TEXT)
-    )  # custom user avater in room (show all room user)
+    )  # custom user avatar in room (show all room user)
 
     created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
     updated_at: datetime = Field(
