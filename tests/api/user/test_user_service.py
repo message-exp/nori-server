@@ -1,8 +1,14 @@
-import pytest
 import grpc
-from types import SimpleNamespace
+import pytest
+from unittest.mock import MagicMock
 from pytest_mock import MockerFixture
+from types import SimpleNamespace
+from typing import Generator
+
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
+from src.proto_generated.nori.v0.user.user_pb2 import User
+
+# from src.model import Users, Rooms
 from src.api.user.user_service import UserServicer
 
 
@@ -18,38 +24,49 @@ def fake_user() -> SimpleNamespace:
     return SimpleNamespace(
         id=1,
         username="testuser",
-        email="test@example.com",
         display_name="Test User",
+        email="test@example.com",
         rooms=[fake_room],
     )
 
 
+@pytest.fixture
+def mock_user_repository(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
+    """Mock UserRepository"""
+    mock_db_session = MagicMock()
+    mocker.patch("src.api.user.user_service.get_db", return_value=mock_db_session)
+
+    mock_user_repo: MagicMock = mocker.patch("src.api.user.user_service.UserRepository")
+
+    yield mock_user_repo
+
+
 def test_get_user_success(
-    mocker: MockerFixture,
+    mock_user_repository: MagicMock,
     fake_context: grpc.aio.ServicerContext,
     fake_user: SimpleNamespace,
 ) -> None:
     # Arrange: Create a fake request with id=1
     request = UserId(id=fake_user.id)
 
-    # Patch the UserRepository.get_user method to return our fake_user.
-    get_user_patch = mocker.patch(
-        "src.repositories.user_repository.UserRepository.get_user_only_ids",
-        return_value=fake_user,
-    )
+    # Set the return value for get_user_only_ids on the patched UserRepository
+    mock_user_repository.return_value.get_user_only_ids.return_value = fake_user
 
     service = UserServicer()
 
     # Act: Call GetUser
     response = service.GetUser(request, fake_context)
 
-    # Assert: Ensure the repository was called and response has the correct values.
-    get_user_patch.assert_called_once()
+    # Assert: Ensure the repository method was called once with the correct argument.
+    mock_user_repository.return_value.get_user_only_ids.assert_called_once_with(
+        fake_user.id
+    )
+    assert isinstance(response, User)
     assert response.user_id.id == fake_user.id
     assert response.username == fake_user.username
     assert response.email == fake_user.email
     assert response.display_name == fake_user.display_name
-    assert response.avatar_url is None
+    assert response.avatar_url == ""
     # Check connected_accounts: our code always returns one empty UserConnection.
     assert len(response.connected_accounts) == 1
     # Check rooms: each room is converted to a RoomId with the same id.
@@ -59,17 +76,15 @@ def test_get_user_success(
 
 
 def test_get_user_not_found(
-    mocker: MockerFixture, fake_context: grpc.aio.ServicerContext
+    mock_user_repository: MagicMock,
+    fake_context: grpc.aio.ServicerContext,
 ) -> None:
     # Arrange: Create a request for a non-existent user (e.g., id 999)
     user_id = 999
     request = UserId(id=user_id)
 
     # Patch the repository method to return None.
-    mocker.patch(
-        "src.repositories.user_repository.UserRepository.get_user_only_ids",
-        return_value=None,
-    )
+    mock_user_repository.return_value.get_user_only_ids.return_value = None
 
     service = UserServicer()
 
@@ -88,6 +103,6 @@ def test_get_user_not_found(
     assert response.email == ""
     assert response.display_name == ""
     # Default empty message for avatar_url can be an empty string.
-    assert response.avatar_url in (None, "")
+    assert response.avatar_url == ""
     assert len(response.connected_accounts) == 0
     assert len(response.rooms) == 0

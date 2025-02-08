@@ -36,12 +36,12 @@ class UserServicer(UserServiceServicer):
         # return user data
         return User(
             user_id=UserId(id=user.id),
-            username=user.username,
-            email=user.email,
-            display_name=user.display_name,
-            avatar_url=None,
+            username=str(user.username),
+            email=str(user.email),
+            display_name=str(user.display_name),
+            avatar_url="",
             connected_accounts=[UserConnection()],
-            rooms=[RoomId(room.id) for room in user.rooms],
+            rooms=[RoomId(id=room.id) for room in user.rooms],
         )
 
     def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> Empty:
