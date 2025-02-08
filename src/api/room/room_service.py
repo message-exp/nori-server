@@ -13,6 +13,7 @@ from proto_generated.nori.v0.room.room_service_pb2_grpc import (
     RoomServiceServicer,
 )
 
+from utils.token_helper import auth_required
 from utils.db_helper import get_db
 from model import Rooms, RoomMembers
 
@@ -22,11 +23,7 @@ from repositories.room_repostitory import RoomRepository
 
 
 class RoomServicer(RoomServiceServicer):
-    service_namespace = "nori.v0.RoomService"
-    auth_config: dict[str, bool] = dict()
-
-    auth_config[f"/{service_namespace}/CreateRoom"] = True
-
+    @auth_required
     def CreateRoom(
         self, request: RoomCreateRequest, context: ServicerContext
     ) -> RoomId:
@@ -57,32 +54,27 @@ class RoomServicer(RoomServiceServicer):
         )
         return RoomId(id=room_id)
 
-    auth_config[f"/{service_namespace}/InviteToRoom"] = True
-
+    @auth_required
     def InviteToRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement invite to room logic)
         return Empty()
 
-    auth_config[f"/{service_namespace}/JoinRoom"] = True
-
+    @auth_required
     def JoinRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement join room logic)
         return Empty()
 
-    auth_config[f"/{service_namespace}/LeaveRoom"] = True
-
+    @auth_required
     def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement leave room logic)
         return Empty()
 
-    auth_config[f"/{service_namespace}/GetRoom"] = True
-
+    @auth_required
     def GetRoom(self, request: RoomId, context: ServicerContext) -> Room:
         # TODO: ...... (implement get room logic)
         return Room()
 
-    auth_config[f"/{service_namespace}/UpdateRoomBasic"] = True
-
+    @auth_required
     def UpdateRoomBasic(
         self, request: RoomBasicInfoRequest, context: ServicerContext
     ) -> Empty:

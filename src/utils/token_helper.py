@@ -1,25 +1,51 @@
 import os
 import jwt
+import grpc
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Callable
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "default_secret")
 ALGORITHM = "HS512"
 
 
-def get_token(token: str | bytes) -> dict:
+def auth_required(func: Callable) -> Callable:
     """
-    Decode the token and return the payload.
-
-    Need to catch the exceptions from jwt.decode(), including jwt.ExpiredSignatureError, jwt.InvalidTokenError, etc.
-
-    Parameters:
-        token (str | bytes): encoded token
-
+    Decorator that ensures the request has a valid authorization token.
+    Args:
+        func (Callable): The function to be decorated.
     Returns:
-        dict: decoded payload
+        Callable: The wrapped function with authorization check.
+    Raises:
+        grpc.RpcError: If the token is missing, expired, or invalid, an appropriate gRPC error is raised.
     """
-    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+    def wrapper(
+        self, request: grpc.aio.Call, context: grpc.aio.ServicerContext  # noqa: ANN001
+    ) -> grpc.aio.Call:
+        metadata = dict(context.invocation_metadata())
+        token = metadata.get("authorization")
+
+        if not token:
+            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Missing token")
+            return
+
+        try:
+            if isinstance(token, (str, bytes)):
+                decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            else:
+                context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid token type")
+                return
+            context.user_info = decoded_token
+        except jwt.ExpiredSignatureError:
+            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Token expired")
+            return
+        except jwt.InvalidTokenError:
+            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid token")
+            return
+
+        return func(self, request, context)
+
+    return wrapper
 
 
 def generate_token(
@@ -27,11 +53,9 @@ def generate_token(
 ) -> str:
     """
     Generate a token with the user_id.
-
-    Parameters:
+    Args:
         subject (str, optional): user_id to be encoded in the token
         expire (datetime, optional): expiration time of the token
-
     Returns:
         str: encoded token
     """

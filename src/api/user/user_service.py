@@ -1,6 +1,6 @@
 from grpc.aio import ServicerContext
 
-from src.utils.token_context import token_payload
+from src.utils.token_helper import auth_required
 
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.user_pb2 import User
@@ -23,25 +23,12 @@ class UserServicer(UserServiceServicer):
         auth_config (dict[str, bool]): A dictionary that maps the RPC path to a boolean value indicating whether the RPC requires authentication.
     """
 
-    service_namespace = "nori.v0.UserService"
-    auth_config: dict[str, bool] = dict()
-
-    auth_config[f"/{service_namespace}/GetUser"] = True
-
+    @auth_required
     def GetUser(self, request: UserId, context: ServicerContext) -> User:
-        # get user_id from token
-        try:
-            payload = token_payload.get()
-            user_id = payload.get("sub")
-        except LookupError:
-            user_id = None  # noqa: F841
-
-        # TODO: check user_id format (remove "noqa: F841" which disables linter warning temporarily)
+        # TODO: check user_id format
         # TODO: get user data from database
         # TODO: return user data
         return User()
-
-    auth_config[f"/{service_namespace}/Login"] = False
 
     def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> Empty:
         # TODO: check email format
@@ -51,34 +38,28 @@ class UserServicer(UserServiceServicer):
         # context.set_details('Method not implemented!')
         return Empty()
 
-    auth_config[f"/{service_namespace}/Logout"] = True
-
+    @auth_required
     def Logout(self, request: UserId, context: ServicerContext) -> Empty:
         # TODO: ...... (implement logout logic)
         return Empty()
-
-    auth_config[f"/{service_namespace}/Signup"] = False
 
     def Signup(self, request: User, context: ServicerContext) -> Empty:
         # TODO: ...... (implement signup logic)
         return Empty()
 
-    auth_config[f"/{service_namespace}/DeleteUser"] = True
-
+    @auth_required
     def DeleteUser(self, request: UserId, context: ServicerContext) -> Empty:
         # TODO: ...... (implement delete user logic)
         return Empty()
 
-    auth_config[f"/{service_namespace}/UpdateUserProfile"] = True
-
+    @auth_required
     def UpdateUserProfile(
         self, request: UserProfile, context: ServicerContext
     ) -> Empty:
         # TODO: ...... (implement update user profile logic)
         return Empty()
 
-    auth_config[f"/{service_namespace}/GetUserRoomList"] = True
-
+    @auth_required
     def GetUserRoomList(self, request: UserId, context: ServicerContext) -> RoomList:
         # TODO: ...... (implement get user room list logic)
         return RoomList()
