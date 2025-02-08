@@ -20,7 +20,9 @@ def auth_required(func: Callable) -> Callable:
     """
 
     def wrapper(
-        self, request: grpc.aio.Call, context: grpc.aio.ServicerContext  # noqa: ANN001
+        self,
+        request: grpc.aio.Call,
+        context: grpc.aio.ServicerContext,  # noqa: ANN001
     ) -> grpc.aio.Call:
         metadata = dict(context.invocation_metadata())
         token = metadata.get("authorization")
