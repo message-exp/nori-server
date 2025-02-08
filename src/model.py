@@ -9,7 +9,7 @@ from sqlmodel import (
     TIMESTAMP,
     UniqueConstraint,
     func,
-    select
+    select,
 )
 from sqlalchemy.event import listens_for
 from sqlalchemy.engine import Connection
@@ -26,19 +26,16 @@ def generate_snowflake_id() -> int:
 class Users(SQLModel, table=True):  # type: ignore
     __tablename__ = "users"
     id: int | None = Field(
-        sa_column=Column(BIGINT, primary_key=True,
-                         default=generate_snowflake_id)
+        sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
     )
-    username: str = Field(sa_column=Column(
-        String(256), index=True, unique=True))
+    username: str = Field(sa_column=Column(String(256), index=True, unique=True))
     display_name: str = Field(sa_column=Column(String(256)))
     email: str = Field(sa_column=Column(TEXT))
     token: str = Field(sa_column=Column(String(512), index=True))
     avatar_url: str = Field(sa_column=Column(TEXT))
     hashed_password: str = Field(sa_column=Column(String(60)))
 
-    created_at: datetime = Field(sa_column=Column(
-        TIMESTAMP, server_default=func.now()))
+    created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
     updated_at: datetime = Field(
         sa_column=Column(
             TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp()
@@ -54,14 +51,12 @@ class Users(SQLModel, table=True):  # type: ignore
 class Rooms(SQLModel, table=True):  # type: ignore
     __tablename__ = "rooms"
     id: int | None = Field(
-        sa_column=Column(BIGINT, primary_key=True,
-                         default=generate_snowflake_id)
+        sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
     )
     name: str = Field(sa_column=Column(String(256)))
     avatar_url: str = Field(sa_column=Column(TEXT))
 
-    created_at: datetime = Field(sa_column=Column(
-        TIMESTAMP, server_default=func.now()))
+    created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
     updated_at: datetime = Field(
         sa_column=Column(
             TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp()
@@ -81,28 +76,24 @@ class Rooms(SQLModel, table=True):  # type: ignore
 class RoomMembers(SQLModel, table=True):  # type: ignore
     __tablename__ = "room_members"
     id: int | None = Field(
-        sa_column=Column(BIGINT, primary_key=True,
-                         default=generate_snowflake_id)
+        sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
     )
     room_id: int = Field(foreign_key="rooms.id", index=True, sa_type=BIGINT)
     user_id: int = Field(foreign_key="users.id", index=True, sa_type=BIGINT)
-    room_name: str | None = Field(default=None, sa_column=Column(
-        String(256)))  # user customize room name (show only user)
+    room_name: str | None = Field(
+        default=None, sa_column=Column(String(256))
+    )  # user customize room name (show only user)
     room_avatar_url: str | None = Field(
-        default=None,
-        sa_column=Column(TEXT)
+        default=None, sa_column=Column(TEXT)
     )  # user customize room avater (show only user)
     user_name: str | None = Field(
-        default=None,
-        sa_column=Column(String(256))
+        default=None, sa_column=Column(String(256))
     )  # custom user name in room (show all room user)
     user_avatar_url: str | None = Field(
-        default=None,
-        sa_column=Column(TEXT)
+        default=None, sa_column=Column(TEXT)
     )  # custom user avater in room (show all room user)
 
-    created_at: datetime = Field(sa_column=Column(
-        TIMESTAMP, server_default=func.now()))
+    created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
     updated_at: datetime = Field(
         sa_column=Column(
             TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp()
@@ -114,24 +105,20 @@ class RoomMembers(SQLModel, table=True):  # type: ignore
     )
     user: Users = Relationship(sa_relationship_kwargs={"viewonly": True})
 
-    __table_args__ = (
-        UniqueConstraint(
-            "room_id","user_id", name="uix_room_member"
-        ),
-    )
+    __table_args__ = (UniqueConstraint("room_id", "user_id", name="uix_room_member"),)
+
+
 class Messages(SQLModel, table=True):  # type: ignore
     __tablename__ = "messages"
     id: int | None = Field(
-        sa_column=Column(BIGINT, primary_key=True,
-                         default=generate_snowflake_id)
+        sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
     )
     room_member_id: int = Field(
         foreign_key="room_members.id", index=True, sa_type=BIGINT
     )
     room_id: int = Field(foreign_key="rooms.id", index=True, sa_type=BIGINT)
     message: str = Field(sa_column=Column(TEXT))
-    created_at: datetime = Field(sa_column=Column(
-        TIMESTAMP, server_default=func.now()))
+    created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
     updated_at: datetime = Field(
         sa_column=Column(
             TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp()
@@ -143,8 +130,10 @@ class Messages(SQLModel, table=True):  # type: ignore
     )
 
 
-@listens_for(RoomMembers, 'before_insert')
-def before_insert_room_member(mapper: object, connection: Connection, target: RoomMembers) -> None:
+@listens_for(RoomMembers, "before_insert")
+def before_insert_room_member(
+    mapper: object, connection: Connection, target: RoomMembers
+) -> None:
     if target.room_name is None:
         result = connection.execute(
             select(Rooms.name).where(Rooms.id == target.room_id)

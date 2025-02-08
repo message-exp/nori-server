@@ -9,7 +9,9 @@ from src.api.room.room_service import RoomServicer, RoomMembers, Rooms
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.room.room_create_request_pb2 import RoomCreateRequest
-from src.proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import InviteUserToRoomRequest
+from src.proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import (
+    InviteUserToRoomRequest,
+)
 from google.protobuf.empty_pb2 import Empty
 
 
@@ -19,13 +21,10 @@ def mock_repositories(
 ) -> Generator[Tuple[MagicMock, MagicMock, MagicMock], None, None]:
     """Mock UserRepository, RoomRepository, RoomMemberRepository"""
     mock_db_session = MagicMock()
-    mocker.patch("src.api.room.room_service.get_db",
-                 return_value=mock_db_session)
+    mocker.patch("src.api.room.room_service.get_db", return_value=mock_db_session)
 
-    mock_user_repo: MagicMock = mocker.patch(
-        "src.api.room.room_service.UserRepo")
-    mock_room_repo: MagicMock = mocker.patch(
-        "src.api.room.room_service.RoomRepo")
+    mock_user_repo: MagicMock = mocker.patch("src.api.room.room_service.UserRepo")
+    mock_room_repo: MagicMock = mocker.patch("src.api.room.room_service.RoomRepo")
     mock_room_member_repo: MagicMock = mocker.patch(
         "src.api.room.room_service.RoomMemberRepo"
     )
@@ -122,8 +121,7 @@ def test_invite_to_room_inviter_not_found(
     response = service.InviteToRoom(request, grpc_context)
 
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
-    grpc_context.set_details.assert_called_once_with(
-        "User with ID 2 not found.")
+    grpc_context.set_details.assert_called_once_with("User with ID 2 not found.")
     assert isinstance(response, Empty)
 
 
@@ -143,7 +141,8 @@ def test_invite_to_room_invitees_not_found(
 
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with(
-        "Users with some IDs in [3] not found.")
+        "Users with some IDs in [3] not found."
+    )
     assert isinstance(response, Empty)
 
 
@@ -158,9 +157,13 @@ def test_invite_to_room_success(
 
     service = RoomServicer()
     request = InviteUserToRoomRequest(
-        room_id=RoomId(id=1), inviter=UserId(id=2), invitees=[UserId(id=3), UserId(id=4)]
+        room_id=RoomId(id=1),
+        inviter=UserId(id=2),
+        invitees=[UserId(id=3), UserId(id=4)],
     )
     response = service.InviteToRoom(request, grpc_context)
 
-    mock_room_member_repo.return_value.create_room_members.assert_called_once_with(1, [3, 4])
+    mock_room_member_repo.return_value.create_room_members.assert_called_once_with(
+        1, [3, 4]
+    )
     assert isinstance(response, Empty)
