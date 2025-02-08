@@ -14,6 +14,7 @@ from proto_generated.nori.v0.room.room_service_pb2_grpc import RoomServiceServic
 from proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import (
     InviteUserToRoomRequest,
 )
+from utils.token_helper import auth_required
 from utils.db_helper import get_db
 from model import Rooms, RoomMembers
 
@@ -21,6 +22,7 @@ from repositories import RoomRepo, RoomMemberRepo, UserRepo
 
 
 class RoomServicer(RoomServiceServicer):
+    @auth_required
     def CreateRoom(
         self, request: RoomCreateRequest, context: ServicerContext
     ) -> RoomId:
@@ -51,6 +53,7 @@ class RoomServicer(RoomServiceServicer):
         )
         return RoomId(id=room_id)
 
+    @auth_required
     def InviteToRoom(
         self, request: InviteUserToRoomRequest, context: ServicerContext
     ) -> Empty:
@@ -84,18 +87,22 @@ class RoomServicer(RoomServiceServicer):
 
         return Empty()
 
+    @auth_required
     def JoinRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement join room logic)
         return Empty()
 
+    @auth_required
     def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement leave room logic)
         return Empty()
 
+    @auth_required
     def GetRoom(self, request: RoomId, context: ServicerContext) -> Room:
         # TODO: ...... (implement get room logic)
         return Room()
 
+    @auth_required
     def UpdateRoomBasic(
         self, request: RoomBasicInfoRequest, context: ServicerContext
     ) -> Empty:
