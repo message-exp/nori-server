@@ -1,4 +1,4 @@
-from grpc.aio import Server, ServicerContext
+from grpc.aio import ServicerContext
 
 from src.utils.token_context import token_payload
 
@@ -11,7 +11,6 @@ from proto_generated.nori.v0.room.room_list_pb2 import RoomList
 
 from proto_generated.nori.v0.user.user_service_pb2_grpc import (
     UserServiceServicer,
-    add_UserServiceServicer_to_server,
 )
 
 
@@ -83,7 +82,3 @@ class UserServicer(UserServiceServicer):
     def GetUserRoomList(self, request: UserId, context: ServicerContext) -> RoomList:
         # TODO: ...... (implement get user room list logic)
         return RoomList()
-
-
-def add_service_to_server(server: Server) -> None:
-    add_UserServiceServicer_to_server(UserServicer(), server)

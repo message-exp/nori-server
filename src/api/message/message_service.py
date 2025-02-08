@@ -1,4 +1,4 @@
-from grpc.aio import Server, ServicerContext
+from grpc.aio import ServicerContext
 
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.message.message_pb2 import Message
@@ -6,7 +6,6 @@ from proto_generated.nori.v0.room.room_id_pb2 import RoomId
 
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
-    add_MessageServiceServicer_to_server,
 )
 
 
@@ -28,7 +27,3 @@ class MessageServicer(MessageServiceServicer):
     def GetMessages(self, request: RoomId, context: ServicerContext) -> Message:
         # TODO: ...... (implement get messages logic)
         return Message()
-
-
-def add_service_to_server(server: Server) -> None:
-    add_MessageServiceServicer_to_server(MessageServicer(), server)

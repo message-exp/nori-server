@@ -1,5 +1,5 @@
 import grpc
-from grpc.aio import Server, ServicerContext
+from grpc.aio import ServicerContext
 
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.room.room_pb2 import Room
@@ -11,7 +11,6 @@ from proto_generated.nori.v0.room.room_basic_info_request_pb2 import (
 from proto_generated.nori.v0.room.room_user_request_pb2 import RoomUserRequest
 from proto_generated.nori.v0.room.room_service_pb2_grpc import (
     RoomServiceServicer,
-    add_RoomServiceServicer_to_server,
 )
 
 from utils.db_helper import get_db
@@ -89,7 +88,3 @@ class RoomServicer(RoomServiceServicer):
     ) -> Empty:
         # TODO: ...... (implement update room basic info logic)
         return Empty()
-
-
-def add_service_to_server(server: Server) -> None:
-    add_RoomServiceServicer_to_server(RoomServicer(), server)
