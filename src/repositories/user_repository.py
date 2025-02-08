@@ -1,4 +1,4 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from sqlalchemy.orm import selectinload
 from model import Users, Rooms
 
@@ -19,8 +19,16 @@ class UserRepository:
         return self.db.exec(select(Users).where(Users.id == user_id)).first()
 
     def exists_user(self, user_id: int) -> bool:
-        result = self.db.exec(select(Users).where(Users.id == user_id)).first()
-        return result is not None
+        user = self.db.exec(select(Users).where(Users.id == user_id)).first()
+        return user is not None
+
+    def exists_all_users(self, user_list: list[int]) -> bool:
+        if not user_list:
+            return False
+        existing_users = self.db.exec(
+            select(Users.id).where(col(Users.id).in_(user_list))
+        ).all()
+        return len(existing_users) == len(user_list)
 
     def create_user(self, user: Users) -> int:
         self.db.add(user)

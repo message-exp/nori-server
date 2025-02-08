@@ -8,8 +8,14 @@ from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
 
+from src.utils.token_helper import auth_required
+
 
 class MessageServicer(MessageServiceServicer):
+    service_namespace = "nori.v0.MessageService"
+    auth_config: dict[str, bool] = dict()
+
+    @auth_required
     def SendMessage(self, request: Message, context: ServicerContext) -> Empty:
         # TODO: ...... (implement send message logic)
 
@@ -17,6 +23,7 @@ class MessageServicer(MessageServiceServicer):
         # context.set_details('Method not implemented!')
         return Empty()
 
+    @auth_required
     def GetMessages(self, request: RoomId, context: ServicerContext) -> Message:
         # TODO: ...... (implement get messages logic)
         return Message()
