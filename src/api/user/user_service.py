@@ -8,9 +8,7 @@ from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from proto_generated.nori.v0.user.user_profile_pb2 import UserProfile
 from proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from proto_generated.nori.v0.room.room_list_pb2 import RoomList
-from proto_generated.nori.v0.room.room_basic_info_response_pb2 import (
-    RoomBasicInfoResponse,
-)
+from proto_generated.nori.v0.room.room_basic_info_response_pb2 import RoomBasicInfoResponse
 
 from proto_generated.nori.v0.user.user_service_pb2_grpc import (
     UserServiceServicer,
@@ -69,23 +67,22 @@ class UserServicer(UserServiceServicer):
 
         rooms = []
         for room_member in user_room_members:
+            room_basic_info = RoomBasicInfoResponse(
+                room_id=RoomId(id=room_member.room_id),
+            )
+
             # For the name oneof, prioritize the custom name if provided.
             if room_member.room_name:
-                name_field = {"custom_name": room_member.room_name}
+                room_basic_info.custom_name = room_member.room_name
             else:
-                name_field = {"shared_name": room_member.room.name}
+                room_basic_info.shared_name = room_member.room.name
 
             # For the avatar oneof, prioritize the custom URL if provided.
             if room_member.room_avatar_url:
-                avatar_field = {"custom_avatar_url": room_member.room_avatar_url}
+                room_basic_info.custom_avatar_url = room_member.room_avatar_url
             else:
-                avatar_field = {"shared_avatar_url": room_member.room.avatar_url}
+                room_basic_info.shared_avatar_url = room_member.room.avatar_url
 
-            room_basic_info = RoomBasicInfoResponse(
-                room_id=RoomId(id=room_member.room_id),
-                **name_field,
-                **avatar_field,
-            )
             rooms.append(room_basic_info)
 
         return RoomList(rooms=rooms)
