@@ -6,7 +6,7 @@ from typing import Any, Optional, Callable
 import utils.env_helper
 
 SECRET_KEY = utils.env_helper.JWT_SECRET_KEY
-ALGORITHM = "HS512"
+ALGORITHM = utils.env_helper.JWT_ALGORITHM
 
 
 def auth_required(func: Callable) -> Callable:

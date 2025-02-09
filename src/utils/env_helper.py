@@ -3,10 +3,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT")
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_DB = os.getenv("POSTGRES_DB")
+POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", 5432))
+POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_DB: str = os.getenv("POSTGRES_DB", "nori")
 
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "jwt_default_secret")
+JWT_ALGORITHM: str = "HS512"
