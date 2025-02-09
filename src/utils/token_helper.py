@@ -1,10 +1,11 @@
-import os
 import jwt
 import grpc
 from datetime import datetime
 from typing import Any, Optional, Callable
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "default_secret")
+import utils.env_helper
+
+SECRET_KEY = utils.env_helper.JWT_SECRET_KEY
 ALGORITHM = "HS512"
 
 

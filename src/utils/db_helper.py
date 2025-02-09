@@ -1,16 +1,14 @@
-import os
 from typing import Any, Generator
 from sqlmodel import create_engine, Session
 from sqlalchemy_utils import database_exists, create_database
 
-from dotenv import load_dotenv
+import utils.env_helper
 
-load_dotenv()
-SERVER = os.getenv("POSTGRES_HOST")
-PORT = os.getenv("POSTGRES_PORT")
-USERNAME = os.getenv("POSTGRES_USER")
-PASSWORD = os.getenv("POSTGRES_PASSWORD")
-DB = os.getenv("POSTGRES_DB")
+SERVER = utils.env_helper.POSTGRES_HOST
+PORT = utils.env_helper.POSTGRES_PORT
+USERNAME = utils.env_helper.POSTGRES_USER
+PASSWORD = utils.env_helper.POSTGRES_PASSWORD
+DB = utils.env_helper.POSTGRES_DB
 
 ENGINE_URL = f"postgresql://{USERNAME}:{PASSWORD}@{SERVER}:{PORT}/{DB}"
 engine = create_engine(
