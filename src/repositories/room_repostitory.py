@@ -14,3 +14,7 @@ class RoomRepository:
     def exists_room(self, room_id: int) -> bool:
         room = self.db.exec(select(Rooms).where(Rooms.id == room_id)).first()
         return room is not None
+
+    def get_room(self, room_id: int) -> Rooms:
+        room = self.db.exec(select(Rooms).where(Rooms.id == room_id)).first()
+        return room
