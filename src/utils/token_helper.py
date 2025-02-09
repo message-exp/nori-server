@@ -51,13 +51,17 @@ def auth_required(func: Callable) -> Callable:
 
 
 def generate_token(
-    subject: Optional[str] = None, expire: Optional[datetime] = None
+    subject: Optional[str] = None,
+    expire: Optional[datetime] = None,
+    token_id: Optional[str] = None,
 ) -> str:
     """
     Generate a token with the user_id.
     Args:
         subject (str, optional): user_id to be encoded in the token
         expire (datetime, optional): expiration time of the token
+        device (str, optional): device_id to be encoded in the token
+        **kwargs: additional information to be encoded in the token
     Returns:
         str: encoded token
     """
@@ -68,5 +72,8 @@ def generate_token(
 
     if expire is not None:
         payload["exp"] = expire
+
+    if token_id is not None:
+        payload["jti"] = token_id
 
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
