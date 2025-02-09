@@ -7,8 +7,12 @@ from sqlmodel import (
     BIGINT,
     Column,
     TIMESTAMP,
+    UniqueConstraint,
     func,
+    select,
 )
+from sqlalchemy.event import listens_for
+from sqlalchemy.engine import Connection
 from datetime import datetime
 from snowflake import SnowflakeGenerator
 
@@ -28,6 +32,7 @@ class Users(SQLModel, table=True):  # type: ignore
     display_name: str = Field(sa_column=Column(String(256)))
     email: str = Field(sa_column=Column(TEXT))
     token: str = Field(sa_column=Column(String(512), index=True))
+    avatar_url: str = Field(sa_column=Column(TEXT))
     hashed_password: str = Field(sa_column=Column(String(60)))
 
     created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
@@ -75,18 +80,18 @@ class RoomMembers(SQLModel, table=True):  # type: ignore
     )
     room_id: int = Field(foreign_key="rooms.id", index=True, sa_type=BIGINT)
     user_id: int = Field(foreign_key="users.id", index=True, sa_type=BIGINT)
-    room_name: str = Field(
-        sa_column=Column(String(256))
+    room_name: str | None = Field(
+        default=None, sa_column=Column(String(256))
     )  # user customize room name (show only user)
-    room_avatar_url: str = Field(
-        sa_column=Column(TEXT)
-    )  # user customize room avatar (show only user)
-    user_name: str = Field(
-        sa_column=Column(String(256))
+    room_avatar_url: str | None = Field(
+        default=None, sa_column=Column(TEXT)
+    )  # user customize room avater (show only user)
+    user_name: str | None = Field(
+        default=None, sa_column=Column(String(256))
     )  # custom user name in room (show all room user)
-    user_avatar_url: str = Field(
-        sa_column=Column(TEXT)
-    )  # custom user avatar in room (show all room user)
+    user_avatar_url: str | None = Field(
+        default=None, sa_column=Column(TEXT)
+    )  # custom user avater in room (show all room user)
 
     created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
     updated_at: datetime = Field(
@@ -99,6 +104,8 @@ class RoomMembers(SQLModel, table=True):  # type: ignore
         back_populates="members", sa_relationship_kwargs={"viewonly": True}
     )
     user: Users = Relationship(sa_relationship_kwargs={"viewonly": True})
+
+    __table_args__ = (UniqueConstraint("room_id", "user_id", name="uix_room_member"),)
 
 
 class Messages(SQLModel, table=True):  # type: ignore
@@ -121,3 +128,36 @@ class Messages(SQLModel, table=True):  # type: ignore
     user: Users = Relationship(
         sa_relationship_kwargs={"secondary": "room_members", "viewonly": True}
     )
+
+
+@listens_for(RoomMembers, "before_insert")
+def before_insert_room_member(
+    mapper: object, connection: Connection, target: RoomMembers
+) -> None:
+    if target.room_name is None:
+        result = connection.execute(
+            select(Rooms.name).where(Rooms.id == target.room_id)
+        )
+        room_name = result.scalar()
+        target.room_name = room_name
+
+    if target.room_avatar_url is None:
+        result = connection.execute(
+            select(Rooms.avatar_url).where(Rooms.id == target.room_id)
+        )
+        room_avater_url = result.scalar()
+        target.room_avatar_url = room_avater_url
+
+    if target.user_name is None:
+        result = connection.execute(
+            select(Users.display_name).where(Users.id == target.user_id)
+        )
+        user_display_name = result.scalar()
+        target.user_name = user_display_name
+
+    if target.user_avatar_url is None:
+        result = connection.execute(
+            select(Users.avatar_url).where(Users.id == target.user_id)
+        )
+        user_avatar_url = result.scalar()
+        target.user_avatar_url = user_avatar_url

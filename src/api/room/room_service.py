@@ -9,26 +9,28 @@ from proto_generated.nori.v0.room.room_basic_info_request_pb2 import (
     RoomBasicInfoRequest,
 )
 from proto_generated.nori.v0.room.room_user_request_pb2 import RoomUserRequest
-from proto_generated.nori.v0.room.room_service_pb2_grpc import (
-    RoomServiceServicer,
+from proto_generated.nori.v0.room.room_service_pb2_grpc import RoomServiceServicer
+from proto_generated.nori.v0.room.room_member_pb2 import RoomMember, RoomMemberStatus
+from proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import (
+    InviteUserToRoomRequest,
 )
-
+from proto_generated.nori.v0.user.user_id_pb2 import UserId
+from utils.token_helper import auth_required
 from utils.db_helper import get_db
 from model import Rooms, RoomMembers
 
-from repositories.user_repository import UserRepository
-from repositories.room_member_repository import RoomMemberRepository
-from repositories.room_repostitory import RoomRepository
+from repositories import RoomRepo, RoomMemberRepo, UserRepo
 
 
 class RoomServicer(RoomServiceServicer):
+    @auth_required
     def CreateRoom(
         self, request: RoomCreateRequest, context: ServicerContext
     ) -> RoomId:
         user_id = request.creator.id
         room_name = request.name
-        user_repository = UserRepository(next(get_db()))
-        user = user_repository.get_user(user_id=user_id)
+        user_repo = UserRepo(next(get_db()))
+        user = user_repo.get_user(user_id)
 
         # check user exist
         if user is None:
@@ -37,12 +39,12 @@ class RoomServicer(RoomServiceServicer):
             return RoomId()
 
         # create room
-        room_repository = RoomRepository(next(get_db()))
-        room_id = room_repository.create_room(Rooms(name=room_name))
+        room_repo = RoomRepo(next(get_db()))
+        room_id = room_repo.create_room(Rooms(name=room_name))
 
         # create room_member for user in the room
-        room_member_repository = RoomMemberRepository(next(get_db()))
-        room_member_repository.create_room_member(
+        room_member_repo = RoomMemberRepo(next(get_db()))
+        room_member_repo.create_room_member(
             RoomMembers(
                 room_id=room_id,
                 user_id=user_id,
@@ -52,22 +54,103 @@ class RoomServicer(RoomServiceServicer):
         )
         return RoomId(id=room_id)
 
-    def InviteToRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement invite to room logic)
+    @auth_required
+    def InviteToRoom(
+        self, request: InviteUserToRoomRequest, context: ServicerContext
+    ) -> Empty:
+        room_id = request.room_id.id
+        inviter_id = request.inviter.id
+        invitees_id: list[int] = [invitees_id.id for invitees_id in request.invitees]  # noqa: F841
+
+        # check room exist
+        room_repo = RoomRepo(next(get_db()))
+        if not room_repo.exists_room(room_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Room with ID {room_id} not found.")
+            return Empty()
+
+        # check inviter exist
+        user_repo = UserRepo(next(get_db()))
+        if not user_repo.exists_user(inviter_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"User with ID {inviter_id} not found.")
+            return Empty()
+
+        # check all invitees exist
+        if not user_repo.exists_all_users(invitees_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Users with some IDs in {invitees_id} not found.")
+            return Empty()
+        # TODO let invitees can refuse Invited
+        # create room_members for all invitees in the room
+        room_member_repo = RoomMemberRepo(next(get_db()))
+        room_member_repo.create_room_members(room_id, invitees_id)
+
         return Empty()
 
+    @auth_required
     def JoinRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement join room logic)
+        room_id = request.room_id.id
+        user_id = request.user_id.id
+
+        # check room exist
+        room_repo = RoomRepo(next(get_db()))
+        if not room_repo.exists_room(room_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Room with ID {room_id} not found.")
+            return Empty()
+
+        # check user exist
+        user_repo = UserRepo(next(get_db()))
+        if not user_repo.exists_user(user_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"User with ID {user_id} not found.")
+            return Empty()
+
+        # TODO let room owner can refuse joining room
+        # create room_member for user in the room
+        room_member_repo = RoomMemberRepo(next(get_db()))
+        room_member_repo.create_room_member(
+            RoomMembers(room_id=room_id, user_id=user_id)
+        )
         return Empty()
 
+    @auth_required
     def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement leave room logic)
         return Empty()
 
+    @auth_required
     def GetRoom(self, request: RoomId, context: ServicerContext) -> Room:
-        # TODO: ...... (implement get room logic)
-        return Room()
+        room_id = request.id
 
+        # check room exist
+        room_repo = RoomRepo(next(get_db()))
+        room = room_repo.get_room(room_id)
+        if room is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Room with ID {room_id} not found.")
+            return Empty()
+
+        room = Room(
+            room_id=RoomId(id=room.id),
+            shared_name=room.name,
+            custom_name="",
+            shared_avatar_url=room.avatar_url,
+            custom_avatar_url="",
+            members=[
+                RoomMember(
+                    user_id=UserId(id=member.user_id),
+                    room_nickname=member.user_name,
+                    status=RoomMemberStatus.JOINED,
+                )
+                for member in room.members
+            ],
+        )
+
+        return room
+
+    @auth_required
     def UpdateRoomBasic(
         self, request: RoomBasicInfoRequest, context: ServicerContext
     ) -> Empty:
