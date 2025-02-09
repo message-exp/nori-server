@@ -17,7 +17,7 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import (
 )
 
 from utils.db_helper import get_db
-from repositories.user_repository import UserRepository
+from repositories import UserRepo
 
 
 class UserServicer(UserServiceServicer):
@@ -35,8 +35,8 @@ class UserServicer(UserServiceServicer):
         user_id = request.id
 
         # get user data from database
-        user_repository = UserRepository(next(get_db()))
-        user = user_repository.get_user_only_ids(user_id)
+        user_repo = UserRepo(next(get_db()))
+        user = user_repo.get_user_only_ids(user_id)
 
         # check if user exists in database
         if user is None:
