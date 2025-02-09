@@ -7,14 +7,18 @@ class UserRepository:
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def get_user(self, user_id: Optional[int] = None, email: Optional[str] = None) -> Users:
+    def get_user(
+        self, user_id: Optional[int] = None, email: Optional[str] = None
+    ) -> Users | None:
         if user_id is not None:
             return self.db.exec(select(Users).where(Users.id == user_id)).first()
         if email is not None:
             return self.db.exec(select(Users).where(Users.email == email)).first()
         return None
 
-    def exists_user(self, user_id: Optional[int] = None, email: Optional[str] = None) -> bool:
+    def exists_user(
+        self, user_id: Optional[int] = None, email: Optional[str] = None
+    ) -> bool:
         if user_id is not None:
             user = self.db.exec(select(Users).where(Users.id == user_id)).first()
         elif email is not None:
