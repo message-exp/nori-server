@@ -44,7 +44,7 @@ class UserServicer(UserServiceServicer):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details("Invalid email format")
             return Empty()
-        
+
         # check password format
         if not password:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
