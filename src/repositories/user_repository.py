@@ -8,7 +8,9 @@ class UserRepository:
         self.db = session
 
     def get_user(
-        self, user_id: Optional[int] = None, email: Optional[str] = None
+        self,
+        user_id: Optional[int] = None,
+        email: Optional[str] = None,
     ) -> Users | None:
         if user_id is not None:
             return self.db.exec(select(Users).where(Users.id == user_id)).first()
@@ -17,7 +19,9 @@ class UserRepository:
         return None
 
     def exists_user(
-        self, user_id: Optional[int] = None, email: Optional[str] = None
+        self,
+        user_id: Optional[int] = None,
+        email: Optional[str] = None,
     ) -> bool:
         if user_id is not None:
             user = self.db.exec(select(Users).where(Users.id == user_id)).first()
