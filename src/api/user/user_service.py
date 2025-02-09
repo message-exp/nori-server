@@ -1,6 +1,9 @@
+import grpc
 from grpc.aio import ServicerContext
 
-from src.utils.token_helper import auth_required
+from utils.token_helper import auth_required, generate_token
+from utils.validate_format_helper import is_valid_email
+from utils.db_helper import get_db
 
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.user_pb2 import User
@@ -12,6 +15,8 @@ from proto_generated.nori.v0.room.room_list_pb2 import RoomList
 from proto_generated.nori.v0.user.user_service_pb2_grpc import (
     UserServiceServicer,
 )
+
+from repositories import UserRepo
 
 
 class UserServicer(UserServiceServicer):
@@ -31,11 +36,40 @@ class UserServicer(UserServiceServicer):
         return User()
 
     def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> Empty:
-        # TODO: check email format
-        # TODO: ...... (implement login logic)
+        email = request.email
+        password = request.password
 
-        # context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        # context.set_details('Method not implemented!')
+        # check email format
+        if not is_valid_email(email):
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Invalid email format")
+            return Empty()
+        
+        # check password format
+        if not password:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Password cannot be empty")
+            return Empty()
+
+        # get user from database
+        user_repo = UserRepo(next(get_db()))
+        user = user_repo.get_user(email)
+
+        # check if user exists
+        if not user:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found")
+            return Empty()
+
+        # create token
+        token_id = "generated_device_id"  # TODO: Implement device ID generation
+        token = generate_token(subject=user.id, token_id=token_id)
+
+        # save token in database
+        # TODO: implement this after the model of the database has been updated
+
+        # put token into metadata
+        context.send_initial_metadata([("authorization", token)])
         return Empty()
 
     @auth_required
