@@ -30,7 +30,7 @@ class RoomServicer(RoomServiceServicer):
         user_id = request.creator.id
         room_name = request.name
         user_repo = UserRepo(next(get_db()))
-        user = user_repo.get_user_by_id(user_id)
+        user = user_repo.get_user(user_id)
 
         # check user exist
         if user is None:
