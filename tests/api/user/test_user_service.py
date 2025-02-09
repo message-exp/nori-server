@@ -9,12 +9,16 @@ from typing import Generator
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.user.user_pb2 import User
 
+from src.utils.token_helper import generate_token
 from src.api.user import user_service
 
 
 @pytest.fixture
 def fake_context(mocker: MockerFixture) -> grpc.aio.ServicerContext:
-    return mocker.MagicMock(spec=grpc.aio.ServicerContext)
+    context: MagicMock = mocker.MagicMock(grpc.aio.ServicerContext)
+    token = generate_token(subject="test")
+    context.invocation_metadata.return_value = (("authorization", token),)
+    return context
 
 
 @pytest.fixture
@@ -41,19 +45,19 @@ def mock_user_repo(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     yield mock_user_repo
 
 
-@pytest.fixture(autouse=True)
-def bypass_auth_required(monkeypatch: pytest.MonkeyPatch) -> None:
-    # Patch the auth_required decorator so future imports use our no‑op.
-    monkeypatch.setattr("src.utils.token_helper.auth_required", lambda f: f)
+# @pytest.fixture(autouse=True)
+# def bypass_auth_required(monkeypatch: pytest.MonkeyPatch) -> None:
+#     # Patch the auth_required decorator so future imports use our no‑op.
+#     monkeypatch.setattr("src.utils.token_helper.auth_required", lambda f: f)
 
-    # Reload the user_service module so that the new decorator is applied.
-    importlib.reload(user_service)
+#     # Reload the user_service module so that the new decorator is applied.
+#     importlib.reload(user_service)
 
-    # Unwrap already decorated methods.
-    for attr_name in dir(user_service.UserServicer):
-        attr = getattr(user_service.UserServicer, attr_name, None)
-        if callable(attr) and hasattr(attr, "__wrapped__"):
-            setattr(user_service.UserServicer, attr_name, attr.__wrapped__)
+#     # Unwrap already decorated methods.
+#     for attr_name in dir(user_service.UserServicer):
+#         attr = getattr(user_service.UserServicer, attr_name, None)
+#         if callable(attr) and hasattr(attr, "__wrapped__"):
+#             setattr(user_service.UserServicer, attr_name, attr.__wrapped__)
 
 
 class TestGetUser:
