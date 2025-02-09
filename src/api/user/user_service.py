@@ -10,7 +10,6 @@ from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from proto_generated.nori.v0.user.user_profile_pb2 import UserProfile
 from proto_generated.nori.v0.user.user_connection_pb2 import UserConnection
 from proto_generated.nori.v0.room.room_id_pb2 import RoomId
-from proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from proto_generated.nori.v0.room.room_list_pb2 import RoomList
 from proto_generated.nori.v0.room.room_basic_info_response_pb2 import (
     RoomBasicInfoResponse,
