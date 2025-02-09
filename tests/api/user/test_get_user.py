@@ -2,7 +2,6 @@ import grpc
 import pytest
 from unittest.mock import MagicMock
 from pytest_mock import MockerFixture
-import importlib
 from types import SimpleNamespace
 from typing import Generator
 
