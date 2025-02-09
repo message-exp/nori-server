@@ -56,7 +56,7 @@ def fake_room_member_shared() -> SimpleNamespace:
 
 
 @pytest.fixture
-def mock_room_member_repository(
+def mock_room_member_repo(
     mocker: MockerFixture,
 ) -> Generator[MagicMock, None, None]:
     """Mock RoomMemberRepository"""
@@ -64,14 +64,14 @@ def mock_room_member_repository(
     mocker.patch("src.api.user.user_service.get_db", return_value=mock_db_session)
 
     mock_room_member_repo: MagicMock = mocker.patch(
-        "src.api.user.user_service.RoomMemberRepository"
+        "src.api.user.user_service.RoomMemberRepo"
     )
 
     yield mock_room_member_repo
 
 
 def test_get_user_room_list_success(
-    mock_room_member_repository: MagicMock,
+    mock_room_member_repo: MagicMock,
     fake_context: grpc.aio.ServicerContext,
     fake_room_member: SimpleNamespace,
 ) -> None:
@@ -80,7 +80,7 @@ def test_get_user_room_list_success(
     request = UserId(id=user_id)
     fake_room_members = [fake_room_member]
 
-    mock_room_member_repository.return_value.get_user_room_members.return_value = (
+    mock_room_member_repo.return_value.get_user_room_members.return_value = (
         fake_room_members
     )
 
@@ -90,7 +90,7 @@ def test_get_user_room_list_success(
     response: RoomList = service.GetUserRoomList(request, fake_context)
 
     # Assert
-    mock_room_member_repository.return_value.get_user_room_members.assert_called_once_with(
+    mock_room_member_repo.return_value.get_user_room_members.assert_called_once_with(
         user_id
     )
     assert len(response.rooms) == 1
@@ -106,7 +106,7 @@ def test_get_user_room_list_success(
 
 
 def test_get_user_room_list_success_shared_values(
-    mock_room_member_repository: MagicMock,
+    mock_room_member_repo: MagicMock,
     fake_context: grpc.aio.ServicerContext,
     fake_room_member_shared: SimpleNamespace,
 ) -> None:
@@ -115,7 +115,7 @@ def test_get_user_room_list_success_shared_values(
     request = UserId(id=user_id)
     fake_room_members = [fake_room_member_shared]
 
-    mock_room_member_repository.return_value.get_user_room_members.return_value = (
+    mock_room_member_repo.return_value.get_user_room_members.return_value = (
         fake_room_members
     )
 
@@ -125,7 +125,7 @@ def test_get_user_room_list_success_shared_values(
     response: RoomList = service.GetUserRoomList(request, fake_context)
 
     # Assert
-    mock_room_member_repository.return_value.get_user_room_members.assert_called_once_with(
+    mock_room_member_repo.return_value.get_user_room_members.assert_called_once_with(
         user_id
     )
     assert len(response.rooms) == 1
@@ -141,13 +141,13 @@ def test_get_user_room_list_success_shared_values(
 
 
 def test_get_user_room_list_not_found(
-    mock_room_member_repository: MagicMock, fake_context: grpc.aio.ServicerContext
+    mock_room_member_repo: MagicMock, fake_context: grpc.aio.ServicerContext
 ) -> None:
     # Arrange: simulate no room members found
     user_id = 999
     request = UserId(id=user_id)
 
-    mock_room_member_repository.return_value.get_user_room_members.return_value = None
+    mock_room_member_repo.return_value.get_user_room_members.return_value = None
 
     service = UserServicer()
 

@@ -19,7 +19,7 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import (
 )
 
 from utils.db_helper import get_db
-from repositories.room_member_repository import RoomMemberRepository
+from repositories import RoomMemberRepo
 
 
 class UserServicer(UserServiceServicer):
@@ -73,8 +73,8 @@ class UserServicer(UserServiceServicer):
         user_id = request.id
 
         # get user room_member data from database
-        room_member_repository = RoomMemberRepository(next(get_db()))
-        user_room_members = room_member_repository.get_user_room_members(user_id)
+        room_member_repo = RoomMemberRepo(next(get_db()))
+        user_room_members = room_member_repo.get_user_room_members(user_id)
 
         # check if user room_member object exists in database
         if user_room_members is None:
