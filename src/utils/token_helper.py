@@ -3,10 +3,10 @@ import grpc
 from datetime import datetime
 from typing import Any, Optional, Callable
 
-import utils.env_helper
+from utils.config import config
 
-SECRET_KEY = utils.env_helper.JWT_SECRET_KEY
-ALGORITHM = utils.env_helper.JWT_ALGORITHM
+SECRET_KEY = config.JWT_SECRET_KEY
+ALGORITHM = config.JWT_ALGORITHM
 
 
 def auth_required(func: Callable) -> Callable:

@@ -2,13 +2,13 @@ from typing import Any, Generator
 from sqlmodel import create_engine, Session
 from sqlalchemy_utils import database_exists, create_database
 
-import utils.env_helper
+from utils.config import config
 
-SERVER = utils.env_helper.POSTGRES_HOST
-PORT = utils.env_helper.POSTGRES_PORT
-USERNAME = utils.env_helper.POSTGRES_USER
-PASSWORD = utils.env_helper.POSTGRES_PASSWORD
-DB = utils.env_helper.POSTGRES_DB
+SERVER = config.POSTGRES_HOST
+PORT = config.POSTGRES_PORT
+USERNAME = config.POSTGRES_USER
+PASSWORD = config.POSTGRES_PASSWORD
+DB = config.POSTGRES_DB
 
 ENGINE_URL = f"postgresql://{USERNAME}:{PASSWORD}@{SERVER}:{PORT}/{DB}"
 engine = create_engine(
