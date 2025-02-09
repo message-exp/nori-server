@@ -13,13 +13,15 @@ from utils.db_helper import get_db
 class MessageServicer(MessageServiceServicer):
     def SendMessage(self, request: Message, context: ServicerContext) -> Empty:
         # TODO: ...... (implement send message logic)
-
         # context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         # context.set_details('Method not implemented!')
+        
         return Empty()
 
     def GetMessages(self, request: RoomId, context: ServicerContext) -> Message:
         # TODO: ...... (implement get messages logic)
+        #from_when=request.datetime
+        #limit = request.limit
         roomId : int = request.room_id
         message_db = MessageRepository(next(get_db()))
         return message_db.get_message_by_roomId(roomId)
