@@ -1,5 +1,6 @@
 from src.utils.validate_format_helper import is_valid_email
 
+
 def test_valid_email() -> None:
     # List of valid email addresses
     valid_emails = [
@@ -9,6 +10,7 @@ def test_valid_email() -> None:
     ]
     for email in valid_emails:
         assert is_valid_email(email), f"Email {email} should be valid"
+
 
 def test_invalid_email() -> None:
     # List of invalid email addresses
