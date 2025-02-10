@@ -15,7 +15,9 @@ from proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import (
     InviteUserToRoomRequest,
 )
 from proto_generated.nori.v0.room.room_join_invite_reply_pb2 import RoomJoinInviteReply
-from proto_generated.nori.v0.room.room_join_request_reply_pb2 import RoomJoinRequestReply
+from proto_generated.nori.v0.room.room_join_request_reply_pb2 import (
+    RoomJoinRequestReply,
+)
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from utils.token_helper import auth_required
 from utils.db_helper import get_db
@@ -86,7 +88,7 @@ class RoomServicer(RoomServiceServicer):
         )
 
         return room
-    
+
     @auth_required
     def UpdateRoomBasic(
         self, request: RoomBasicInfoRequest, context: ServicerContext
@@ -127,9 +129,11 @@ class RoomServicer(RoomServiceServicer):
         room_member_repo.create_room_members(room_id, invitees_id)
 
         return Empty()
-    
+
     @auth_required
-    def InviteRoomReply(self, request: RoomJoinInviteReply, context: ServicerContext) -> Empty:
+    def InviteRoomReply(
+        self, request: RoomJoinInviteReply, context: ServicerContext
+    ) -> Empty:
         # TODO: ...... (implement invite room reply logic)
         return Empty()
 
@@ -159,9 +163,11 @@ class RoomServicer(RoomServiceServicer):
             RoomMembers(room_id=room_id, user_id=user_id)
         )
         return Empty()
-    
+
     @auth_required
-    def JoinRoomReply(self, request: RoomJoinRequestReply, context: ServicerContext) -> Empty:
+    def JoinRoomReply(
+        self, request: RoomJoinRequestReply, context: ServicerContext
+    ) -> Empty:
         # TODO: ...... (implement join room reply logic)
         return Empty()
 
@@ -169,7 +175,3 @@ class RoomServicer(RoomServiceServicer):
     def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement leave room logic)
         return Empty()
-
-    
-
-    

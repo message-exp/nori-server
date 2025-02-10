@@ -9,8 +9,12 @@ from proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from proto_generated.nori.v0.user.token_pair_pb2 import TokenPair
 from proto_generated.nori.v0.user.access_token_pb2 import AccessToken
-from proto_generated.nori.v0.user.user_profile_update_request_pb2 import UserProfileUpdateRequest
-from proto_generated.nori.v0.user.user_reset_password_request_pb2 import UserResetPasswordRequest
+from proto_generated.nori.v0.user.user_profile_update_request_pb2 import (
+    UserProfileUpdateRequest,
+)
+from proto_generated.nori.v0.user.user_reset_password_request_pb2 import (
+    UserResetPasswordRequest,
+)
 from proto_generated.nori.v0.user.user_connection_pb2 import UserConnection
 from proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from proto_generated.nori.v0.room.room_list_pb2 import RoomList
@@ -79,7 +83,9 @@ class UserServicer(UserServiceServicer):
         # TODO: ...... (implement get user room list logic)
         return RoomList()
 
-    def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> TokenPair:
+    def Login(
+        self, request: UserEmailPasswordLogin, context: ServicerContext
+    ) -> TokenPair:
         # TODO: check email format
         # TODO: ...... (implement login logic)
         return TokenPair()
@@ -88,13 +94,15 @@ class UserServicer(UserServiceServicer):
     def Logout(self, request: TokenPair, context: ServicerContext) -> Empty:
         # TODO: ...... (implement logout logic)
         return Empty()
-    
+
     @auth_required
     def RefreshToken(self, request: UserId, context: ServicerContext) -> AccessToken:
         # TODO: ...... (implement login logic)
         return AccessToken()
-    
+
     @auth_required
-    def ResetUserPassword(self, request: UserResetPasswordRequest, context: ServicerContext) -> Empty:
+    def ResetUserPassword(
+        self, request: UserResetPasswordRequest, context: ServicerContext
+    ) -> Empty:
         # TODO: ...... (implement login logic)
         return Empty()
