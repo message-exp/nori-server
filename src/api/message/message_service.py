@@ -10,6 +10,8 @@ from proto_generated.nori.v0.message.message_service_pb2_grpc import (
 from repositories.message_repository import MessageRepository
 from utils.db_helper import get_db
 
+
+
 class MessageServicer(MessageServiceServicer):
     def SendMessage(self, request: Message, context: ServicerContext) -> Empty:
         # TODO: ...... (implement send message logic)
@@ -20,8 +22,8 @@ class MessageServicer(MessageServiceServicer):
 
     def GetMessages(self, request: RoomId, context: ServicerContext) -> Message:
         # TODO: ...... (implement get messages logic)
-        #from_when=request.datetime
-        #limit = request.limit
+        # from_when=request.datetime
+        # limit = request.limit
         roomId : int = request.room_id
         message_db = MessageRepository(next(get_db()))
         return message_db.get_message_by_roomId(roomId)
