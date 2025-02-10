@@ -1,8 +1,8 @@
 """Init users, rooms, room_members, and messages tables
 
-Revision ID: 00be3b7f9445
+Revision ID: a961154dab00
 Revises:
-Create Date: 2025-01-31 10:58:43.002365
+Create Date: 2025-02-09 15:25:00.962294
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "00be3b7f9445"
+revision: str = "a961154dab00"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,7 +25,7 @@ def upgrade() -> None:
         "rooms",
         sa.Column("id", sa.BIGINT(), nullable=False),
         sa.Column("name", sa.String(length=256), nullable=True),
-        sa.Column("avater_url", sa.TEXT(), nullable=True),
+        sa.Column("avatar_url", sa.TEXT(), nullable=True),
         sa.Column(
             "created_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=True
         ),
@@ -41,6 +41,7 @@ def upgrade() -> None:
         sa.Column("display_name", sa.String(length=256), nullable=True),
         sa.Column("email", sa.TEXT(), nullable=True),
         sa.Column("token", sa.String(length=512), nullable=True),
+        sa.Column("avatar_url", sa.TEXT(), nullable=True),
         sa.Column("hashed_password", sa.String(length=60), nullable=True),
         sa.Column(
             "created_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=True
@@ -58,9 +59,9 @@ def upgrade() -> None:
         sa.Column("room_id", sa.BIGINT(), nullable=False),
         sa.Column("user_id", sa.BIGINT(), nullable=False),
         sa.Column("room_name", sa.String(length=256), nullable=True),
-        sa.Column("room_avater_url", sa.TEXT(), nullable=True),
+        sa.Column("room_avatar_url", sa.TEXT(), nullable=True),
         sa.Column("user_name", sa.String(length=256), nullable=True),
-        sa.Column("user_avater_url", sa.TEXT(), nullable=True),
+        sa.Column("user_avatar_url", sa.TEXT(), nullable=True),
         sa.Column(
             "created_at", sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=True
         ),
@@ -76,6 +77,7 @@ def upgrade() -> None:
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("room_id", "user_id", name="uix_room_member"),
     )
     op.create_index(
         op.f("ix_room_members_room_id"), "room_members", ["room_id"], unique=False

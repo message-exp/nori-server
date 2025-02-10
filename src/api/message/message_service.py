@@ -11,8 +11,14 @@ from repositories.message_repository import MessageRepository
 from utils.db_helper import get_db
 
 
+from src.utils.token_helper import auth_required
+
 
 class MessageServicer(MessageServiceServicer):
+    service_namespace = "nori.v0.MessageService"
+    auth_config: dict[str, bool] = dict()
+
+    @auth_required
     def SendMessage(self, request: Message, context: ServicerContext) -> Empty:
         # TODO: ...... (implement send message logic)
         # context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -20,6 +26,7 @@ class MessageServicer(MessageServiceServicer):
         
         return Empty()
 
+    @auth_required
     def GetMessages(self, request: RoomId, context: ServicerContext) -> Message:
         # TODO: ...... (implement get messages logic)
         # from_when=request.datetime
