@@ -13,7 +13,7 @@ from sqlmodel import (
 )
 from sqlalchemy.event import listens_for
 from sqlalchemy.engine import Connection
-from datetime import datetime
+from datetime import datetime, timedelta
 from snowflake import SnowflakeGenerator
 
 snowflake_gen = SnowflakeGenerator(1)
@@ -31,7 +31,6 @@ class Users(SQLModel, table=True):  # type: ignore
     username: str = Field(sa_column=Column(String(256), index=True, unique=True))
     display_name: str = Field(sa_column=Column(String(256)))
     email: str = Field(sa_column=Column(TEXT))
-    token: str = Field(sa_column=Column(String(512), index=True))
     avatar_url: str = Field(sa_column=Column(TEXT))
     hashed_password: str = Field(sa_column=Column(String(60)))
 
@@ -46,7 +45,9 @@ class Users(SQLModel, table=True):  # type: ignore
         back_populates="users",
         sa_relationship_kwargs={"secondary": "room_members", "viewonly": True},
     )
-
+    refresh_tokens: list["RefreshToken"] = Relationship(
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
 
 class Rooms(SQLModel, table=True):  # type: ignore
     __tablename__ = "rooms"
@@ -129,6 +130,13 @@ class Messages(SQLModel, table=True):  # type: ignore
         sa_relationship_kwargs={"secondary": "room_members", "viewonly": True}
     )
 
+class RefreshToken(SQLModel, table=True):
+    __tablename__ = "refresh_token"
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id", index=True, sa_type=BIGINT)
+    refresh_token: str = Field(sa_column=Column(String(128), nullable=False, unique=True))
+    expires_at: datetime = Field(default_factory=lambda: datetime.now() + timedelta(days=7))
+    created_at: datetime = Field(default_factory=lambda: datetime.now())
 
 @listens_for(RoomMembers, "before_insert")
 def before_insert_room_member(
