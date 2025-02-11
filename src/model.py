@@ -140,7 +140,7 @@ class RefreshToken(SQLModel, table=True):  # type: ignore
         sa_column=Column(String(128), nullable=False, unique=True)
     )
     expires_at: datetime = Field(
-        default_factory=lambda: datetime.now() + timedelta(days=7)
+        default_factory=lambda: datetime.now() + timedelta(days=30)
     )
     created_at: datetime = Field(default_factory=lambda: datetime.now())
 
