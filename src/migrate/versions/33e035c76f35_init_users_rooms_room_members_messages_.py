@@ -1,8 +1,8 @@
-"""Init users, rooms, room_members, and messages tables
+"""Init users, rooms, room_members, messages and refresh_token tables
 
-Revision ID: a961154dab00
+Revision ID: 33e035c76f35
 Revises:
-Create Date: 2025-02-09 15:25:00.962294
+Create Date: 2025-02-10 15:32:24.799160
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "a961154dab00"
+revision: str = "33e035c76f35"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -40,7 +40,6 @@ def upgrade() -> None:
         sa.Column("username", sa.String(length=256), nullable=True),
         sa.Column("display_name", sa.String(length=256), nullable=True),
         sa.Column("email", sa.TEXT(), nullable=True),
-        sa.Column("token", sa.String(length=512), nullable=True),
         sa.Column("avatar_url", sa.TEXT(), nullable=True),
         sa.Column("hashed_password", sa.String(length=60), nullable=True),
         sa.Column(
@@ -51,8 +50,24 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index(op.f("ix_users_token"), "users", ["token"], unique=False)
     op.create_index(op.f("ix_users_username"), "users", ["username"], unique=True)
+    op.create_table(
+        "refresh_token",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("user_id", sa.BIGINT(), nullable=False),
+        sa.Column("refresh_token", sa.String(length=128), nullable=False),
+        sa.Column("expires_at", sa.DateTime(), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["users.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("refresh_token"),
+    )
+    op.create_index(
+        op.f("ix_refresh_token_user_id"), "refresh_token", ["user_id"], unique=False
+    )
     op.create_table(
         "room_members",
         sa.Column("id", sa.BIGINT(), nullable=False),
@@ -122,8 +137,9 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_room_members_user_id"), table_name="room_members")
     op.drop_index(op.f("ix_room_members_room_id"), table_name="room_members")
     op.drop_table("room_members")
+    op.drop_index(op.f("ix_refresh_token_user_id"), table_name="refresh_token")
+    op.drop_table("refresh_token")
     op.drop_index(op.f("ix_users_username"), table_name="users")
-    op.drop_index(op.f("ix_users_token"), table_name="users")
     op.drop_table("users")
     op.drop_table("rooms")
     # ### end Alembic commands ###
