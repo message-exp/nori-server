@@ -7,7 +7,14 @@ from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.user_pb2 import User
 from proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
-from proto_generated.nori.v0.user.user_profile_pb2 import UserProfile
+from proto_generated.nori.v0.user.token_pair_pb2 import TokenPair
+from proto_generated.nori.v0.user.access_token_pb2 import AccessToken
+from proto_generated.nori.v0.user.user_profile_update_request_pb2 import (
+    UserProfileUpdateRequest,
+)
+from proto_generated.nori.v0.user.user_reset_password_request_pb2 import (
+    UserResetPasswordRequest,
+)
 from proto_generated.nori.v0.user.user_connection_pb2 import UserConnection
 from proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from proto_generated.nori.v0.room.room_list_pb2 import RoomList
@@ -58,19 +65,6 @@ class UserServicer(UserServiceServicer):
             rooms=[RoomId(id=room.id) for room in user.rooms],
         )
 
-    def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> Empty:
-        # TODO: check email format
-        # TODO: ...... (implement login logic)
-
-        # context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        # context.set_details('Method not implemented!')
-        return Empty()
-
-    @auth_required
-    def Logout(self, request: UserId, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement logout logic)
-        return Empty()
-
     def Signup(self, request: User, context: ServicerContext) -> Empty:
         # TODO: ...... (implement signup logic)
         return Empty()
@@ -82,7 +76,7 @@ class UserServicer(UserServiceServicer):
 
     @auth_required
     def UpdateUserProfile(
-        self, request: UserProfile, context: ServicerContext
+        self, request: UserProfileUpdateRequest, context: ServicerContext
     ) -> Empty:
         # TODO: ...... (implement update user profile logic)
         return Empty()
@@ -123,3 +117,27 @@ class UserServicer(UserServiceServicer):
             rooms.append(room_basic_info)
 
         return RoomList(rooms=rooms)
+
+    def Login(
+        self, request: UserEmailPasswordLogin, context: ServicerContext
+    ) -> TokenPair:
+        # TODO: check email format
+        # TODO: ...... (implement login logic)
+        return TokenPair()
+
+    @auth_required
+    def Logout(self, request: TokenPair, context: ServicerContext) -> Empty:
+        # TODO: ...... (implement logout logic)
+        return Empty()
+
+    @auth_required
+    def RefreshToken(self, request: UserId, context: ServicerContext) -> AccessToken:
+        # TODO: ...... (implement login logic)
+        return AccessToken()
+
+    @auth_required
+    def ResetUserPassword(
+        self, request: UserResetPasswordRequest, context: ServicerContext
+    ) -> Empty:
+        # TODO: ...... (implement login logic)
+        return Empty()
