@@ -132,7 +132,7 @@ class Messages(SQLModel, table=True):  # type: ignore
     )
 
 
-class RefreshToken(SQLModel, table=True):
+class RefreshToken(SQLModel, table=True):  # type: ignore
     __tablename__ = "refresh_token"
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id", index=True, sa_type=BIGINT)
