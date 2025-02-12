@@ -9,9 +9,7 @@ from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
 )
 from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
-from src.proto_generated.nori.v0.message.message_pb2 import Message
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
-from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_token
 from src.api.message.message_service import MessageServicer, Messages
 
