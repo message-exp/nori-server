@@ -11,6 +11,7 @@ from proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from proto_generated.nori.v0.user.token_pair_pb2 import TokenPair
 from proto_generated.nori.v0.user.access_token_pb2 import AccessToken
+from proto_generated.nori.v0.user.refresh_token_pb2 import RefreshToken
 from proto_generated.nori.v0.user.user_profile_update_request_pb2 import (
     UserProfileUpdateRequest,
 )
@@ -160,7 +161,14 @@ class UserServicer(UserServiceServicer):
         access_token = generate_jwt_token(subject=user.id)
 
         # return tokens
-        return TokenPair(access_token=access_token, refresh_token=refresh_token)
+        return TokenPair(
+            access_token=AccessToken(
+                access_token=bytes(access_token, "utf-8")
+            ),
+            refresh_token=RefreshToken(
+                refresh_token=bytes(refresh_token, "utf-8")
+            )
+        )
 
     @auth_required
     def Logout(self, request: TokenPair, context: ServicerContext) -> Empty:
