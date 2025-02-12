@@ -46,6 +46,9 @@ def auth_required(func: Callable) -> Callable:
         except jwt.InvalidTokenError:
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid token")
             return
+        except Exception:
+            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Unknown error")
+            return
 
         return func(self, request, context)
 
