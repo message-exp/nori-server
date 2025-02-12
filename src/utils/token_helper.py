@@ -1,5 +1,6 @@
 import jwt
 import grpc
+import secrets
 from datetime import datetime
 from typing import Any, Optional, Callable
 
@@ -54,15 +55,14 @@ def auth_required(func: Callable) -> Callable:
 def generate_jwt_token(
     subject: Optional[str] = None,
     expire: Optional[datetime] = None,
-    token_id: Optional[str] = None,
+    token_id: Optional[str] = secrets.token_urlsafe(8),
 ) -> str:
     """
     Generate a token with the user_id.
     Args:
         subject (str, optional): user_id to be encoded in the token
         expire (datetime, optional): expiration time of the token
-        device (str, optional): device_id to be encoded in the token
-        **kwargs: additional information to be encoded in the token
+        token_id (str, optional): unique identifier for the token
     Returns:
         str: encoded token
     """
@@ -78,3 +78,13 @@ def generate_jwt_token(
         payload["jti"] = token_id
 
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def generate_refresh_token() -> str:
+    """
+    Generate a random refresh token.
+    Returns:
+        str: refresh token
+    """
+    token = secrets.token_urlsafe(64)
+    return token

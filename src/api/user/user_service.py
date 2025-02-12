@@ -1,7 +1,7 @@
 import grpc
 from grpc.aio import ServicerContext
 
-from utils.token_helper import auth_required, generate_jwt_token
+from utils.token_helper import auth_required, generate_jwt_token, generate_refresh_token
 from utils.validate_format_helper import is_valid_email
 from utils.db_helper import get_db
 
@@ -28,7 +28,8 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import (
     UserServiceServicer,
 )
 
-from repositories import UserRepo, RoomMemberRepo
+from model import RefreshToken as DBRefreshToken
+from repositories import UserRepo, RoomMemberRepo, RefreshTokenRepo
 
 
 class UserServicer(UserServiceServicer):
@@ -119,7 +120,9 @@ class UserServicer(UserServiceServicer):
 
         return RoomList(rooms=rooms)
 
-    def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> TokenPair:
+    def Login(
+        self, request: UserEmailPasswordLogin, context: ServicerContext
+    ) -> TokenPair:
         email = request.email
         password = request.password
 
@@ -145,16 +148,19 @@ class UserServicer(UserServiceServicer):
             context.set_details("User not found")
             return Empty()
 
-        # create token
-        token_id = "generated_device_id"  # TODO: Implement device ID generation
-        token = generate_jwt_token(subject=user.id, token_id=token_id)
+        # create refresh token and save in database
+        refresh_token = generate_refresh_token()
+        refresh_token_db_obj = DBRefreshToken(
+            user_id=user.id, refresh_token=refresh_token
+        )
+        refresh_token_repo = RefreshTokenRepo(next(get_db()))
+        refresh_token_repo.save_refresh_token(refresh_token_db_obj)
 
-        # save token in database
-        # TODO: implement this after the model of the database has been updated
+        # create access token
+        access_token = generate_jwt_token(subject=user.id)
 
-        # put token into metadata
-        context.send_initial_metadata([("authorization", token)])
-        return Empty()
+        # return tokens
+        return TokenPair(access_token=access_token, refresh_token=refresh_token)
 
     @auth_required
     def Logout(self, request: TokenPair, context: ServicerContext) -> Empty:
