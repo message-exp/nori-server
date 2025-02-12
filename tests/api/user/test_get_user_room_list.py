@@ -11,14 +11,14 @@ from src.proto_generated.nori.v0.room.room_basic_info_response_pb2 import (
     RoomBasicInfoResponse,
 )
 
-from src.utils.token_helper import generate_token
+from src.utils.token_helper import generate_jwt_token
 from src.api.user.user_service import UserServicer
 
 
 @pytest.fixture
 def fake_context(mocker: MockerFixture) -> grpc.aio.ServicerContext:
     context: MagicMock = mocker.MagicMock(grpc.aio.ServicerContext)
-    token = generate_token(subject="test")
+    token = generate_jwt_token(subject="test")
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
 

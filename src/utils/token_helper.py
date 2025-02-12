@@ -51,7 +51,7 @@ def auth_required(func: Callable) -> Callable:
     return wrapper
 
 
-def generate_token(
+def generate_jwt_token(
     subject: Optional[str] = None,
     expire: Optional[datetime] = None,
     token_id: Optional[str] = None,

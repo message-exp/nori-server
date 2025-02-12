@@ -1,7 +1,7 @@
 import grpc
 from grpc.aio import ServicerContext
 
-from utils.token_helper import auth_required, generate_token
+from utils.token_helper import auth_required, generate_jwt_token
 from utils.validate_format_helper import is_valid_email
 from utils.db_helper import get_db
 
@@ -66,48 +66,6 @@ class UserServicer(UserServiceServicer):
             rooms=[RoomId(id=room.id) for room in user.rooms],
         )
 
-    def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> Empty:
-        email = request.email
-        password = request.password
-
-        # check email format
-        if not is_valid_email(email):
-            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details("Invalid email format")
-            return Empty()
-
-        # check password format
-        if not password:
-            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details("Password cannot be empty")
-            return Empty()
-
-        # get user from database
-        user_repo = UserRepo(next(get_db()))
-        user = user_repo.get_user(email)
-
-        # check if user exists
-        if not user:
-            context.set_code(grpc.StatusCode.NOT_FOUND)
-            context.set_details("User not found")
-            return Empty()
-
-        # create token
-        token_id = "generated_device_id"  # TODO: Implement device ID generation
-        token = generate_token(subject=user.id, token_id=token_id)
-
-        # save token in database
-        # TODO: implement this after the model of the database has been updated
-
-        # put token into metadata
-        context.send_initial_metadata([("authorization", token)])
-        return Empty()
-
-    @auth_required
-    def Logout(self, request: UserId, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement logout logic)
-        return Empty()
-
     def Signup(self, request: User, context: ServicerContext) -> Empty:
         # TODO: ...... (implement signup logic)
         return Empty()
@@ -160,6 +118,48 @@ class UserServicer(UserServiceServicer):
             rooms.append(room_basic_info)
 
         return RoomList(rooms=rooms)
+
+    def Login(self, request: UserEmailPasswordLogin, context: ServicerContext) -> TokenPair:
+        email = request.email
+        password = request.password
+
+        # check email format
+        if not is_valid_email(email):
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Invalid email format")
+            return Empty()
+
+        # check password format
+        if not password:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Password cannot be empty")
+            return Empty()
+
+        # get user from database
+        user_repo = UserRepo(next(get_db()))
+        user = user_repo.get_user(email)
+
+        # check if user exists
+        if not user:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found")
+            return Empty()
+
+        # create token
+        token_id = "generated_device_id"  # TODO: Implement device ID generation
+        token = generate_jwt_token(subject=user.id, token_id=token_id)
+
+        # save token in database
+        # TODO: implement this after the model of the database has been updated
+
+        # put token into metadata
+        context.send_initial_metadata([("authorization", token)])
+        return Empty()
+
+    @auth_required
+    def Logout(self, request: TokenPair, context: ServicerContext) -> Empty:
+        # TODO: ...... (implement logout logic)
+        return Empty()
 
     @auth_required
     def RefreshToken(self, request: UserId, context: ServicerContext) -> AccessToken:

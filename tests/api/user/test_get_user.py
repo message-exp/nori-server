@@ -8,14 +8,14 @@ from typing import Generator
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.user.user_pb2 import User
 
-from src.utils.token_helper import generate_token
+from src.utils.token_helper import generate_jwt_token
 from src.api.user import user_service
 
 
 @pytest.fixture
 def fake_context(mocker: MockerFixture) -> grpc.aio.ServicerContext:
     context: MagicMock = mocker.MagicMock(grpc.aio.ServicerContext)
-    token = generate_token(subject="test")
+    token = generate_jwt_token(subject="test")
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
 
