@@ -130,13 +130,13 @@ class UserServicer(UserServiceServicer):
         if not is_valid_email(email):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details("Invalid email format")
-            return Empty()
+            return TokenPair()
 
         # check password format
         if not password:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details("Password cannot be empty")
-            return Empty()
+            return TokenPair()
 
         # get user from database
         user_repo = UserRepo(next(get_db()))
@@ -146,7 +146,7 @@ class UserServicer(UserServiceServicer):
         if not user:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("User not found")
-            return Empty()
+            return TokenPair()
 
         # create refresh token and save in database
         refresh_token = generate_refresh_token()
