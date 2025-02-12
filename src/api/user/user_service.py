@@ -28,7 +28,6 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import (
     UserServiceServicer,
 )
 
-from utils.db_helper import get_db
 from repositories import UserRepo, RoomMemberRepo
 
 
@@ -55,7 +54,7 @@ class UserServicer(UserServiceServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {user_id} not found.")
             return User()
-        
+
         # return user data
         return User(
             user_id=UserId(id=user.id),
@@ -161,18 +160,6 @@ class UserServicer(UserServiceServicer):
             rooms.append(room_basic_info)
 
         return RoomList(rooms=rooms)
-
-    def Login(
-        self, request: UserEmailPasswordLogin, context: ServicerContext
-    ) -> TokenPair:
-        # TODO: check email format
-        # TODO: ...... (implement login logic)
-        return TokenPair()
-
-    @auth_required
-    def Logout(self, request: TokenPair, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement logout logic)
-        return Empty()
 
     @auth_required
     def RefreshToken(self, request: UserId, context: ServicerContext) -> AccessToken:
