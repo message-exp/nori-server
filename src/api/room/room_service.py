@@ -14,6 +14,10 @@ from proto_generated.nori.v0.room.room_member_pb2 import RoomMember, RoomMemberS
 from proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import (
     InviteUserToRoomRequest,
 )
+from proto_generated.nori.v0.room.room_join_invite_reply_pb2 import RoomJoinInviteReply
+from proto_generated.nori.v0.room.room_join_request_reply_pb2 import (
+    RoomJoinRequestReply,
+)
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from utils.token_helper import auth_required
 from utils.db_helper import get_db
@@ -55,6 +59,44 @@ class RoomServicer(RoomServiceServicer):
         return RoomId(id=room_id)
 
     @auth_required
+    def GetRoom(self, request: RoomUserRequest, context: ServicerContext) -> Room:
+        # TODO: fix the braking changes in protos 0.3
+        room_id = request.id
+
+        # check room exist
+        room_repo = RoomRepo(next(get_db()))
+        room = room_repo.get_room(room_id)
+        if room is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Room with ID {room_id} not found.")
+            return Empty()
+
+        room = Room(
+            room_id=RoomId(id=room.id),
+            shared_name=room.name,
+            custom_name="",
+            shared_avatar_url=room.avatar_url,
+            custom_avatar_url="",
+            members=[
+                RoomMember(
+                    user_id=UserId(id=member.user_id),
+                    room_nickname=member.user_name,
+                    status=RoomMemberStatus.JOINED,
+                )
+                for member in room.members
+            ],
+        )
+
+        return room
+
+    @auth_required
+    def UpdateRoomBasic(
+        self, request: RoomBasicInfoRequest, context: ServicerContext
+    ) -> Empty:
+        # TODO: ...... (implement update room basic info logic)
+        return Empty()
+
+    @auth_required
     def InviteToRoom(
         self, request: InviteUserToRoomRequest, context: ServicerContext
     ) -> Empty:
@@ -89,6 +131,13 @@ class RoomServicer(RoomServiceServicer):
         return Empty()
 
     @auth_required
+    def InviteRoomReply(
+        self, request: RoomJoinInviteReply, context: ServicerContext
+    ) -> Empty:
+        # TODO: ...... (implement invite room reply logic)
+        return Empty()
+
+    @auth_required
     def JoinRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         room_id = request.room_id.id
         user_id = request.user_id.id
@@ -116,43 +165,13 @@ class RoomServicer(RoomServiceServicer):
         return Empty()
 
     @auth_required
-    def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement leave room logic)
+    def JoinRoomReply(
+        self, request: RoomJoinRequestReply, context: ServicerContext
+    ) -> Empty:
+        # TODO: ...... (implement join room reply logic)
         return Empty()
 
     @auth_required
-    def GetRoom(self, request: RoomId, context: ServicerContext) -> Room:
-        room_id = request.id
-
-        # check room exist
-        room_repo = RoomRepo(next(get_db()))
-        room = room_repo.get_room(room_id)
-        if room is None:
-            context.set_code(grpc.StatusCode.NOT_FOUND)
-            context.set_details(f"Room with ID {room_id} not found.")
-            return Empty()
-
-        room = Room(
-            room_id=RoomId(id=room.id),
-            shared_name=room.name,
-            custom_name="",
-            shared_avatar_url=room.avatar_url,
-            custom_avatar_url="",
-            members=[
-                RoomMember(
-                    user_id=UserId(id=member.user_id),
-                    room_nickname=member.user_name,
-                    status=RoomMemberStatus.JOINED,
-                )
-                for member in room.members
-            ],
-        )
-
-        return room
-
-    @auth_required
-    def UpdateRoomBasic(
-        self, request: RoomBasicInfoRequest, context: ServicerContext
-    ) -> Empty:
-        # TODO: ...... (implement update room basic info logic)
+    def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
+        # TODO: ...... (implement leave room logic)
         return Empty()

@@ -1,11 +1,20 @@
 from sqlmodel import Session, select, col
-from model import Users
+from sqlalchemy.orm import selectinload
+from model import Users, Rooms
 from typing import Optional
 
 
 class UserRepository:
     def __init__(self, session: Session) -> None:
         self.db = session
+
+    def get_user_only_ids(self, user_id: int) -> Users | None:
+        stmt = (
+            select(Users)
+            .options(selectinload(Users.rooms).load_only(Rooms.id))
+            .where(Users.id == user_id)
+        )
+        return self.db.exec(stmt).first()
 
     def get_user(
         self,
