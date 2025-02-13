@@ -28,22 +28,22 @@ class MessageServicer(MessageServiceServicer):
         user_id = request.author.id
         room_id = request.room_id.id
         message = request.text
-        userDB = UserRepo(next(get_db()))
-        user = userDB.get_user(user_id=user_id)
+        user_db = UserRepo(next(get_db()))
+        user = user_db.get_user(user_id=user_id)
         # check user exist
         if user is None:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {user_id} not found.")
             return Empty()
-        roomDB = RoomRepo(next(get_db()))
-        room_exist = roomDB.exists_room(room_id=room_id)
+        room_db = RoomRepo(next(get_db()))
+        room_exist = room_db.exists_room(room_id=room_id)
         # check room exist
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
             return Empty()
-        messageDB = MessageRepo(next(get_db()))
-        messageDB.add_message_to_db(
+        message_db = MessageRepo(next(get_db()))
+        message_db.add_message(
             Messages(room_id=room_id, message=message, user=user)
         ).id
         return Empty()
@@ -55,8 +55,8 @@ class MessageServicer(MessageServiceServicer):
         baseline = request.baseline.id
         limit = request.limit
         room_id: int = request.room_id.id
-        roomDB = RoomRepo(next(get_db()))
-        room_exist = roomDB.exists_room(room_id=room_id)
+        room_db = RoomRepo(next(get_db()))
+        room_exist = room_db.exists_room(room_id=room_id)
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")

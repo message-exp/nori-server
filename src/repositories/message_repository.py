@@ -19,11 +19,11 @@ class MessageRepository:
             ).all()
         )
 
-    def add_message_to_db(self, message: Messages) -> None :
+    def add_message(self, message: Messages) -> None :
         self.db.add(message)
         self.db.commit()
         return None
 
-    def update_message_to_db(self, room_id: int, id: int) -> None:
+    def update_message(self, room_id: int, id: int) -> None:
         # Update
         return None

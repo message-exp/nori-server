@@ -42,7 +42,7 @@ def test_send_message_success(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
-    mock_message_repo.return_value.add_message_to_db.return_value = MagicMock(
+    mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
     mock_user_repo.return_value.get_user.return_value = MagicMock(user_id=66)
@@ -53,7 +53,7 @@ def test_send_message_success(
     response: Empty = servicer.SendMessage(request, grpc_context)
 
     assert isinstance(response, Empty)
-    mock_message_repo.return_value.add_message_to_db.assert_called_once_with(
+    mock_message_repo.return_value.add_message.assert_called_once_with(
         Messages(room_id=123, message="abc")
     )
     mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
@@ -64,7 +64,7 @@ def test_send_message_userNotFound(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
-    mock_message_repo.return_value.add_message_to_db.return_value = MagicMock(
+    mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
     mock_user_repo.return_value.get_user.return_value = None
@@ -77,7 +77,7 @@ def test_send_message_userNotFound(
     grpc_context.set_details.assert_called_once_with("User with ID 66 not found.")
 
     assert isinstance(response, Empty)
-    mock_message_repo.return_value.add_message_to_db.assert_not_called()
+    mock_message_repo.return_value.add_message.assert_not_called()
     mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_not_called()
 
@@ -86,7 +86,7 @@ def test_send_message_roomNotFound(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
-    mock_message_repo.return_value.add_message_to_db.return_value = MagicMock(
+    mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
     mock_user_repo.return_value.get_user.return_value = MagicMock(user_id=66)
@@ -99,6 +99,6 @@ def test_send_message_roomNotFound(
     grpc_context.set_details.assert_called_once_with("Room with ID 123 not found.")
 
     assert isinstance(response, Empty)
-    mock_message_repo.return_value.add_message_to_db.assert_not_called()
+    mock_message_repo.return_value.add_message.assert_not_called()
     mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_called_once_with(room_id=123)
