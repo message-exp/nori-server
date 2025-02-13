@@ -13,6 +13,7 @@ from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
 from utils.db_helper import get_db
 from src.utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
+from google.protobuf.empty_pb2 import Empty
 
 
 class MessageServicer(MessageServiceServicer):
@@ -22,7 +23,7 @@ class MessageServicer(MessageServiceServicer):
     @auth_required
     def SendMessage(
         self, request: Message, context: ServicerContext
-    ) -> MessageId | None:
+    ) -> Empty:
         user_id = request.author.id
         room_id = request.room_id.id
         message = request.text
@@ -32,19 +33,19 @@ class MessageServicer(MessageServiceServicer):
         if user is None:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {user_id} not found.")
-            return None
+            return Empty()
         roomDB = RoomRepo(next(get_db()))
         room_exist = roomDB.exists_room(room_id=room_id)
         # check room exist
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
-            return None
+            return Empty()
         messageDB = MessageRepo(next(get_db()))
-        input_message_id = messageDB.add_message_to_db(
+        messageDB.add_message_to_db(
             Messages(room_id=room_id, message=message, user=user)
         ).id
-        return MessageId(id=input_message_id)
+        return Empty()
 
     @auth_required
     def GetMessages(
