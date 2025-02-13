@@ -1,3 +1,4 @@
+from typing import Iterable
 import grpc
 from grpc.aio import ServicerContext
 
@@ -50,7 +51,7 @@ class MessageServicer(MessageServiceServicer):
     @auth_required
     def GetMessages(
         self, request: GetMessageRequest, context: ServicerContext
-    ) -> list[Message] | None:
+    ) -> Iterable[Messages]:
         baseline = request.baseline.id
         limit = request.limit
         room_id: int = request.room_id.id
@@ -59,9 +60,10 @@ class MessageServicer(MessageServiceServicer):
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
-            return None
+            return
         message_db = MessageRepo(next(get_db()))
-
-        return message_db.get_message_by_roomId(
+        list_of_message = message_db.get_message_by_roomId(
             room_id=room_id, baseline=baseline, limit=limit
         )
+        for message in list_of_message:
+            yield message
