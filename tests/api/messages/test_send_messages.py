@@ -13,6 +13,7 @@ from src.utils.token_helper import generate_token
 from src.api.message.message_service import MessageServicer, Messages
 from google.protobuf.empty_pb2 import Empty
 
+
 @pytest.fixture
 def mock_repositories(
     mocker: MockerFixture,

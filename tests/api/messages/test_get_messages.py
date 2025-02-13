@@ -1,7 +1,7 @@
 import pytest
 import grpc
 from unittest.mock import MagicMock
-from typing import Generator, Iterable, Tuple
+from typing import Generator, Tuple
 from grpc import ServicerContext
 from pytest_mock import MockerFixture
 

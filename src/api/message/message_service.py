@@ -6,7 +6,6 @@ from proto_generated.nori.v0.message.message_pb2 import Message
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
-from proto_generated.nori.v0.message.message_id_pb2 import MessageId
 from model import Messages
 from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
@@ -22,9 +21,7 @@ class MessageServicer(MessageServiceServicer):
     auth_config: dict[str, bool] = dict()
 
     @auth_required
-    def SendMessage(
-        self, request: Message, context: ServicerContext
-    ) -> Empty:
+    def SendMessage(self, request: Message, context: ServicerContext) -> Empty:
         user_id = request.author.id
         room_id = request.room_id.id
         message = request.text
@@ -43,15 +40,13 @@ class MessageServicer(MessageServiceServicer):
             context.set_details(f"Room with ID {room_id} not found.")
             return Empty()
         message_db = MessageRepo(next(get_db()))
-        message_db.add_message(
-            Messages(room_id=room_id, message=message, user=user)
-        ).id
+        message_db.add_message(Messages(room_id=room_id, message=message, user=user)).id
         return Empty()
 
     @auth_required
     def GetMessages(
         self, request: GetMessageRequest, context: ServicerContext
-    ) -> Generator[Messages , None , None]:
+    ) -> Generator[Messages, None, None]:
         baseline = request.baseline.id
         limit = request.limit
         room_id: int = request.room_id.id

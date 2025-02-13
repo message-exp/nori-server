@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlmodel import Session, select
 from model import Messages
-from google.protobuf.empty_pb2 import Empty
+
 
 class MessageRepository:
     def __init__(self, session: Session) -> None:
@@ -19,7 +19,7 @@ class MessageRepository:
             ).all()
         )
 
-    def add_message(self, message: Messages) -> None :
+    def add_message(self, message: Messages) -> None:
         self.db.add(message)
         self.db.commit()
         return None
