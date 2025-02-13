@@ -11,7 +11,7 @@ from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_token
 from src.api.message.message_service import MessageServicer, Messages
-
+from google.protobuf.empty_pb2 import Empty
 
 @pytest.fixture
 def mock_repositories(
@@ -50,10 +50,9 @@ def test_send_message_success(
 
     servicer: MessageServicer = MessageServicer()
     request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
-    response: MessageId = servicer.SendMessage(request, grpc_context)
+    response: Empty = servicer.SendMessage(request, grpc_context)
 
-    assert isinstance(response, MessageId)
-    assert response.id == 1
+    assert isinstance(response, Empty)
     mock_message_repo.return_value.add_message_to_db.assert_called_once_with(
         Messages(room_id=123, message="abc")
     )
@@ -77,7 +76,7 @@ def test_send_message_userNotFound(
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("User with ID 66 not found.")
 
-    assert response is None
+    assert isinstance(response, Empty)
     mock_message_repo.return_value.add_message_to_db.assert_not_called()
     mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_not_called()
@@ -99,7 +98,7 @@ def test_send_message_roomNotFound(
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("Room with ID 123 not found.")
 
-    assert response is None
+    assert isinstance(response, Empty)
     mock_message_repo.return_value.add_message_to_db.assert_not_called()
     mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_called_once_with(room_id=123)
