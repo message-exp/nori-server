@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Generator
 import grpc
 from grpc.aio import ServicerContext
 
@@ -51,7 +51,7 @@ class MessageServicer(MessageServiceServicer):
     @auth_required
     def GetMessages(
         self, request: GetMessageRequest, context: ServicerContext
-    ) -> Iterable[Messages]:
+    ) -> Generator[Messages , None , None]:
         baseline = request.baseline.id
         limit = request.limit
         room_id: int = request.room_id.id
