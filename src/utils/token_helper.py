@@ -57,7 +57,7 @@ def auth_required(func: Callable) -> Callable:
 
 def generate_jwt_token(
     subject: Optional[str] = None,
-    expire: Optional[datetime] =  datetime.now(timezone.utc) + timedelta(minutes=30),
+    expire: Optional[datetime] = datetime.now(timezone.utc) + timedelta(minutes=30),
     token_id: Optional[str] = secrets.token_urlsafe(8),
 ) -> str:
     """
