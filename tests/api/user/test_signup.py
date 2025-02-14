@@ -5,6 +5,7 @@ from pytest_mock import MockerFixture
 from typing import Generator
 
 from src.proto_generated.nori.v0.user.signup_request_pb2 import SignUpRequest
+
 # from src.proto_generated.nori.v0.user.user_pb2 import User
 from src.proto_generated.nori.v0.user.token_pair_pb2 import TokenPair
 
@@ -25,9 +26,9 @@ def mock_user_repo(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     """Mock UserRepository"""
     mock_db_session = MagicMock()
     mocker.patch("src.api.user.user_service.get_db", return_value=mock_db_session)
-    
+
     mock_user_repo = mocker.patch("src.api.user.user_service.UserRepo")
-    
+
     yield mock_user_repo
 
 
@@ -36,9 +37,9 @@ def mock_refresh_token_repo(mocker: MockerFixture) -> Generator[MagicMock, None,
     """Mock RefreshTokenRepository"""
     mock_db_session = MagicMock()
     mocker.patch("src.api.user.user_service.get_db", return_value=mock_db_session)
-    
+
     mock_refresh_token_repo = mocker.patch("src.api.user.user_service.RefreshTokenRepo")
-    
+
     yield mock_refresh_token_repo
 
 
@@ -115,7 +116,9 @@ def test_successful_signup(
     mock_refresh_token_repo: MagicMock,
 ) -> None:
     # Arrange: valid signup info
-    request = SignUpRequest(username="user1", email="user@example.com", display_name="User One")
+    request = SignUpRequest(
+        username="user1", email="user@example.com", display_name="User One"
+    )
     user_repo_instance = mock_user_repo.return_value
     refresh_repo_instance = mock_refresh_token_repo.return_value
 
