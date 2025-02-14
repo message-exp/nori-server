@@ -40,7 +40,9 @@ class MessageServicer(MessageServiceServicer):
             context.set_details(f"Room with ID {room_id} not found.")
             return Empty()
         message_repo = MessageRepo(next(get_db()))
-        message_repo.add_message(Messages(room_id=room_id, message=message, user=user)).id
+        message_repo.add_message(
+            Messages(room_id=room_id, message=message, user=user)
+        ).id
         return Empty()
 
     @auth_required
