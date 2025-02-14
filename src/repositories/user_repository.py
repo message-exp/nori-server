@@ -31,11 +31,14 @@ class UserRepository:
         self,
         user_id: Optional[int] = None,
         email: Optional[str] = None,
+        username: Optional[str] = None,
     ) -> bool:
         if user_id is not None:
             user = self.db.exec(select(Users).where(Users.id == user_id)).first()
         elif email is not None:
             user = self.db.exec(select(Users).where(Users.email == email)).first()
+        elif username is not None:
+            user = self.db.exec(select(Users).where(Users.username == username)).first()
         return user is not None
 
     def exists_all_users(self, user_list: list[int]) -> bool:

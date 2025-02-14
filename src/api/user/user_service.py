@@ -29,7 +29,7 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import (
     UserServiceServicer,
 )
 
-from model import RefreshToken as DBRefreshToken
+from model import RefreshToken as DBRefreshToken, Users
 from repositories import UserRepo, RoomMemberRepo, RefreshTokenRepo
 
 
@@ -68,9 +68,56 @@ class UserServicer(UserServiceServicer):
             rooms=[RoomId(id=room.id) for room in user.rooms],
         )
 
-    def Signup(self, request: User, context: ServicerContext) -> Empty:
-        # TODO: ...... (implement signup logic)
-        return Empty()
+    def Signup(self, request: User, context: ServicerContext) -> TokenPair:
+        # get request content
+        username = request.username
+        email = request.email
+        display_name = request.display_name
+
+        # check email format
+        if not is_valid_email(email):
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Invalid email format")
+            return TokenPair()
+
+        # check if email already exists
+        user_repo = UserRepo(next(get_db()))
+        if user_repo.exists_user(email=email):
+            context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+            context.set_details("Email already in use")
+            return TokenPair()
+
+        # check if username already exists
+        if user_repo.exists_user(username=username):
+            context.set_code(grpc.StatusCode.ALREADY_EXISTS)
+            context.set_details("Username already in use")
+            return TokenPair()
+
+        # create user object
+        try:
+            new_user_id = user_repo.create_user(
+                Users(username=username, email=email, display_name=display_name)
+            )
+        except Exception:  # catch exceptions
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Failed to create user")
+            return TokenPair()
+
+        # create refresh tokens
+        refresh_token = generate_refresh_token()
+        refresh_token_db_obj = DBRefreshToken(
+            user_id=new_user_id, refresh_token=refresh_token
+        )
+        refresh_token_repo = RefreshTokenRepo(next(get_db()))
+        refresh_token_repo.save_refresh_token(refresh_token_db_obj)
+
+        # create access token
+        access_token = generate_jwt_token(subject=new_user_id)
+
+        return TokenPair(
+            access_token=AccessToken(access_token=bytes(access_token, "utf-8")),
+            refresh_token=RefreshToken(refresh_token=bytes(refresh_token, "utf-8")),
+        )
 
     @auth_required
     def DeleteUser(self, request: UserId, context: ServicerContext) -> Empty:
