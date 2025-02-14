@@ -10,7 +10,7 @@ from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
 )
 from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
-from src.utils.token_helper import generate_token
+from src.utils.token_helper import generate_jwt_token
 from src.api.message.message_service import MessageServicer, Messages
 
 
@@ -33,7 +33,7 @@ def mock_repositories(
 def grpc_context() -> MagicMock:
     """Mock gRPC context with valid authorization metadata"""
     context: MagicMock = MagicMock(spec=ServicerContext)
-    token = generate_token(subject="test")
+    token = generate_jwt_token(subject="test")
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
 
