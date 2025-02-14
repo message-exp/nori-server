@@ -1,6 +1,7 @@
 from sqlmodel import Session, select, col
 from sqlalchemy.orm import selectinload
 from model import Users, Rooms
+from typing import Optional
 
 
 class UserRepository:
@@ -15,11 +16,26 @@ class UserRepository:
         )
         return self.db.exec(stmt).first()
 
-    def get_user(self, user_id: int) -> Users:
-        return self.db.exec(select(Users).where(Users.id == user_id)).first()
+    def get_user(
+        self,
+        user_id: Optional[int] = None,
+        email: Optional[str] = None,
+    ) -> Users | None:
+        if user_id is not None:
+            return self.db.exec(select(Users).where(Users.id == user_id)).first()
+        if email is not None:
+            return self.db.exec(select(Users).where(Users.email == email)).first()
+        return None
 
-    def exists_user(self, user_id: int) -> bool:
-        user = self.db.exec(select(Users).where(Users.id == user_id)).first()
+    def exists_user(
+        self,
+        user_id: Optional[int] = None,
+        email: Optional[str] = None,
+    ) -> bool:
+        if user_id is not None:
+            user = self.db.exec(select(Users).where(Users.id == user_id)).first()
+        elif email is not None:
+            user = self.db.exec(select(Users).where(Users.email == email)).first()
         return user is not None
 
     def exists_all_users(self, user_list: list[int]) -> bool:

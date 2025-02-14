@@ -1,7 +1,9 @@
 import grpc
 from grpc.aio import ServicerContext
 
-from src.utils.token_helper import auth_required
+from utils.token_helper import auth_required, generate_jwt_token, generate_refresh_token
+from utils.validate_format_helper import is_valid_email
+from utils.db_helper import get_db
 
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.user_pb2 import User
@@ -9,6 +11,7 @@ from proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from proto_generated.nori.v0.user.token_pair_pb2 import TokenPair
 from proto_generated.nori.v0.user.access_token_pb2 import AccessToken
+from proto_generated.nori.v0.user.refresh_token_pb2 import RefreshToken
 from proto_generated.nori.v0.user.user_profile_update_request_pb2 import (
     UserProfileUpdateRequest,
 )
@@ -26,8 +29,8 @@ from proto_generated.nori.v0.user.user_service_pb2_grpc import (
     UserServiceServicer,
 )
 
-from utils.db_helper import get_db
-from repositories import UserRepo, RoomMemberRepo
+from model import RefreshToken as DBRefreshToken
+from repositories import UserRepo, RoomMemberRepo, RefreshTokenRepo
 
 
 class UserServicer(UserServiceServicer):
@@ -121,9 +124,47 @@ class UserServicer(UserServiceServicer):
     def Login(
         self, request: UserEmailPasswordLogin, context: ServicerContext
     ) -> TokenPair:
-        # TODO: check email format
-        # TODO: ...... (implement login logic)
-        return TokenPair()
+        email = request.email
+        password = request.password
+
+        # check email format
+        if not is_valid_email(email):
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Invalid email format")
+            return TokenPair()
+
+        # check password format
+        if not password:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Password cannot be empty")
+            return TokenPair()
+
+        # get user from database
+        user_repo = UserRepo(next(get_db()))
+        user = user_repo.get_user(email)
+
+        # check if user exists
+        if not user:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found")
+            return TokenPair()
+
+        # create refresh token and save in database
+        refresh_token = generate_refresh_token()
+        refresh_token_db_obj = DBRefreshToken(
+            user_id=user.id, refresh_token=refresh_token
+        )
+        refresh_token_repo = RefreshTokenRepo(next(get_db()))
+        refresh_token_repo.save_refresh_token(refresh_token_db_obj)
+
+        # create access token
+        access_token = generate_jwt_token(subject=user.id)
+
+        # return tokens
+        return TokenPair(
+            access_token=AccessToken(access_token=bytes(access_token, "utf-8")),
+            refresh_token=RefreshToken(refresh_token=bytes(refresh_token, "utf-8")),
+        )
 
     @auth_required
     def Logout(self, request: TokenPair, context: ServicerContext) -> Empty:

@@ -1,6 +1,7 @@
 import jwt
 import grpc
-from datetime import datetime
+import secrets
+from datetime import datetime, timezone, timedelta
 from typing import Any, Optional, Callable
 
 from utils.config import config
@@ -45,20 +46,26 @@ def auth_required(func: Callable) -> Callable:
         except jwt.InvalidTokenError:
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid token")
             return
+        except Exception:
+            context.abort(grpc.StatusCode.UNAUTHENTICATED, "Unknown error")
+            return
 
         return func(self, request, context)
 
     return wrapper
 
 
-def generate_token(
-    subject: Optional[str] = None, expire: Optional[datetime] = None
+def generate_jwt_token(
+    subject: Optional[str] = None,
+    expire: Optional[datetime] = datetime.now(timezone.utc) + timedelta(minutes=30),
+    token_id: Optional[str] = secrets.token_urlsafe(8),
 ) -> str:
     """
     Generate a token with the user_id.
     Args:
         subject (str, optional): user_id to be encoded in the token
         expire (datetime, optional): expiration time of the token
+        token_id (str, optional): unique identifier for the token
     Returns:
         str: encoded token
     """
@@ -70,4 +77,17 @@ def generate_token(
     if expire is not None:
         payload["exp"] = expire
 
+    if token_id is not None:
+        payload["jti"] = token_id
+
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def generate_refresh_token() -> str:
+    """
+    Generate a random refresh token.
+    Returns:
+        str: refresh token
+    """
+    token = secrets.token_urlsafe(64)
+    return token

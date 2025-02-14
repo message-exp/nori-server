@@ -7,7 +7,7 @@ from pytest_mock import MockerFixture
 
 from src.proto_generated.nori.v0.room.room_pb2 import Room
 from src.proto_generated.nori.v0.room.room_user_request_pb2 import RoomUserRequest
-from src.utils.token_helper import generate_token
+from src.utils.token_helper import generate_jwt_token
 from src.api.room.room_service import RoomServicer, RoomMembers, Rooms
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
@@ -40,7 +40,7 @@ def mock_repositories(
 def grpc_context() -> MagicMock:
     """Mock gRPC context with valid authorization metadata"""
     context: MagicMock = MagicMock(spec=ServicerContext)
-    token = generate_token(subject="test")
+    token = generate_jwt_token(subject="test")
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
 
