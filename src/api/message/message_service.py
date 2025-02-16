@@ -7,11 +7,11 @@ from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
 from model import Messages
-from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
+from proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
 )
 from utils.db_helper import get_db
-from src.utils.token_helper import auth_required
+from utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
 from google.protobuf.empty_pb2 import Empty
 
