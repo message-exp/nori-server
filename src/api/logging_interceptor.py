@@ -17,6 +17,6 @@ class LoggingInterceptor(grpc.aio.ServerInterceptor):
 
         # Log the incoming request details
         logger.info("Incoming call to method: %s", method_name)
-        logger.info("Invocation metadata: %s", metadata)
+        logger.debug("Invocation metadata: %s", metadata)
 
         return continuation(handler_call_details)
