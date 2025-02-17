@@ -130,5 +130,5 @@ def test_successful_login(
 
     # Assert: Check the response
     assert isinstance(response, TokenPair)
-    assert response.access_token.access_token.decode() == "access123"
-    assert response.refresh_token.refresh_token.decode() == "refresh123"
+    assert response.access_token.access_token == "access123"
+    assert response.refresh_token.refresh_token == "refresh123"

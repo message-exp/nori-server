@@ -141,5 +141,5 @@ def test_successful_signup(
     response = servicer.Signup(request, fake_context)
 
     # Assert
-    assert response.access_token.access_token == b"access123"
-    assert response.refresh_token.refresh_token == b"refresh123"
+    assert response.access_token.access_token == "access123"
+    assert response.refresh_token.refresh_token == "refresh123"
