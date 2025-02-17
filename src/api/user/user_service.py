@@ -188,7 +188,7 @@ class UserServicer(UserServiceServicer):
 
         # get user from database
         user_repo = UserRepo(next(get_db()))
-        user = user_repo.get_user(email)
+        user = user_repo.get_user(email=email)
 
         # check if user exists
         if not user:
