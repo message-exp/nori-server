@@ -10,4 +10,4 @@ RUN curl -L https://github.com/fullstorydev/grpcurl/releases/download/v1.9.2/grp
 
 COPY pyproject.toml poetry.lock ./
 RUN pip install poetry \
-    && poetry config virtualenvs.create false
+    && poetry config virtualenvs.create true

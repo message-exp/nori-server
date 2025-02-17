@@ -30,7 +30,7 @@ class Users(SQLModel, table=True):  # type: ignore
     )
     username: str = Field(sa_column=Column(String(256), index=True, unique=True))
     display_name: str = Field(sa_column=Column(String(256)))
-    email: str = Field(sa_column=Column(TEXT))
+    email: str = Field(sa_column=Column(TEXT, index=True, unique=True))
     avatar_url: str = Field(sa_column=Column(TEXT))
     hashed_password: str = Field(sa_column=Column(String(60)))
 
