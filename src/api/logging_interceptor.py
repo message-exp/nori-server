@@ -2,7 +2,7 @@ import grpc
 import logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class LoggingInterceptor(grpc.aio.ServerInterceptor):
