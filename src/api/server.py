@@ -1,5 +1,6 @@
 import grpc
 
+from api.logging_interceptor import LoggingInterceptor
 from api.user.user_service import UserServicer
 from api.room.room_service import RoomServicer
 from api.message.message_service import MessageServicer
@@ -20,7 +21,7 @@ from grpc_reflection.v1alpha import reflection
 
 def get_server() -> grpc.Server:
     # server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    server = grpc.aio.server()
+    server = grpc.aio.server(interceptors=(LoggingInterceptor(),))
 
     add_UserServiceServicer_to_server(servicer=UserServicer(), server=server)
     add_RoomServiceServicer_to_server(servicer=RoomServicer(), server=server)
