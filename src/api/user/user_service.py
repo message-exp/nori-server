@@ -115,8 +115,8 @@ class UserServicer(UserServiceServicer):
         access_token = generate_jwt_token(subject=new_user_id)
 
         return TokenPair(
-            access_token=AccessToken(access_token=bytes(access_token, "utf-8")),
-            refresh_token=RefreshToken(refresh_token=bytes(refresh_token, "utf-8")),
+            access_token=AccessToken(access_token=access_token),
+            refresh_token=RefreshToken(refresh_token=refresh_token),
         )
 
     @auth_required
@@ -161,8 +161,10 @@ class UserServicer(UserServiceServicer):
             # For the avatar oneof, prioritize the custom URL if provided.
             if room_member.room_avatar_url:
                 room_basic_info.custom_avatar_url = room_member.room_avatar_url
-            else:
+            elif room_member.room.avatar_url:
                 room_basic_info.shared_avatar_url = room_member.room.avatar_url
+            else:
+                room_basic_info.custom_avatar_url = ""
 
             rooms.append(room_basic_info)
 
@@ -209,8 +211,8 @@ class UserServicer(UserServiceServicer):
 
         # return tokens
         return TokenPair(
-            access_token=AccessToken(access_token=bytes(access_token, "utf-8")),
-            refresh_token=RefreshToken(refresh_token=bytes(refresh_token, "utf-8")),
+            access_token=AccessToken(access_token=access_token),
+            refresh_token=RefreshToken(refresh_token=refresh_token),
         )
 
     @auth_required

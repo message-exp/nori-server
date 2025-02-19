@@ -6,11 +6,11 @@ class RoomMemberRepository:
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def get_user_room_members(self, user_id: int) -> list[RoomMembers] | None:
+    def get_user_room_members(self, user_id: int) -> list[RoomMembers]:
         result = self.db.exec(
             select(RoomMembers).where(RoomMembers.user_id == user_id)
         ).all()
-        return list(result) if result else None
+        return list(result)
 
     def create_room_member(self, room_member: RoomMembers) -> int:
         self.db.add(room_member)

@@ -1,10 +1,13 @@
 import jwt
 import grpc
 import secrets
+import logging
 from datetime import datetime, timezone, timedelta
 from typing import Any, Optional, Callable
 
 from utils.config import config
+
+logger = logging.getLogger(__name__)
 
 SECRET_KEY = config.JWT_SECRET_KEY
 ALGORITHM = config.JWT_ALGORITHM
@@ -30,23 +33,37 @@ def auth_required(func: Callable) -> Callable:
         token = metadata.get("authorization")
 
         if not token:
+            logger.error("Missing token in metadata: %s", metadata)
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Missing token")
             return
 
+        # Remove the "Bearer" prefix
+        token = str(token).split("Bearer ")[-1]
+        logger.debug("Extracted token: %s", token)
+
         try:
             if isinstance(token, (str, bytes)):
+                logger.debug(
+                    "Attempting to decode token using secret key and algorithm %s",
+                    ALGORITHM,
+                )
                 decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                logger.debug("Decoded token payload: %s", decoded_token)
             else:
+                logger.error("Invalid token type: %s", type(token))
                 context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid token type")
                 return
-            context.user_info = decoded_token
+            # context.user_info = decoded_token
         except jwt.ExpiredSignatureError:
+            logger.error("Token expired: %s", token)
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Token expired")
             return
-        except jwt.InvalidTokenError:
+        except jwt.InvalidTokenError as e:
+            logger.error("Invalid token: %s | error: %s", token, e)
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Invalid token")
             return
-        except Exception:
+        except Exception as e:
+            logger.error("Unknown error while decoding token: %s | error: %s", token, e)
             context.abort(grpc.StatusCode.UNAUTHENTICATED, "Unknown error")
             return
 
@@ -72,7 +89,7 @@ def generate_jwt_token(
     payload: dict[str, Any] = dict()
 
     if subject is not None:
-        payload["sub"] = subject
+        payload["sub"] = str(subject)
 
     if expire is not None:
         payload["exp"] = expire
