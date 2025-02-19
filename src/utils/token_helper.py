@@ -43,7 +43,10 @@ def auth_required(func: Callable) -> Callable:
 
         try:
             if isinstance(token, (str, bytes)):
-                logger.debug("Attempting to decode token using secret key and algorithm %s", ALGORITHM)
+                logger.debug(
+                    "Attempting to decode token using secret key and algorithm %s",
+                    ALGORITHM,
+                )
                 decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 logger.debug("Decoded token payload: %s", decoded_token)
             else:
@@ -71,8 +74,7 @@ def auth_required(func: Callable) -> Callable:
 
 def generate_jwt_token(
     subject: Optional[str] = None,
-    expire: Optional[datetime] = datetime.now(
-        timezone.utc) + timedelta(minutes=30),
+    expire: Optional[datetime] = datetime.now(timezone.utc) + timedelta(minutes=30),
     token_id: Optional[str] = secrets.token_urlsafe(8),
 ) -> str:
     """
