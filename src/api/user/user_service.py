@@ -161,7 +161,7 @@ class UserServicer(UserServiceServicer):
             # For the avatar oneof, prioritize the custom URL if provided.
             if room_member.room_avatar_url:
                 room_basic_info.custom_avatar_url = room_member.room_avatar_url
-            elif room_basic_info.shared_avatar_url:
+            elif room_member.room.avatar_url:
                 room_basic_info.shared_avatar_url = room_member.room.avatar_url
             else:
                 room_basic_info.custom_avatar_url = ""
