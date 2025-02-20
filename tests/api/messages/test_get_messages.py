@@ -9,6 +9,7 @@ from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
 )
 from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
+from src.proto_generated.nori.v0.message.message_list_pb2 import MessageList
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.utils.token_helper import generate_jwt_token
 from src.api.message.message_service import MessageServicer, Messages
@@ -56,15 +57,15 @@ def test_get_message_success(
         room_id=RoomId(id=123), limit=6, baseline=MessageId(id=1234567890)
     )
     response = servicer.GetMessages(request, grpc_context)
-    assert isinstance(response, list)
-    assert response == [
+    assert isinstance(response, MessageList)
+    assert response == MessageList( [
         Messages(text="hello"),
         Messages(text="world"),
         Messages(text="!"),
         Messages(text="I"),
         Messages(text="am"),
         Messages(text="here"),
-    ]
+    ])
     mock_message_repo.return_value.get_message_by_roomId.assert_called_once_with(
         room_id=123, baseline=1234567890, limit=6
     )

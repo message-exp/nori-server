@@ -69,4 +69,15 @@ class MessageServicer(MessageServiceServicer):
             list_of_message = message_repo.get_message_by_roomId(
                 room_id=room_id, baseline=baseline
             )
+        result = []
+        for message in list_of_message:
+            result.append(
+                Message(
+                    room_id=message.room_id,
+                    message_id=message.id,
+                    created_at=message.created_at,
+                    author=message.user.id,
+                    text=message.message,
+                )
+            )
         return MessageList(messages = list_of_message)
