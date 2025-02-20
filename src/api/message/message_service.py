@@ -13,6 +13,7 @@ from utils.db_helper import get_db
 from utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
 from google.protobuf.empty_pb2 import Empty
+from proto_generated.nori.v0.message.message_list_pb2 import MessageList
 
 
 class MessageServicer(MessageServiceServicer):
@@ -47,7 +48,7 @@ class MessageServicer(MessageServiceServicer):
     @auth_required
     def GetMessages(
         self, request: GetMessageRequest, context: ServicerContext
-    ) -> list[Messages]:
+    ) -> MessageList:
         baseline: int = request.baseline.id
         limit: int = request.limit
         room_id: int = request.room_id.id
@@ -68,4 +69,4 @@ class MessageServicer(MessageServiceServicer):
             list_of_message = message_repo.get_message_by_roomId(
                 room_id=room_id, baseline=baseline
             )
-        return list_of_message
+        return MessageList(messages = list_of_message)
