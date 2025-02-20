@@ -54,6 +54,10 @@ class MessageServicer(MessageServiceServicer):
         room_id: int = request.room_id.id
         room_repo = RoomRepo(next(get_db()))
         room_exist = room_repo.exists_room(room_id=room_id)
+        if limit is None :
+            limit = 0
+        if baseline is None :
+            baseline = 0
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
