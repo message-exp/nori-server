@@ -56,8 +56,7 @@ def test_get_message_success(
         room_id=RoomId(id=123), limit=6, baseline=MessageId(id=1234567890)
     )
     response = servicer.GetMessages(request, grpc_context)
-    assert isinstance(response, Generator)
-    response = list(response)
+    assert isinstance(response, list)
     assert response == [
         Messages(text="hello"),
         Messages(text="world"),
