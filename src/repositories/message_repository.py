@@ -8,13 +8,13 @@ class MessageRepository:
         self.db = session
 
     def get_message_by_roomId(
-        self, room_id: int, baseline: datetime, limit: int
+        self, room_id: int, baseline: int, limit: int
     ) -> list[Messages]:
         return list(
             self.db.exec(
                 select(Messages)
                 .where(Messages.room_id == room_id)
-                .where(Messages.created_at < baseline)
+                .where(Messages.id < baseline)
                 .limit(limit)
             ).all()
         )

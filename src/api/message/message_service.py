@@ -14,6 +14,7 @@ from utils.db_helper import get_db
 from utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
 from google.protobuf.empty_pb2 import Empty
+from snowflake import SnowflakeGenerator
 
 
 class MessageServicer(MessageServiceServicer):
@@ -57,7 +58,8 @@ class MessageServicer(MessageServiceServicer):
         if limit is None :
             limit = 0
         if baseline is None :
-            baseline = 0
+            snowflake_gen = SnowflakeGenerator(1)
+            baseline = next(snowflake_gen) 
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
