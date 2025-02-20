@@ -14,7 +14,6 @@ from utils.db_helper import get_db
 from utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
 from google.protobuf.empty_pb2 import Empty
-from snowflake import SnowflakeGenerator
 
 
 class MessageServicer(MessageServiceServicer):
@@ -55,18 +54,19 @@ class MessageServicer(MessageServiceServicer):
         room_id: int = request.room_id.id
         room_repo = RoomRepo(next(get_db()))
         room_exist = room_repo.exists_room(room_id=room_id)
-        if limit is None :
-            limit = 0
-        if baseline is None :
-            snowflake_gen = SnowflakeGenerator(1)
-            baseline = next(snowflake_gen) 
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
             return
         message_repo = MessageRepo(next(get_db()))
-        list_of_message = message_repo.get_message_by_roomId(
-            room_id=room_id, baseline=baseline, limit=limit
-        )
+        list_of_message: list[Messages] = []
+        if limit is not None:
+            list_of_message = message_repo.get_message_by_roomId(
+                room_id=room_id, baseline=baseline, limit=limit
+            )
+        else:   
+            list_of_message = message_repo.get_message_by_roomId(
+                room_id=room_id, baseline=baseline
+            )
         for message in list_of_message:
             yield message
