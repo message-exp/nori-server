@@ -64,7 +64,7 @@ class MessageServicer(MessageServiceServicer):
             list_of_message = message_repo.get_message_by_roomId(
                 room_id=room_id, baseline=baseline, limit=limit
             )
-        else:   
+        else:
             list_of_message = message_repo.get_message_by_roomId(
                 room_id=room_id, baseline=baseline
             )
