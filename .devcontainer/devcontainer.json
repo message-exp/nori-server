@@ -5,7 +5,7 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "postCreateCommand": "poetry install --extras dev",
+  "postCreateCommand": "poetry install --extras dev&&git config --global --add safe.directory \"*\"",
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
 
