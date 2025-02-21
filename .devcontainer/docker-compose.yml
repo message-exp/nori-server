@@ -30,7 +30,7 @@ services:
   envoy:
     image: envoyproxy/envoy:v1.28.0
     volumes:
-      - ./envoy.yml:/etc/envoy/envoy.yaml
+      - ../envoy/envoy.yml:/etc/envoy/envoy.yaml
     ports:
       - "9901:9901"
       - "8080:8080"

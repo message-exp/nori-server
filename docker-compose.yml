@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    expose:
+      - 3000
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    expose:
+      - 5432
+
+  envoy:
+    image: envoyproxy/envoy:v1.28.0
+    volumes:
+      - ./envoy/envoy.yml:/etc/envoy/envoy.yaml
+    ports:
+      - "9901:9901"
+      - "8080:8080"
+    depends_on:
+      - app
+    command: ["envoy", "-c", "/etc/envoy/envoy.yaml", "--log-level", "info"]
+
+volumes:
+  postgres-data:
+
+networks:
+  dev_network:
+    driver: bridge
