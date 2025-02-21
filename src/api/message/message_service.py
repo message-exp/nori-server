@@ -9,9 +9,9 @@ from model import Messages
 from proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
 )
-from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
-from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
-from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
+from proto_generated.nori.v0.message.message_id_pb2 import MessageId
+from proto_generated.nori.v0.room.room_id_pb2 import RoomId
+from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from utils.db_helper import get_db
 from utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
