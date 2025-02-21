@@ -11,8 +11,10 @@ from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
 from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
 from src.proto_generated.nori.v0.message.message_list_pb2 import MessageList
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
+from src.proto_generated.nori.v0.message.message_pb2 import Message
 from src.utils.token_helper import generate_jwt_token
 from src.api.message.message_service import MessageServicer, Messages
+from src.model import Users
 
 
 @pytest.fixture
@@ -44,12 +46,13 @@ def test_get_message_success(
 ) -> None:
     mock_message_repo, mock_room_repo = mock_repositories
     mock_message_repo.return_value.get_message_by_roomId.return_value = [
-        Messages(text="hello"),
-        Messages(text="world"),
-        Messages(text="!"),
-        Messages(text="I"),
-        Messages(text="am"),
-        Messages(text="here"),
+        Messages(id = 1, room_member_id= 1 ,room_id = 123 , user= Users(id = 1),text="hello"),
+        Messages(id = 2, room_member_id= 1 ,room_id = 123 , user= Users(id = 1),text="world"),
+        Messages(id = 3, room_member_id= 1 ,room_id = 123 , user= Users(id = 1),text="!"),
+        Messages(id = 4, room_member_id= 1 ,room_id = 123 , user= Users(id = 1),text="I"),
+        Messages(id = 5, room_member_id= 1 ,room_id = 123 , user= Users(id = 1),text="am"),
+        Messages(id = 6, room_member_id= 1 ,room_id = 123 , user= Users(id = 1),text="here"),
+        Messages(id = 7, room_member_id= 1 ,room_id = 123 , user= Users(id = 1),text="."),
     ]
     mock_room_repo.return_value.exists_room.return_value = True
     servicer: MessageServicer = MessageServicer()
@@ -59,12 +62,12 @@ def test_get_message_success(
     response = servicer.GetMessages(request, grpc_context)
     assert isinstance(response, MessageList)
     assert response == MessageList( [
-        Messages(text="hello"),
-        Messages(text="world"),
-        Messages(text="!"),
-        Messages(text="I"),
-        Messages(text="am"),
-        Messages(text="here"),
+        Message(room_id = 123 , message_id = 1 , text="hello"),
+        Message(text="world"),
+        Message(text="!"),
+        Message(text="I"),
+        Message(text="am"),
+        Message(text="here"),
     ])
     mock_message_repo.return_value.get_message_by_roomId.assert_called_once_with(
         room_id=123, baseline=1234567890, limit=6

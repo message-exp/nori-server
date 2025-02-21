@@ -9,6 +9,7 @@ from model import Messages
 from proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
 )
+from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from utils.db_helper import get_db
 from utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
@@ -76,7 +77,7 @@ class MessageServicer(MessageServiceServicer):
                     room_id=message.room_id,
                     message_id=message.id,
                     created_at=message.created_at,
-                    author=message.user.id,
+                    author= UserId(message.user.id),
                     text=message.message,
                 )
             )
