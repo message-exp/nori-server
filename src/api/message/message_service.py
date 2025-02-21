@@ -5,7 +5,7 @@ from proto_generated.nori.v0.message.message_pb2 import Message
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
-from model import Messages , Users
+from model import Messages
 from proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
 )
@@ -18,7 +18,6 @@ from repositories import UserRepo, MessageRepo, RoomRepo
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.message.message_list_pb2 import MessageList
 from google.protobuf.timestamp_pb2 import Timestamp
-
 
 
 class MessageServicer(MessageServiceServicer):
@@ -80,11 +79,11 @@ class MessageServicer(MessageServiceServicer):
             timestamp.FromDatetime(message.created_at)
             result.append(
                 Message(
-                    room_id=RoomId(id = message.room_id),
+                    room_id=RoomId(id=message.room_id),
                     message_id=MessageId(id=message.id),
                     created_at=timestamp,
-                    author = UserId(id=message.user.id),
+                    author=UserId(id=message.user.id),
                     text=message.message,
                 )
             )
-        return MessageList(messages = result)
+        return MessageList(messages=result)
