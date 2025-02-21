@@ -5,16 +5,20 @@ from proto_generated.nori.v0.message.message_pb2 import Message
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
-from model import Messages
+from model import Messages , Users
 from proto_generated.nori.v0.message.get_message_request_pb2 import (
     GetMessageRequest,
 )
+from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
+from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from utils.db_helper import get_db
 from utils.token_helper import auth_required
 from repositories import UserRepo, MessageRepo, RoomRepo
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.message.message_list_pb2 import MessageList
+from google.protobuf.timestamp_pb2 import Timestamp
+
 
 
 class MessageServicer(MessageServiceServicer):
@@ -71,14 +75,16 @@ class MessageServicer(MessageServiceServicer):
                 room_id=room_id, baseline=baseline
             )
         result = []
+        timestamp = Timestamp()
         for message in list_of_message:
+            timestamp.FromDatetime(message.created_at)
             result.append(
                 Message(
-                    room_id=message.room_id,
-                    message_id=message.id,
-                    created_at=message.created_at,
-                    author= UserId(message.user.id),
+                    room_id=RoomId(id = message.room_id),
+                    message_id=MessageId(id=message.id),
+                    created_at=timestamp,
+                    author = UserId(id=message.user.id),
                     text=message.message,
                 )
             )
-        return MessageList(messages = list_of_message)
+        return MessageList(messages = result)
