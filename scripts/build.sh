@@ -16,7 +16,7 @@ cd -
 echo ">>> 啟動 Docker Compose"
 docker compose up -d
 
-echo ">>> 進入 Docker 容器並執行指令"
+echo ">>> 執行 alembic migrate"
 docker exec -it nori-server-app-1 /bin/sh -c "cd src && poetry run alembic upgrade head"
 
 
