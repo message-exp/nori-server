@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+COMMIT=${1:-"origin/main"}
+
+echo ">>> 初始化 Git Submodule"
+git submodule update --init --recursive
+
+echo ">>> 切換到指定 commit: $COMMIT"
+cd ./src/protos
+git fetch origin
+git checkout "$COMMIT"
+cd -
+
+echo ">>> 啟動 Docker Compose"
+docker compose up -d
+
+echo ">>> 進入 Docker 容器並執行指令"
+docker exec -it nori-server-app-1 /bin/sh -c "cd src && poetry run alembic upgrade head"
+
+
