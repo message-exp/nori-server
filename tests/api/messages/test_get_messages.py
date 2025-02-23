@@ -192,7 +192,7 @@ def test_get_message_roomNotFound(
         room_id=RoomId(id=123), limit=6, baseline=MessageId(id=1234567890)
     )
     response = servicer.GetMessages(request, grpc_context)
-    assert list(response) == []
+    assert response == MessageList()
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("Room with ID 123 not found.")
     mock_room_repo.return_value.exists_room.assert_called_once_with(room_id=123)
