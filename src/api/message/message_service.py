@@ -61,7 +61,7 @@ class MessageServicer(MessageServiceServicer):
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
-            return []
+            return MessageList()
         message_repo = MessageRepo(next(get_db()))
         list_of_message: list[Messages] = []
         #
