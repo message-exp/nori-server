@@ -15,6 +15,7 @@ class Config:
     JWT_ALGORITHM: str = "HS512"
     KAFKA_HOST: str = os.getenv("KAFKA_HOST", "localhost")
     KAFKA_PORT: str = os.getenv("KAFKA_PORT", "9092")
-    KAFKA_SERVER:str = f"{KAFKA_HOST}:{KAFKA_PORT}"
+    KAFKA_SERVER: str = f"{KAFKA_HOST}:{KAFKA_PORT}"
+
 
 config = Config()

@@ -1,7 +1,7 @@
 import grpc
 from typing import Any, Generator
 from grpc.aio import ServicerContext
-from kafka import KafkaConsumer , KafkaProducer
+from kafka import KafkaConsumer, KafkaProducer
 
 from model import Messages
 from repositories import UserRepo, MessageRepo, RoomRepo
@@ -12,7 +12,8 @@ from proto_generated.nori.v0.message.message_service_pb2_grpc import (
 )
 
 from proto_generated.nori.v0.message.get_message_request_pb2 import (
-    GetHistoryMessageRequest,GetLatestMessageRequest
+    GetHistoryMessageRequest,
+    GetLatestMessageRequest,
 )
 from proto_generated.nori.v0.message.message_id_pb2 import MessageId
 from proto_generated.nori.v0.message.message_list_pb2 import MessageList
@@ -29,8 +30,10 @@ from utils.kafka_helper import proto_serializer
 class MessageServicer(MessageServiceServicer):
     service_namespace = "nori.v0.MessageService"
     auth_config: dict[str, bool] = dict()
-    producer = KafkaProducer(bootstrap_servers=config.KAFKA_SERVER,value_serializer=proto_serializer)
-    
+    producer = KafkaProducer(
+        bootstrap_servers=config.KAFKA_SERVER, value_serializer=proto_serializer
+    )
+
     @auth_required
     def SendMessage(self, request: Message, context: ServicerContext) -> MessageId:
         user_id = request.author.id
@@ -46,7 +49,7 @@ class MessageServicer(MessageServiceServicer):
             return MessageId()
         room_repo = RoomRepo(next(get_db()))
         room_exist = room_repo.exists_room(room_id=room_id)
-        
+
         # check room exist
         if not room_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
@@ -66,7 +69,7 @@ class MessageServicer(MessageServiceServicer):
         baseline: int = request.baseline.id
         limit: int = request.limit
         room_id: int = request.room_id.id
-        
+
         # check room exist
         room_repo = RoomRepo(next(get_db()))
         if not room_repo.exists_room(room_id=room_id):
@@ -102,9 +105,11 @@ class MessageServicer(MessageServiceServicer):
         return MessageList(messages=result)
 
     @auth_required
-    def GetLatestMessages(self, request:GetLatestMessageRequest, context: ServicerContext)->Generator[Message, Any, None]:
+    def GetLatestMessages(
+        self, request: GetLatestMessageRequest, context: ServicerContext
+    ) -> Generator[Message, Any, None]:
         user_id = request.user_id.id
-        room_id = request.room_id.id   
+        room_id = request.room_id.id
 
         # check user exist
         user_repo = UserRepo(next(get_db()))
@@ -112,13 +117,13 @@ class MessageServicer(MessageServiceServicer):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {user_id} not found.")
             return MessageId()
-        
+
         # check room exist
         room_repo = RoomRepo(next(get_db()))
         if not room_repo.exists_room(room_id=room_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
-            return MessageId() 
+            return MessageId()
 
         consumer = KafkaConsumer(
             topic=f"room_{room_id}",
