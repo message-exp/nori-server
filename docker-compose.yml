@@ -33,6 +33,28 @@ services:
       - app
     command: ["envoy", "-c", "/etc/envoy/envoy.yaml", "--log-level", "info"]
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: nori-server-zookeeper
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: nori-server-kafka
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
 volumes:
   postgres-data:
 
