@@ -7,7 +7,7 @@ from grpc import ServicerContext
 from pytest_mock import MockerFixture
 
 from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
-    GetMessageRequest,
+    GetHistoryMessageRequest,
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
@@ -100,7 +100,7 @@ def test_get_message_success(
     ]
     mock_room_repo.return_value.exists_room.return_value = True
     servicer: MessageServicer = MessageServicer()
-    request: GetMessageRequest = GetMessageRequest(
+    request: GetHistoryMessageRequest = GetHistoryMessageRequest(
         room_id=RoomId(id=123), limit=6, baseline=MessageId(id=1234567890)
     )
     response = servicer.GetMessages(request, grpc_context)
@@ -188,7 +188,7 @@ def test_get_message_roomNotFound(
     _, mock_room_repo = mock_repositories
     mock_room_repo.return_value.exists_room.return_value = False
     servicer: MessageServicer = MessageServicer()
-    request: GetMessageRequest = GetMessageRequest(
+    request: GetHistoryMessageRequest = GetHistoryMessageRequest(
         room_id=RoomId(id=123), limit=6, baseline=MessageId(id=1234567890)
     )
     response = servicer.GetMessages(request, grpc_context)
