@@ -116,17 +116,18 @@ class MessageServicer(MessageServiceServicer):
         if not user_repo.exists_user(user_id=user_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {user_id} not found.")
-            return MessageId()
+            return Message()
 
         # check room exist
         room_repo = RoomRepo(next(get_db()))
         if not room_repo.exists_room(room_id=room_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
-            return MessageId()
+            return Message()
 
+        topic=f"room_{room_id}"
         consumer = KafkaConsumer(
-            topic=f"room_{room_id}",
+            topic,
             group_id=f"user_{user_id}",
             bootstrap_servers=config.KAFKA_SERVER,
             auto_offset_reset="earliest",
