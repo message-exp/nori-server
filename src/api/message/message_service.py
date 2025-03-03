@@ -65,7 +65,7 @@ class MessageServicer(MessageServiceServicer):
         message_repo = MessageRepo(next(get_db()))
         message = Messages(room_id=room_id, message=message, user=user)
         message_repo.add_message(message)
-        self.producer.send(topic=f"room_{room_id}", value=message)
+        self.producer.send(topic=f"room_{room_id}", value=request)
         return MessageId(id=message.id)
 
     @auth_required
