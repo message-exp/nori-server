@@ -10,8 +10,9 @@ services:
     depends_on:
       - db
       - kafka
-    expose:
-      - 3000
+    ports:
+      - "3000:3000"
+
   db:
     container_name: nori-server-db
     image: postgres:latest
