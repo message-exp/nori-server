@@ -125,7 +125,7 @@ class MessageServicer(MessageServiceServicer):
             context.set_details(f"Room with ID {room_id} not found.")
             return Message()
 
-        topic=f"room_{room_id}"
+        topic = f"room_{room_id}"
         consumer = KafkaConsumer(
             topic,
             group_id=f"user_{user_id}",
