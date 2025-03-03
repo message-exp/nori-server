@@ -43,14 +43,18 @@ def grpc_context() -> MagicMock:
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
 
+
 @pytest.fixture
 def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     """Mock KafkaProducer to prevent real Kafka interactions"""
     mock_producer = mocker.patch("src.api.message.message_service.KafkaProducer")
     yield mock_producer
 
+
 def test_get_history_message_success(
-    mock_repositories: Tuple[MagicMock, MagicMock], grpc_context: MagicMock,mock_kafka_producer: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_room_repo = mock_repositories
     mock_message_repo.return_value.get_message_by_roomId.return_value = [
@@ -188,7 +192,9 @@ def test_get_history_message_success(
 
 
 def test_get_history_message_roomNotFound(
-    mock_repositories: Tuple[MagicMock, MagicMock], grpc_context: MagicMock,mock_kafka_producer: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     _, mock_room_repo = mock_repositories
     mock_room_repo.return_value.exists_room.return_value = False

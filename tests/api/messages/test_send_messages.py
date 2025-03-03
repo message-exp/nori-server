@@ -1,4 +1,3 @@
-from kafka import KafkaProducer
 import pytest
 import grpc
 from unittest.mock import MagicMock
@@ -12,7 +11,6 @@ from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_jwt_token
 from src.api.message.message_service import MessageServicer, Messages
-from google.protobuf.empty_pb2 import Empty
 
 
 @pytest.fixture
@@ -39,14 +37,18 @@ def grpc_context() -> MagicMock:
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
 
+
 @pytest.fixture
 def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     """Mock KafkaProducer to prevent real Kafka interactions"""
     mock_producer = mocker.patch("src.api.message.message_service.KafkaProducer")
     yield mock_producer
 
+
 def test_send_message_success(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock,mock_kafka_producer: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
     mock_message_repo.return_value.add_message.return_value = MagicMock(
@@ -67,7 +69,9 @@ def test_send_message_success(
 
 
 def test_send_message_userNotFound(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock,mock_kafka_producer: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
     mock_message_repo.return_value.add_message.return_value = MagicMock(
@@ -89,7 +93,9 @@ def test_send_message_userNotFound(
 
 
 def test_send_message_roomNotFound(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock,mock_kafka_producer: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
     mock_message_repo.return_value.add_message.return_value = MagicMock(
