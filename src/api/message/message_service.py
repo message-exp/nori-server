@@ -30,9 +30,10 @@ from utils.kafka_helper import proto_serializer
 class MessageServicer(MessageServiceServicer):
     service_namespace = "nori.v0.MessageService"
     auth_config: dict[str, bool] = dict()
-    producer = KafkaProducer(
-        bootstrap_servers=config.KAFKA_SERVER, value_serializer=proto_serializer
-    )
+    def __init__(self, producer: KafkaProducer = None) -> None:
+        self.producer = KafkaProducer(
+            bootstrap_servers=config.KAFKA_SERVER, value_serializer=proto_serializer
+        ) if producer is None else producer
 
     @auth_required
     def SendMessage(self, request: Message, context: ServicerContext) -> MessageId:
