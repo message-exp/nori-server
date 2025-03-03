@@ -115,9 +115,7 @@ class Messages(SQLModel, table=True):  # type: ignore
     id: int | None = Field(
         sa_column=Column(BIGINT, primary_key=True, default=generate_snowflake_id)
     )
-    room_member_id: int = Field(
-        foreign_key="room_members.id", index=True, sa_type=BIGINT
-    )
+    user_id: int = Field(foreign_key="users.id", index=True, sa_type=BIGINT)
     room_id: int = Field(foreign_key="rooms.id", index=True, sa_type=BIGINT)
     message: str = Field(sa_column=Column(TEXT))
     created_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now()))
@@ -126,10 +124,7 @@ class Messages(SQLModel, table=True):  # type: ignore
             TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp()
         )
     )
-    room_member: RoomMembers = Relationship()
-    user: Users = Relationship(
-        sa_relationship_kwargs={"secondary": "room_members", "viewonly": True}
-    )
+    user: Users = Relationship()
 
 
 class RefreshToken(SQLModel, table=True):  # type: ignore
