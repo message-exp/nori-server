@@ -45,25 +45,23 @@ class MessageServicer(MessageServiceServicer):
         user_id = request.author.id
         room_id = request.room_id.id
         message = request.text
-        user_repo = UserRepo(next(get_db()))
-        user = user_repo.get_user(user_id=user_id)
-
+        
         # check user exist
-        if user is None:
+        user_repo = UserRepo(next(get_db()))
+        if not user_repo.exists_user(user_id=user_id):  
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {user_id} not found.")
             return MessageId()
-        room_repo = RoomRepo(next(get_db()))
-        room_exist = room_repo.exists_room(room_id=room_id)
-
+        
         # check room exist
-        if not room_exist:
+        room_repo = RoomRepo(next(get_db()))
+        if not room_repo.exists_room(room_id=room_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"Room with ID {room_id} not found.")
             return MessageId()
 
         message_repo = MessageRepo(next(get_db()))
-        message = Messages(room_id=room_id, message=message, user=user)
+        message = Messages(room_id=room_id, message=message, user_id=user_id)
         message_repo.add_message(message)
         self.producer.send(topic=f"room_{room_id}", value=request)
         return MessageId(id=message.id)
