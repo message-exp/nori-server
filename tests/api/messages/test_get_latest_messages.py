@@ -61,7 +61,9 @@ def test_get_latest_messages_user_not_found(
 
     response = list(service.GetLatestMessages(request, grpc_context))
 
-    grpc_context.abort.assert_called_once_with(grpc.StatusCode.NOT_FOUND,"User with ID 1 not found.")
+    grpc_context.abort.assert_called_once_with(
+        grpc.StatusCode.NOT_FOUND, "User with ID 1 not found."
+    )
     assert response == []
 
 
@@ -79,7 +81,9 @@ def test_get_latest_messages_room_not_found(
 
     response = list(service.GetLatestMessages(request, grpc_context))
 
-    grpc_context.abort.assert_called_once_with(grpc.StatusCode.NOT_FOUND,"Room with ID 1 not found.")
+    grpc_context.abort.assert_called_once_with(
+        grpc.StatusCode.NOT_FOUND, "Room with ID 1 not found."
+    )
     assert response == []
 
 
