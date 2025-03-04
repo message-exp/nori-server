@@ -17,19 +17,17 @@ from src.api.message.message_service import MessageServicer
 @pytest.fixture
 def mock_repositories(
     mocker: MockerFixture,
-) -> Generator[Tuple[MagicMock, MagicMock], None, None]:
+) -> Generator[Tuple[MagicMock, MagicMock, MagicMock], None, None]:
     mock_db_session = MagicMock()
-    mocker.patch("src.api.room.room_service.get_db",
-                 return_value=mock_db_session)
+    mocker.patch("src.api.room.room_service.get_db", return_value=mock_db_session)
 
     mock_message_repo: MagicMock = mocker.patch(
         "src.api.message.message_service.MessageRepo"
     )
-    mock_user_repo: MagicMock = mocker.patch(
-        "src.api.message.message_service.UserRepo"
+    mock_user_repo: MagicMock = mocker.patch("src.api.message.message_service.UserRepo")
+    mock_room_repository: MagicMock = mocker.patch(
+        "src.api.message.message_service.RoomRepo"
     )
-    mock_room_repository = mocker.patch(
-        "src.api.message.message_service.RoomRepo")
 
     yield mock_user_repo, mock_message_repo, mock_room_repository
 
@@ -46,8 +44,7 @@ def grpc_context() -> MagicMock:
 @pytest.fixture
 def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     """Mock KafkaProducer to prevent real Kafka interactions"""
-    mock_producer = mocker.patch(
-        "src.api.message.message_service.KafkaProducer")
+    mock_producer = mocker.patch("src.api.message.message_service.KafkaProducer")
     yield mock_producer
 
 
@@ -59,15 +56,13 @@ def test_get_latest_messages_user_not_found(
     mock_user_repo, _, _ = mock_repositories
     mock_user_repo.return_value.exists_user.return_value = False
 
-    request = GetLatestMessageRequest(
-        user_id=UserId(id=1), room_id=RoomId(id=1))
+    request = GetLatestMessageRequest(user_id=UserId(id=1), room_id=RoomId(id=1))
     service = MessageServicer(mock_kafka_producer)
 
     response = list(service.GetLatestMessages(request, grpc_context))
 
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
-    grpc_context.set_details.assert_called_once_with(
-        "User with ID 1 not found.")
+    grpc_context.set_details.assert_called_once_with("User with ID 1 not found.")
     assert response == []
 
 
@@ -80,15 +75,13 @@ def test_get_latest_messages_room_not_found(
     mock_user_repo.return_value.exists_user.return_value = True
     mock_room_repo.return_value.exists_room.return_value = False
 
-    request = GetLatestMessageRequest(
-        user_id=UserId(id=1), room_id=RoomId(id=1))
+    request = GetLatestMessageRequest(user_id=UserId(id=1), room_id=RoomId(id=1))
     service = MessageServicer(mock_kafka_producer)
 
     response = list(service.GetLatestMessages(request, grpc_context))
 
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
-    grpc_context.set_details.assert_called_once_with(
-        "Room with ID 1 not found.")
+    grpc_context.set_details.assert_called_once_with("Room with ID 1 not found.")
     assert response == []
 
 
@@ -102,8 +95,7 @@ def test_get_latest_messages_success(
     mock_user_repo.return_value.exists_user.return_value = True
     mock_room_repo.return_value.exists_room.return_value = True
 
-    mock_kafka_consumer = mocker.patch(
-        "src.api.message.message_service.KafkaConsumer")
+    mock_kafka_consumer = mocker.patch("src.api.message.message_service.KafkaConsumer")
     mock_message = Message()
     mock_message.author.id = 2
     mock_message.text = "Hello, World!"
@@ -113,8 +105,7 @@ def test_get_latest_messages_success(
         MagicMock(value=mock_message_bytes)
     ]
 
-    request = GetLatestMessageRequest(
-        user_id=UserId(id=1), room_id=RoomId(id=1))
+    request = GetLatestMessageRequest(user_id=UserId(id=1), room_id=RoomId(id=1))
     service = MessageServicer(mock_kafka_producer)
 
     response = list(service.GetLatestMessages(request, grpc_context))
