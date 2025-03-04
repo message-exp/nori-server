@@ -54,7 +54,7 @@ def test_send_message_success(
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
-    mock_user_repo.return_value.get_user.return_value = MagicMock(user_id=66)
+    mock_user_repo.return_value.exists_user.return_value = MagicMock(user_id=66)
     mock_room_repository.return_value.exists_room.return_value = True
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
     request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
@@ -62,9 +62,9 @@ def test_send_message_success(
 
     assert isinstance(response, MessageId)
     mock_message_repo.return_value.add_message.assert_called_once_with(
-        Messages(room_id=123, message="abc")
+        Messages(room_id=123, message="abc", user_id=66)
     )
-    mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
+    mock_user_repo.return_value.exists_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_called_once_with(room_id=123)
 
 
@@ -77,7 +77,7 @@ def test_send_message_userNotFound(
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
-    mock_user_repo.return_value.get_user.return_value = None
+    mock_user_repo.return_value.exists_user.return_value = None
     mock_room_repository.return_value.exists_room.return_value = True
 
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
@@ -88,7 +88,7 @@ def test_send_message_userNotFound(
 
     assert isinstance(response, MessageId)
     mock_message_repo.return_value.add_message.assert_not_called()
-    mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
+    mock_user_repo.return_value.exists_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_not_called()
 
 
@@ -101,7 +101,7 @@ def test_send_message_roomNotFound(
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
-    mock_user_repo.return_value.get_user.return_value = MagicMock(user_id=66)
+    mock_user_repo.return_value.exists_user.return_value = MagicMock(user_id=66)
     mock_room_repository.return_value.exists_room.return_value = False
 
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
@@ -112,5 +112,5 @@ def test_send_message_roomNotFound(
 
     assert isinstance(response, MessageId)
     mock_message_repo.return_value.add_message.assert_not_called()
-    mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
+    mock_user_repo.return_value.exists_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_called_once_with(room_id=123)
