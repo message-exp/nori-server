@@ -11,7 +11,6 @@ from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_jwt_token
 from src.api.message.message_service import MessageServicer, Messages
-from google.protobuf.empty_pb2 import Empty
 
 
 @pytest.fixture
@@ -39,67 +38,79 @@ def grpc_context() -> MagicMock:
     return context
 
 
+@pytest.fixture
+def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
+    """Mock KafkaProducer to prevent real Kafka interactions"""
+    mock_producer = mocker.patch("src.api.message.message_service.KafkaProducer")
+    yield mock_producer
+
+
 def test_send_message_success(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
-    mock_user_repo.return_value.get_user.return_value = MagicMock(user_id=66)
+    mock_user_repo.return_value.exists_user.return_value = MagicMock(user_id=66)
     mock_room_repository.return_value.exists_room.return_value = True
-
-    servicer: MessageServicer = MessageServicer()
+    servicer: MessageServicer = MessageServicer(mock_kafka_producer)
     request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
-    response: Empty = servicer.SendMessage(request, grpc_context)
+    response: MessageId = servicer.SendMessage(request, grpc_context)
 
-    assert isinstance(response, Empty)
+    assert isinstance(response, MessageId)
     mock_message_repo.return_value.add_message.assert_called_once_with(
-        Messages(room_id=123, message="abc")
+        Messages(room_id=123, message="abc", user_id=66)
     )
-    mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
+    mock_user_repo.return_value.exists_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_called_once_with(room_id=123)
 
 
 def test_send_message_userNotFound(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
-    mock_user_repo.return_value.get_user.return_value = None
+    mock_user_repo.return_value.exists_user.return_value = None
     mock_room_repository.return_value.exists_room.return_value = True
 
-    servicer: MessageServicer = MessageServicer()
+    servicer: MessageServicer = MessageServicer(mock_kafka_producer)
     request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
     response: MessageId = servicer.SendMessage(request, grpc_context)
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("User with ID 66 not found.")
 
-    assert isinstance(response, Empty)
+    assert isinstance(response, MessageId)
     mock_message_repo.return_value.add_message.assert_not_called()
-    mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
+    mock_user_repo.return_value.exists_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_not_called()
 
 
 def test_send_message_roomNotFound(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
-    mock_user_repo.return_value.get_user.return_value = MagicMock(user_id=66)
+    mock_user_repo.return_value.exists_user.return_value = MagicMock(user_id=66)
     mock_room_repository.return_value.exists_room.return_value = False
 
-    servicer: MessageServicer = MessageServicer()
+    servicer: MessageServicer = MessageServicer(mock_kafka_producer)
     request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
     response: MessageId = servicer.SendMessage(request, grpc_context)
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("Room with ID 123 not found.")
 
-    assert isinstance(response, Empty)
+    assert isinstance(response, MessageId)
     mock_message_repo.return_value.add_message.assert_not_called()
-    mock_user_repo.return_value.get_user.assert_called_once_with(user_id=66)
+    mock_user_repo.return_value.exists_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_called_once_with(room_id=123)

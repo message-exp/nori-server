@@ -7,7 +7,7 @@ from grpc import ServicerContext
 from pytest_mock import MockerFixture
 
 from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
-    GetMessageRequest,
+    GetHistoryMessageRequest,
 )
 from google.protobuf.timestamp_pb2 import Timestamp
 from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
@@ -44,8 +44,17 @@ def grpc_context() -> MagicMock:
     return context
 
 
-def test_get_message_success(
-    mock_repositories: Tuple[MagicMock, MagicMock], grpc_context: MagicMock
+@pytest.fixture
+def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
+    """Mock KafkaProducer to prevent real Kafka interactions"""
+    mock_producer = mocker.patch("src.api.message.message_service.KafkaProducer")
+    yield mock_producer
+
+
+def test_get_history_message_success(
+    mock_repositories: Tuple[MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     mock_message_repo, mock_room_repo = mock_repositories
     mock_message_repo.return_value.get_message_by_roomId.return_value = [
@@ -99,11 +108,11 @@ def test_get_message_success(
         ),
     ]
     mock_room_repo.return_value.exists_room.return_value = True
-    servicer: MessageServicer = MessageServicer()
-    request: GetMessageRequest = GetMessageRequest(
+    servicer: MessageServicer = MessageServicer(mock_kafka_producer)
+    request: GetHistoryMessageRequest = GetHistoryMessageRequest(
         room_id=RoomId(id=123), limit=6, baseline=MessageId(id=1234567890)
     )
-    response = servicer.GetMessages(request, grpc_context)
+    response = servicer.GetHistoryMessages(request, grpc_context)
 
     timestamp = Timestamp()
     timestamp.FromDatetime(datetime(2023, 12, 25, 15, 30, 0))
@@ -182,16 +191,18 @@ def test_get_message_success(
     mock_room_repo.return_value.exists_room.assert_called_once_with(room_id=123)
 
 
-def test_get_message_roomNotFound(
-    mock_repositories: Tuple[MagicMock, MagicMock], grpc_context: MagicMock
+def test_get_history_message_roomNotFound(
+    mock_repositories: Tuple[MagicMock, MagicMock],
+    grpc_context: MagicMock,
+    mock_kafka_producer: MagicMock,
 ) -> None:
     _, mock_room_repo = mock_repositories
     mock_room_repo.return_value.exists_room.return_value = False
-    servicer: MessageServicer = MessageServicer()
-    request: GetMessageRequest = GetMessageRequest(
+    servicer: MessageServicer = MessageServicer(mock_kafka_producer)
+    request: GetHistoryMessageRequest = GetHistoryMessageRequest(
         room_id=RoomId(id=123), limit=6, baseline=MessageId(id=1234567890)
     )
-    response = servicer.GetMessages(request, grpc_context)
+    response = servicer.GetHistoryMessages(request, grpc_context)
     assert response == MessageList()
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("Room with ID 123 not found.")
