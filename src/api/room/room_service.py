@@ -4,17 +4,24 @@ from grpc.aio import ServicerContext
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.room.room_pb2 import Room
 from proto_generated.nori.v0.room.room_id_pb2 import RoomId
-from proto_generated.nori.v0.room.general.room_create_request_pb2 import RoomCreateRequest
+from proto_generated.nori.v0.room.general.room_create_request_pb2 import (
+    RoomCreateRequest,
+)
 from proto_generated.nori.v0.room.general.room_basic_info_request_pb2 import (
     RoomBasicInfoRequest,
 )
 from proto_generated.nori.v0.room.room_user_request_pb2 import RoomUserRequest
 from proto_generated.nori.v0.room.room_service_pb2_grpc import RoomServiceServicer
-from proto_generated.nori.v0.room.member.room_member_pb2 import RoomMember, RoomMemberStatus
+from proto_generated.nori.v0.room.member.room_member_pb2 import (
+    RoomMember,
+    RoomMemberStatus,
+)
 from proto_generated.nori.v0.room.member.invite_user_to_room_request_pb2 import (
     InviteUserToRoomRequest,
 )
-from proto_generated.nori.v0.room.member.room_join_invite_reply_pb2 import RoomJoinInviteReply
+from proto_generated.nori.v0.room.member.room_join_invite_reply_pb2 import (
+    RoomJoinInviteReply,
+)
 from proto_generated.nori.v0.room.member.room_join_request_reply_pb2 import (
     RoomJoinRequestReply,
 )
