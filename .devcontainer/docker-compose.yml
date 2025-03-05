@@ -40,6 +40,31 @@ services:
     networks:
       dev_network:
         ipv4_address: 172.20.0.12
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      dev_network:
+        ipv4_address: 172.20.0.13
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://172.20.0.14:9092"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      dev_network:
+        ipv4_address: 172.20.0.14
 
 volumes:
   postgres-data:
