@@ -7,11 +7,12 @@ from model import Messages
 from repositories import UserRepo, MessageRepo, RoomRepo
 
 from proto_generated.nori.v0.message.message_pb2 import Message
+from proto_generated.nori.v0.message.send_message_request_pb2 import SendMessageRequest
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
 
-from proto_generated.nori.v0.message.get_message_request_pb2 import (
+from proto_generated.nori.v0.message.get_message_requests_pb2 import (
     GetHistoryMessageRequest,
     GetLatestMessageRequest,
 )
@@ -41,7 +42,9 @@ class MessageServicer(MessageServiceServicer):
         )
 
     @auth_required
-    def SendMessage(self, request: Message, context: ServicerContext) -> MessageId:
+    def SendMessage(
+        self, request: SendMessageRequest, context: ServicerContext
+    ) -> MessageId:
         user_id = request.author.id
         room_id = request.room_id.id
         message = request.text

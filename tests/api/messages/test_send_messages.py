@@ -6,7 +6,9 @@ from grpc import ServicerContext
 from pytest_mock import MockerFixture
 
 from src.proto_generated.nori.v0.message.message_id_pb2 import MessageId
-from src.proto_generated.nori.v0.message.message_pb2 import Message
+from src.proto_generated.nori.v0.message.send_message_request_pb2 import (
+    SendMessageRequest,
+)
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_jwt_token
@@ -57,7 +59,9 @@ def test_send_message_success(
     mock_user_repo.return_value.exists_user.return_value = MagicMock(user_id=66)
     mock_room_repository.return_value.exists_room.return_value = True
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
-    request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
+    request: SendMessageRequest = SendMessageRequest(
+        room_id=RoomId(id=123), text="abc", author=UserId(id=66)
+    )
     response: MessageId = servicer.SendMessage(request, grpc_context)
 
     assert isinstance(response, MessageId)
@@ -81,7 +85,9 @@ def test_send_message_userNotFound(
     mock_room_repository.return_value.exists_room.return_value = True
 
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
-    request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
+    request: SendMessageRequest = SendMessageRequest(
+        room_id=RoomId(id=123), text="abc", author=UserId(id=66)
+    )
     response: MessageId = servicer.SendMessage(request, grpc_context)
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("User with ID 66 not found.")
@@ -105,7 +111,9 @@ def test_send_message_roomNotFound(
     mock_room_repository.return_value.exists_room.return_value = False
 
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
-    request: Message = Message(room_id=RoomId(id=123), text="abc", author=UserId(id=66))
+    request: SendMessageRequest = SendMessageRequest(
+        room_id=RoomId(id=123), text="abc", author=UserId(id=66)
+    )
     response: MessageId = servicer.SendMessage(request, grpc_context)
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("Room with ID 123 not found.")
