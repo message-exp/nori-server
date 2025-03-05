@@ -11,11 +11,13 @@ from src.utils.token_helper import generate_jwt_token
 from src.api.room.room_service import RoomServicer, RoomMembers, Rooms
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
-from src.proto_generated.nori.v0.room.room_create_request_pb2 import RoomCreateRequest
-from src.proto_generated.nori.v0.room.invite_user_to_room_request_pb2 import (
+from src.proto_generated.nori.v0.room.general.room_create_request_pb2 import (
+    RoomCreateRequest,
+)
+from src.proto_generated.nori.v0.room.member.invite_user_to_room_request_pb2 import (
     InviteUserToRoomRequest,
 )
-from src.proto_generated.nori.v0.room.room_member_pb2 import RoomMemberStatus
+from src.proto_generated.nori.v0.room.member.room_member_pb2 import RoomMemberStatus
 from google.protobuf.empty_pb2 import Empty
 
 

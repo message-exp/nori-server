@@ -6,8 +6,8 @@ from types import SimpleNamespace
 from typing import Generator
 
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
-from src.proto_generated.nori.v0.room.room_list_pb2 import RoomList
-from src.proto_generated.nori.v0.room.room_basic_info_response_pb2 import (
+from src.proto_generated.nori.v0.room.general.room_list_pb2 import RoomList
+from src.proto_generated.nori.v0.room.general.room_basic_info_response_pb2 import (
     RoomBasicInfoResponse,
 )
 

@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from typing import Generator
 
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
-from src.proto_generated.nori.v0.user.user_pb2 import User
+from src.proto_generated.nori.v0.user.account.user_pb2 import User
 
 from src.utils.token_helper import generate_jwt_token
 from src.api.user import user_service
