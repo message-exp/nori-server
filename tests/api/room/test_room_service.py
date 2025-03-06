@@ -293,6 +293,56 @@ def test_get_room_basic_info_success(
     assert response.room_id.id == 123
     assert response.custom_name == "Custom Room Name"
     assert response.custom_avatar_url == "Custom Avatar URL"
+    assert response.shared_name == ""
+    assert response.shared_avatar_url == ""
+    
+
+def test_get_room_basic_info_user_not_found(
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+) -> None:
+    mock_user_repo, _, _ = mock_repositories
+    room_service = RoomServicer()
+
+    mock_user_repo.return_value.exists_user.return_value = False
+
+    request = RoomUserRequest(room_id=RoomId(id=123), user_id=UserId(id=1))
+    response = room_service.GetRoomBasic(request, grpc_context)
+
+    grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
+    grpc_context.set_details.assert_called_once_with("User with ID 1 not found.")
+    assert isinstance(response, Empty)
+
+def test_get_room_basic_info_room_not_found(
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+) -> None:
+    mock_user_repo, mock_room_repo, _ = mock_repositories
+    room_service = RoomServicer()
+
+    mock_user_repo.return_value.exists_user.return_value = True
+    mock_room_repo.return_value.get_room.return_value = None
+
+    request = RoomUserRequest(room_id=RoomId(id=123), user_id=UserId(id=1))
+    response = room_service.GetRoomBasic(request, grpc_context)
+
+    grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
+    grpc_context.set_details.assert_called_once_with("Room with ID 123 not found.")
+    assert isinstance(response, Empty)
+def test_get_room_basic_info_user_not_in_room(
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+) -> None:
+    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories
+    room_service = RoomServicer()
+
+    mock_user_repo.return_value.exists_user.return_value = True
+    mock_room_repo.return_value.get_room.return_value = Rooms(id=123)
+    mock_room_member_repo.return_value.get_single_user_room_member.return_value = None
+
+    request = RoomUserRequest(room_id=RoomId(id=123), user_id=UserId(id=1))
+    response = room_service.GetRoomBasic(request, grpc_context)
+
+    grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
+    grpc_context.set_details.assert_called_once_with("User with ID 1 not found in Room with ID 123")
+    assert isinstance(response, Empty)
 
 
 
