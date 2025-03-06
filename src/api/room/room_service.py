@@ -102,20 +102,33 @@ class RoomServicer(RoomServiceServicer):
     def GetRoomBasic(self,request : RoomUserRequest ,context : ServicerContext) -> RoomBasicInfoResponse:
         room_id = request.room_id.id
         user_id = request.user_id.id
-        room_repo =RoomRepo(get_db())
-        room_exist = room_repo.exists_room(room_id= room_id)
-        if not room_exist:
-            context.set_code(grpc.StatusCode.NOT_FOUND)
-            context.set_details(f"Room with ID {room_id} not found.")
-            return Empty()
+        # check user exist
         user_repo = UserRepo(get_db())
         user_exist = user_repo.exists_user(user_id = user_id)
         if not user_exist:
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User with ID {user_id} not found.")
             return Empty()
+        room_repo =RoomRepo(get_db())
+        room = room_repo.get_room(room_id= room_id)
+        # check room exist
+        if room is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Room with ID {room_id} not found.")
+            return Empty()
+        room_member_repo = RoomMemberRepo(get_db())
+        room_member = room_member_repo.get_single_user_room_member(room_id=room_id,user_id=user_id)
+        # check user is in room
+        if room_member is None:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"User with ID {user_id} not found in Room with ID {room_id}")
+            return Empty()
         
-        return RoomBasicInfoResponse()
+        return RoomBasicInfoResponse(
+            room_id = RoomId(id = room.id),
+            **({"custom_name": room_member.room_name} if room_member.room_name is not None else {"shared_name": room.name}),
+            **({"custom_avatar_url" : room_member.room_avatar_url}if room_member.room_avatar_url is not None else {"shared_avatar_url" : room.avatar_url})
+        )
         
 
     @auth_required
@@ -203,4 +216,4 @@ class RoomServicer(RoomServiceServicer):
     @auth_required
     def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement leave room logic)
-        return Empty()d
+        return Empty()
