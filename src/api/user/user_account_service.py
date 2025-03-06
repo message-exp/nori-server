@@ -26,7 +26,7 @@ from model import RefreshToken as DBRefreshToken, Users
 from repositories import UserRepo, RefreshTokenRepo
 
 
-class UserAccountServicer(UserAccountServiceServicer):    
+class UserAccountServicer(UserAccountServiceServicer):
     @auth_required
     def GetUser(self, request: UserId, context: ServicerContext) -> User:
         # get user ID from request
@@ -52,7 +52,6 @@ class UserAccountServicer(UserAccountServiceServicer):
             connected_accounts=[UserConnection()],
             rooms=[RoomId(id=room.id) for room in user.rooms],
         )
-    
 
     def Signup(self, request: SignUpRequest, context: ServicerContext) -> UserTokenPair:
         # TODO: request and response type has changed

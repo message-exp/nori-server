@@ -8,7 +8,10 @@ from utils.db_helper import get_db
 from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.access.user_login_pb2 import UserEmailPasswordLogin
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
-from proto_generated.nori.v0.user.access.token_pairs_pb2 import UserTokenPair, UserRefreshToken
+from proto_generated.nori.v0.user.access.token_pairs_pb2 import (
+    UserTokenPair,
+    UserRefreshToken,
+)
 from proto_generated.nori.v0.user.access.access_token_pb2 import AccessToken
 from proto_generated.nori.v0.user.access.refresh_token_pb2 import RefreshToken
 from proto_generated.nori.v0.user.access.user_reset_password_request_pb2 import (
@@ -77,7 +80,9 @@ class UserServicer(UserAccessServiceServicer):
         return Empty()
 
     @auth_required
-    def RefreshUserToken(self, request: UserRefreshToken, context: ServicerContext) -> AccessToken:
+    def RefreshUserToken(
+        self, request: UserRefreshToken, context: ServicerContext
+    ) -> AccessToken:
         # TODO: ...... (implement login logic)
         return AccessToken()
 
