@@ -10,6 +10,9 @@ from proto_generated.nori.v0.room.general.room_create_request_pb2 import (
 from proto_generated.nori.v0.room.general.room_basic_info_request_pb2 import (
     RoomBasicInfoRequest,
 )
+from proto_generated.nori.v0.room.general.room_basic_info_response_pb2 import(
+    RoomBasicInfoResponse
+)
 from proto_generated.nori.v0.room.room_user_request_pb2 import RoomUserRequest
 from proto_generated.nori.v0.room.room_service_pb2_grpc import RoomServiceServicer
 from proto_generated.nori.v0.room.member.room_member_pb2 import (
@@ -95,6 +98,25 @@ class RoomServicer(RoomServiceServicer):
         )
 
         return room
+    @auth_required
+    def GetRoomBasic(self,request : RoomUserRequest ,context : ServicerContext) -> RoomBasicInfoResponse:
+        room_id = request.room_id.id
+        user_id = request.user_id.id
+        room_repo =RoomRepo(get_db())
+        room_exist = room_repo.exists_room(room_id= room_id)
+        if not room_exist:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Room with ID {room_id} not found.")
+            return Empty()
+        user_repo = UserRepo(get_db())
+        user_exist = user_repo.exists_user(user_id = user_id)
+        if not user_exist:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"User with ID {user_id} not found.")
+            return Empty()
+        
+        return RoomBasicInfoResponse()
+        
 
     @auth_required
     def UpdateRoomBasic(
@@ -181,4 +203,4 @@ class RoomServicer(RoomServiceServicer):
     @auth_required
     def LeaveRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         # TODO: ...... (implement leave room logic)
-        return Empty()
+        return Empty()d
