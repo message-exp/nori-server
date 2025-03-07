@@ -4,7 +4,7 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
     volumes:
-      - ../..:/workspaces:cached
+      - ..:/workspaces/nori-server:cached
     command: sleep infinity
     env_file:
       - ../.env
