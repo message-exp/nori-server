@@ -26,7 +26,7 @@ from model import RefreshToken as DBRefreshToken
 from repositories import UserRepo, RefreshTokenRepo
 
 
-class UserServicer(UserAccessServiceServicer):
+class UserAccessServicer(UserAccessServiceServicer):
     def Login(
         self, request: UserEmailPasswordLogin, context: ServicerContext
     ) -> UserTokenPair:
