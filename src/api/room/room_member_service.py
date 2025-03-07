@@ -1,4 +1,3 @@
-
 import grpc
 from grpc.aio import ServicerContext
 
@@ -21,9 +20,9 @@ from model import RoomMembers
 from repositories import RoomRepo, RoomMemberRepo, UserRepo
 
 
-
-
-from proto_generated.nori.v0.room.member.room_member_service_pb2_grpc import RoomMemberServiceServicer
+from proto_generated.nori.v0.room.member.room_member_service_pb2_grpc import (
+    RoomMemberServiceServicer,
+)
 
 
 class RoomMemberServicer(RoomMemberServiceServicer):
@@ -60,12 +59,14 @@ class RoomMemberServicer(RoomMemberServiceServicer):
         room_member_repo.create_room_members(room_id, invitees_id)
 
         return Empty()
+
     @auth_required
     def InviteRoomReply(
         self, request: RoomJoinInviteReply, context: ServicerContext
     ) -> Empty:
         # TODO: ...... (implement invite room reply logic)
         return Empty()
+
     @auth_required
     def JoinRoom(self, request: RoomUserRequest, context: ServicerContext) -> Empty:
         room_id = request.room_id.id
@@ -92,6 +93,7 @@ class RoomMemberServicer(RoomMemberServiceServicer):
             RoomMembers(room_id=room_id, user_id=user_id)
         )
         return Empty()
+
     @auth_required
     def JoinRoomReply(
         self, request: RoomJoinRequestReply, context: ServicerContext

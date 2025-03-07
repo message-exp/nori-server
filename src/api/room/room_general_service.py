@@ -14,7 +14,6 @@ from proto_generated.nori.v0.room.general.room_basic_info_response_pb2 import (
     RoomBasicInfoResponse,
 )
 from proto_generated.nori.v0.room.room_user_request_pb2 import RoomUserRequest
-from proto_generated.nori.v0.room.room_service_pb2_grpc import RoomServiceServicer
 from proto_generated.nori.v0.room.member.room_member_pb2 import (
     RoomMember,
     RoomMemberStatus,
@@ -26,7 +25,9 @@ from model import Rooms, RoomMembers
 
 from repositories import RoomRepo, RoomMemberRepo, UserRepo
 
-from proto_generated.nori.v0.room.general.room_general_service_pb2_grpc import RoomGeneralServiceServicer
+from proto_generated.nori.v0.room.general.room_general_service_pb2_grpc import (
+    RoomGeneralServiceServicer,
+)
 
 
 class RoomGeneralServicer(RoomGeneralServiceServicer):
@@ -60,6 +61,7 @@ class RoomGeneralServicer(RoomGeneralServiceServicer):
             )
         )
         return RoomId(id=room_id)
+
     @auth_required
     def GetRoom(self, request: RoomUserRequest, context: ServicerContext) -> Room:
         # TODO: fix the braking changes in protos 0.3
@@ -90,6 +92,7 @@ class RoomGeneralServicer(RoomGeneralServiceServicer):
         )
 
         return room
+
     @auth_required
     def GetRoomBasic(
         self, request: RoomUserRequest, context: ServicerContext
@@ -134,10 +137,10 @@ class RoomGeneralServicer(RoomGeneralServiceServicer):
                 else {"shared_avatar_url": room.avatar_url}
             ),
         )
+
     @auth_required
     def UpdateRoomBasic(
         self, request: RoomBasicInfoRequest, context: ServicerContext
     ) -> Empty:
         # TODO: ...... (implement update room basic info logic)
         return Empty()
-    
