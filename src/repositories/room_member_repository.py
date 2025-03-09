@@ -22,7 +22,13 @@ class RoomMemberRepository:
             [RoomMembers(room_id=room_id, user_id=user_id) for user_id in users_id]
         )
         self.db.commit()
-
+        
+    def get_room_room_members(self, room_id: int) -> list[RoomMembers]:
+        result = self.db.exec(
+            select(RoomMembers).where(RoomMembers.room_id == room_id)
+        ).all()
+        return list(result)
+    
     def get_single_user_room_member(self, room_id: int, user_id: int) -> RoomMembers:
         result = self.db.exec(
             select(RoomMembers)

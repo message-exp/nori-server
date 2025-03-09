@@ -13,6 +13,7 @@ from proto_generated.nori.v0.room.member.room_join_invite_reply_pb2 import (
 from proto_generated.nori.v0.room.member.room_join_request_reply_pb2 import (
     RoomJoinRequestReply,
 )
+from proto_generated.nori.v0.room.member.room_member_pb2 import RoomMember, RoomMemberList, RoomMemberStatus
 from utils.token_helper import auth_required
 from utils.db_helper import get_db
 from model import RoomMembers
@@ -26,6 +27,40 @@ from proto_generated.nori.v0.room.member.room_member_service_pb2_grpc import (
 
 
 class RoomMemberServicer(RoomMemberServiceServicer):
+    @auth_required
+    def GetRoomMembers(
+        self, request: RoomUserRequest, context: ServicerContext
+    ) -> RoomMemberList:
+        user_id = request.user_id.id
+        room_id = request.room_id.id
+
+        # check room exist
+        room_repo = RoomRepo(next(get_db()))
+        if not room_repo.exists_room(room_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"Room with ID {room_id} not found.")
+            return RoomMemberList()
+
+        # check user exist
+        user_repo = UserRepo(next(get_db()))
+        if not user_repo.exists_user(user_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details(f"User with ID {user_id} not found.")
+            return RoomMemberList()
+
+        # get room members
+        room_member_repo = RoomMemberRepo(next(get_db()))
+        room_members = room_member_repo.get_room_members(room_id= room_id)
+        result = []
+        for room_member in room_members:
+            appendResult = RoomMember(
+                user_id=room_member.user_id,
+                room_id=room_member.room_id, 
+                status=RoomMemberStatus.JOINED #TODO: implement status
+            )
+            result.append(appendResult)
+            
+        return RoomMemberList(members = result)
     @auth_required
     def InviteToRoom(
         self, request: InviteUserToRoomRequest, context: ServicerContext
