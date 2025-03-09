@@ -1,3 +1,4 @@
+import logging
 import grpc
 from typing import Any, Generator
 from grpc.aio import ServicerContext
@@ -66,7 +67,10 @@ class MessageServicer(MessageServiceServicer):
         message_repo = MessageRepo(next(get_db()))
         message = Messages(room_id=room_id, message=message, user_id=user_id)
         message_repo.add_message(message)
-        self.producer.send(topic=f"room_{room_id}", value=request)
+        timestamp = Timestamp()
+        timestamp.FromDatetime(message.created_at)
+        self.producer.send(topic=f"room_{room_id}", value=Message(
+            room_id=RoomId(id=room_id), message_id=MessageId(id=message.id), created_at=timestamp, author=UserId(id=user_id), text=message.message))
         return MessageId(id=message.id)
 
     @auth_required
