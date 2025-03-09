@@ -1,4 +1,3 @@
-import logging
 import grpc
 from typing import Any, Generator
 from grpc.aio import ServicerContext
