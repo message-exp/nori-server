@@ -3,7 +3,8 @@ from typing import Any, Generator
 from grpc.aio import ServicerContext
 from kafka import KafkaConsumer, KafkaProducer
 
-from model import Messages
+import model as db
+
 from repositories import UserRepo, MessageRepo, RoomRepo
 
 from proto_generated.nori.v0.message.message_pb2 import Message
@@ -64,7 +65,7 @@ class MessageServicer(MessageServiceServicer):
             return MessageId()
 
         message_repo = MessageRepo(next(get_db()))
-        message = Messages(room_id=room_id, message=message, user_id=user_id)
+        message = db.Messages(room_id=room_id, message=message, user_id=user_id)
         message_repo.add_message(message)
         timestamp = Timestamp()
         timestamp.FromDatetime(message.created_at)
@@ -96,7 +97,7 @@ class MessageServicer(MessageServiceServicer):
             return MessageList()
 
         message_repo = MessageRepo(next(get_db()))
-        list_of_message: list[Messages] = []
+        list_of_message: list[db.Messages] = []
 
         if limit is not None:
             list_of_message = message_repo.get_message_by_roomId(

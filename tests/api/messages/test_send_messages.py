@@ -13,7 +13,7 @@ from src.proto_generated.nori.v0.message.send_message_request_pb2 import (
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_jwt_token
-from src.api.message.message_service import MessageServicer, Messages
+from src.api.message.message_service import MessageServicer, db
 
 
 @pytest.fixture
@@ -48,7 +48,7 @@ def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, Non
     yield mock_producer
 @pytest.fixture
 def mock_messages(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
-    mock_messages = mocker.patch("src.api.message.message_service.Messages")
+    mock_messages = mocker.patch("src.api.message.message_service.db.Messages")
     yield mock_messages
 
 
