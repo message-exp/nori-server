@@ -40,13 +40,11 @@ class UserNetworkServicer(UserNetworkServiceServicer):
                 room_basic_info.custom_name = room_member.room_name
             else:
                 room_basic_info.shared_name = room_member.room.name
-            # For the avatar oneof, prioritize the custom URL if provided.
+
             if room_member.room_avatar_url:
                 room_basic_info.custom_avatar_url = room_member.room_avatar_url
-            elif room_member.room.avatar_url:
-                room_basic_info.shared_avatar_url = room_member.room.avatar_url
             else:
-                room_basic_info.custom_avatar_url = ""
+                room_basic_info.shared_avatar_url = room_member.room.avatar_url
             rooms.append(room_basic_info)
 
         return RoomList(rooms=rooms)
