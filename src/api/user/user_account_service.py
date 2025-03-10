@@ -54,7 +54,6 @@ class UserAccountServicer(UserAccountServiceServicer):
         )
 
     def Signup(self, request: SignUpRequest, context: ServicerContext) -> UserTokenPair:
-        # TODO: request and response type has changed
         # get request content
         username = request.username
         email = request.email
