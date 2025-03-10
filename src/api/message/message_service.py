@@ -68,8 +68,16 @@ class MessageServicer(MessageServiceServicer):
         message_repo.add_message(message)
         timestamp = Timestamp()
         timestamp.FromDatetime(message.created_at)
-        self.producer.send(topic=f"room_{room_id}", value=Message(
-            room_id=RoomId(id=room_id), message_id=MessageId(id=message.id), created_at=timestamp, author=UserId(id=user_id), text=message.message))
+        self.producer.send(
+            topic=f"room_{room_id}",
+            value=Message(
+                room_id=RoomId(id=room_id),
+                message_id=MessageId(id=message.id),
+                created_at=timestamp,
+                author=UserId(id=user_id),
+                text=message.message,
+            ),
+        )
         return MessageId(id=message.id)
 
     @auth_required
