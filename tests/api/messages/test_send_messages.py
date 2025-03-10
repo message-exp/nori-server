@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytest
 import grpc
-from unittest.mock import MagicMock , patch
+from unittest.mock import MagicMock
 from typing import Generator, Tuple
 from grpc import ServicerContext
 from pytest_mock import MockerFixture
@@ -13,7 +13,7 @@ from src.proto_generated.nori.v0.message.send_message_request_pb2 import (
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_jwt_token
-from src.api.message.message_service import MessageServicer, db
+from src.api.message.message_service import MessageServicer
 
 
 @pytest.fixture
@@ -46,6 +46,8 @@ def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, Non
     """Mock KafkaProducer to prevent real Kafka interactions"""
     mock_producer = mocker.patch("src.api.message.message_service.KafkaProducer")
     yield mock_producer
+
+
 @pytest.fixture
 def mock_messages(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     mock_messages = mocker.patch("src.api.message.message_service.db.Messages")
@@ -59,15 +61,11 @@ def test_send_message_success(
     mock_kafka_producer: MagicMock,
 ) -> None:
     fake_message = MagicMock(
-    id=1,
-    room_id=123,
-    message="abc",
-    user_id=66,
-    created_at=datetime.now()
+        id=1, room_id=123, message="abc", user_id=66, created_at=datetime.now()
     )
     mock_message_repo, mock_user_repo, mock_room_repository = mock_repositories
     mock_message_repo.return_value.add_message.return_value = MagicMock(
-        id=1, room_id=123, text="abc" , created_at=fake_message.created_at
+        id=1, room_id=123, text="abc", created_at=fake_message.created_at
     )  # Message
     mock_user_repo.return_value.exists_user.return_value = True
     mock_room_repository.return_value.exists_room.return_value = True
@@ -76,15 +74,12 @@ def test_send_message_success(
     request: SendMessageRequest = SendMessageRequest(
         room_id=RoomId(id=123), text="abc", author=UserId(id=66)
     )
-    
+
     response: MessageId = servicer.SendMessage(request, grpc_context)
     assert isinstance(response, MessageId)
     mock_message_repo.return_value.add_message.assert_called_once_with(fake_message)
     mock_user_repo.return_value.exists_user.assert_called_once_with(user_id=66)
     mock_room_repository.return_value.exists_room.assert_called_once_with(room_id=123)
-
-
-
 
 
 def test_send_message_userNotFound(
