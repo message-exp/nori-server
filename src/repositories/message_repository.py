@@ -11,7 +11,7 @@ class MessageRepository:
     def get_message_by_roomId(
         self, room_id: int, baseline: Optional[int], limit: int = 10
     ) -> list[Messages]:
-        if baseline == 0:
+        if baseline == 0 or baseline is None:
             return list(
                 self.db.exec(
                     select(Messages)
