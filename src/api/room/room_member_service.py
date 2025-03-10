@@ -14,6 +14,7 @@ from proto_generated.nori.v0.room.member.room_join_request_reply_pb2 import (
     RoomJoinRequestReply,
 )
 from proto_generated.nori.v0.room.member.room_member_pb2 import RoomMember, RoomMemberList, RoomMemberStatus
+from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from utils.token_helper import auth_required
 from utils.db_helper import get_db
 from model import RoomMembers
@@ -33,7 +34,7 @@ class RoomMemberServicer(RoomMemberServiceServicer):
     ) -> RoomMemberList:
         user_id = request.user_id.id
         room_id = request.room_id.id
-
+    
         # check room exist
         room_repo = RoomRepo(next(get_db()))
         if not room_repo.exists_room(room_id):
@@ -50,16 +51,15 @@ class RoomMemberServicer(RoomMemberServiceServicer):
 
         # get room members
         room_member_repo = RoomMemberRepo(next(get_db()))
-        room_members = room_member_repo.get_room_members(room_id= room_id)
+        room_members = room_member_repo.get_room_room_members(room_id= room_id)
         result = []
         for room_member in room_members:
             appendResult = RoomMember(
-                user_id=room_member.user_id,
-                room_id=room_member.room_id, 
+                user_id=UserId(id = room_member.user_id),
+                room_nickname= room_member.room_name, 
                 status=RoomMemberStatus.JOINED #TODO: implement status
             )
             result.append(appendResult)
-            
         return RoomMemberList(members = result)
     @auth_required
     def InviteToRoom(
