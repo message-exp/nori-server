@@ -30,7 +30,6 @@ class UserAccessServicer(UserAccessServiceServicer):
     def Login(
         self, request: UserEmailPasswordLogin, context: ServicerContext
     ) -> UserTokenPair:
-        # TODO: response type has changed
         email = request.email
         password = request.password
 
