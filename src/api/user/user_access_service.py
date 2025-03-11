@@ -82,8 +82,20 @@ class UserAccessServicer(UserAccessServiceServicer):
     def RefreshUserToken(
         self, request: UserRefreshToken, context: ServicerContext
     ) -> AccessToken:
-        # TODO: ...... (implement login logic)
-        return AccessToken()
+        user_id = request.user_id.id
+        refresh_token = request.refresh_token.refresh_token
+        user_repo = UserRepo(next(get_db()))
+        if not user_repo.exists_user(user_id):
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details("User not found")
+            return AccessToken()
+        refresh_token_repo = RefreshTokenRepo(next(get_db()))
+        if not refresh_token_repo.exists_refresh_token(user_id, refresh_token):
+            context.set_code(grpc.StatusCode.UNAUTHENTICATED)
+            context.set_details("Invalid refresh token")
+            return AccessToken()   
+        access_token = generate_jwt_token(subject=user_id)
+        return AccessToken(access_token=access_token)
 
     @auth_required
     def ResetUserPassword(
