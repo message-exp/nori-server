@@ -6,22 +6,22 @@ from utils.validate_format_helper import is_valid_email
 from utils.db_helper import get_db
 
 from google.protobuf.empty_pb2 import Empty
-from proto_generated.nori.v0.user.user_pb2 import User
-from proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
+from proto_generated.nori.v0.user.account.user_pb2 import User
+from proto_generated.nori.v0.user.access.user_login_pb2 import UserEmailPasswordLogin
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
-from proto_generated.nori.v0.user.token_pair_pb2 import TokenPair
-from proto_generated.nori.v0.user.access_token_pb2 import AccessToken
-from proto_generated.nori.v0.user.refresh_token_pb2 import RefreshToken
-from proto_generated.nori.v0.user.user_profile_update_request_pb2 import (
+from proto_generated.nori.v0.user.access.token_pairs_pb2 import TokenPair
+from proto_generated.nori.v0.user.access.access_token_pb2 import AccessToken
+from proto_generated.nori.v0.user.access.refresh_token_pb2 import RefreshToken
+from proto_generated.nori.v0.user.account.user_profile_update_request_pb2 import (
     UserProfileUpdateRequest,
 )
-from proto_generated.nori.v0.user.user_reset_password_request_pb2 import (
+from proto_generated.nori.v0.user.access.user_reset_password_request_pb2 import (
     UserResetPasswordRequest,
 )
-from proto_generated.nori.v0.user.user_connection_pb2 import UserConnection
+from proto_generated.nori.v0.user.network.user_connection_pb2 import UserConnection
 from proto_generated.nori.v0.room.room_id_pb2 import RoomId
-from proto_generated.nori.v0.room.room_list_pb2 import RoomList
-from proto_generated.nori.v0.room.room_basic_info_response_pb2 import (
+from proto_generated.nori.v0.room.general.room_list_pb2 import RoomList
+from proto_generated.nori.v0.room.general.room_basic_info_response_pb2 import (
     RoomBasicInfoResponse,
 )
 

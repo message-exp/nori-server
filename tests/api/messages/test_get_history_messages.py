@@ -6,7 +6,7 @@ from typing import Generator, Tuple
 from grpc import ServicerContext
 from pytest_mock import MockerFixture
 
-from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
+from src.proto_generated.nori.v0.message.get_message_requests_pb2 import (
     GetHistoryMessageRequest,
 )
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -16,7 +16,7 @@ from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.message.message_pb2 import Message
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.utils.token_helper import generate_jwt_token
-from src.api.message.message_service import MessageServicer, Messages
+from src.api.message.message_service import MessageServicer, db
 from src.api.user.user_service import Users
 
 
@@ -58,7 +58,7 @@ def test_get_history_message_success(
 ) -> None:
     mock_message_repo, mock_room_repo = mock_repositories
     mock_message_repo.return_value.get_message_by_roomId.return_value = [
-        Messages(
+        db.Messages(
             id=1,
             room_member_id=1,
             room_id=123,
@@ -66,7 +66,7 @@ def test_get_history_message_success(
             created_at=datetime(2023, 12, 25, 15, 30, 0),
             message="hello",
         ),
-        Messages(
+        db.Messages(
             id=2,
             room_member_id=1,
             room_id=123,
@@ -74,7 +74,7 @@ def test_get_history_message_success(
             created_at=datetime(2023, 12, 25, 15, 30, 0),
             message="world",
         ),
-        Messages(
+        db.Messages(
             id=3,
             room_member_id=1,
             room_id=123,
@@ -82,7 +82,7 @@ def test_get_history_message_success(
             created_at=datetime(2023, 12, 25, 15, 30, 0),
             message="!",
         ),
-        Messages(
+        db.Messages(
             id=4,
             room_member_id=1,
             room_id=123,
@@ -90,7 +90,7 @@ def test_get_history_message_success(
             created_at=datetime(2023, 12, 25, 15, 30, 0),
             message="I",
         ),
-        Messages(
+        db.Messages(
             id=5,
             room_member_id=1,
             room_id=123,
@@ -98,7 +98,7 @@ def test_get_history_message_success(
             created_at=datetime(2023, 12, 25, 15, 30, 0),
             message="am",
         ),
-        Messages(
+        db.Messages(
             id=6,
             room_member_id=1,
             room_id=123,

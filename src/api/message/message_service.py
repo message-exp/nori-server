@@ -3,15 +3,17 @@ from typing import Any, Generator
 from grpc.aio import ServicerContext
 from kafka import KafkaConsumer, KafkaProducer
 
-from model import Messages
+import model as db
+
 from repositories import UserRepo, MessageRepo, RoomRepo
 
 from proto_generated.nori.v0.message.message_pb2 import Message
+from proto_generated.nori.v0.message.send_message_request_pb2 import SendMessageRequest
 from proto_generated.nori.v0.message.message_service_pb2_grpc import (
     MessageServiceServicer,
 )
 
-from proto_generated.nori.v0.message.get_message_request_pb2 import (
+from proto_generated.nori.v0.message.get_message_requests_pb2 import (
     GetHistoryMessageRequest,
     GetLatestMessageRequest,
 )
@@ -41,7 +43,9 @@ class MessageServicer(MessageServiceServicer):
         )
 
     @auth_required
-    def SendMessage(self, request: Message, context: ServicerContext) -> MessageId:
+    def SendMessage(
+        self, request: SendMessageRequest, context: ServicerContext
+    ) -> MessageId:
         user_id = request.author.id
         room_id = request.room_id.id
         message = request.text
@@ -61,9 +65,20 @@ class MessageServicer(MessageServiceServicer):
             return MessageId()
 
         message_repo = MessageRepo(next(get_db()))
-        message = Messages(room_id=room_id, message=message, user_id=user_id)
+        message = db.Messages(room_id=room_id, message=message, user_id=user_id)
         message_repo.add_message(message)
-        self.producer.send(topic=f"room_{room_id}", value=request)
+        timestamp = Timestamp()
+        timestamp.FromDatetime(message.created_at)
+        self.producer.send(
+            topic=f"room_{room_id}",
+            value=Message(
+                room_id=RoomId(id=room_id),
+                message_id=MessageId(id=message.id),
+                created_at=timestamp,
+                author=UserId(id=user_id),
+                text=message.message,
+            ),
+        )
         return MessageId(id=message.id)
 
     @auth_required
@@ -82,7 +97,7 @@ class MessageServicer(MessageServiceServicer):
             return MessageList()
 
         message_repo = MessageRepo(next(get_db()))
-        list_of_message: list[Messages] = []
+        list_of_message: list[db.Messages] = []
 
         if limit is not None:
             list_of_message = message_repo.get_message_by_roomId(

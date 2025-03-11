@@ -4,8 +4,10 @@ from unittest.mock import MagicMock
 from pytest_mock import MockerFixture
 from typing import Generator
 
-from src.proto_generated.nori.v0.user.user_login_pb2 import UserEmailPasswordLogin
-from src.proto_generated.nori.v0.user.token_pair_pb2 import TokenPair
+from src.proto_generated.nori.v0.user.access.user_login_pb2 import (
+    UserEmailPasswordLogin,
+)
+from src.proto_generated.nori.v0.user.access.token_pairs_pb2 import TokenPair
 
 from src.utils.token_helper import generate_jwt_token
 from src.api.user.user_service import UserServicer

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from typing import Generator, Tuple
 from pytest_mock import MockerFixture
 
-from src.proto_generated.nori.v0.message.get_message_request_pb2 import (
+from src.proto_generated.nori.v0.message.get_message_requests_pb2 import (
     GetLatestMessageRequest,
 )
 from src.proto_generated.nori.v0.message.message_pb2 import Message
