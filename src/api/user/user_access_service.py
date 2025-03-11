@@ -93,7 +93,7 @@ class UserAccessServicer(UserAccessServiceServicer):
         if not refresh_token_repo.exists_refresh_token(user_id, refresh_token):
             context.set_code(grpc.StatusCode.UNAUTHENTICATED)
             context.set_details("Invalid refresh token")
-            return AccessToken()   
+            return AccessToken()
         access_token = generate_jwt_token(subject=user_id)
         return AccessToken(access_token=access_token)
 
