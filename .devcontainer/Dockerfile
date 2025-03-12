@@ -4,9 +4,15 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update && apt-get install -y protobuf-compiler grpc-proto
 
-RUN curl -L https://github.com/fullstorydev/grpcurl/releases/download/v1.9.2/grpcurl_1.9.2_linux_amd64.deb -o /tmp/grpcurl.deb && \
-    dpkg -i /tmp/grpcurl.deb && \
-    rm -f /tmp/grpcurl.deb
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "$ARCH" = "amd64" ]; then \
+        curl -L https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_amd64.deb -o /tmp/grpcurl.deb; \
+    elif [ "$ARCH" = "arm64" ]; then \
+        curl -L https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_arm64.deb -o /tmp/grpcurl.deb; \
+    else \
+        echo "Unsupported architecture: $ARCH" && exit 1; \
+    fi && \
+    dpkg -i /tmp/grpcurl.deb && rm -f /tmp/grpcurl.deb
 
 COPY pyproject.toml poetry.lock ./
 RUN pip install poetry \
