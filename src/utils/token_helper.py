@@ -74,8 +74,8 @@ def auth_required(func: Callable) -> Callable:
 
 def generate_jwt_token(
     subject: Optional[str] = None,
-    expire: Optional[datetime] = datetime.now(timezone.utc) + timedelta(minutes=30),
-    token_id: Optional[str] = secrets.token_urlsafe(8),
+    expire: Optional[datetime] = None,
+    token_id: Optional[str] = None,
 ) -> str:
     """
     Generate a token with the user_id.
@@ -86,6 +86,11 @@ def generate_jwt_token(
     Returns:
         str: encoded token
     """
+    if expire is None:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+    if token_id is None:
+        token_id = secrets.token_urlsafe(8)
+    
     payload: dict[str, Any] = dict()
 
     if subject is not None:
