@@ -10,7 +10,8 @@ from src.proto_generated.nori.v0.user.access.user_login_pb2 import (
 from src.proto_generated.nori.v0.user.access.token_pairs_pb2 import TokenPair
 
 from src.utils.token_helper import generate_jwt_token
-from src.api.user.user_service import UserServicer
+from src.api.user.user_access_service import UserAccessServicer
+from mock_repo import grpc_context, mock_refresh_token_repo ,mock_repositories
 
 
 @pytest.fixture
@@ -19,7 +20,6 @@ def fake_context(mocker: MockerFixture) -> grpc.aio.ServicerContext:
     token = generate_jwt_token(subject="test")
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
-
 
 @pytest.fixture
 def mock_user_repo(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
@@ -61,7 +61,7 @@ def test_invalid_email(fake_context: grpc.aio.ServicerContext) -> None:
     request = UserEmailPasswordLogin(email="invalid", password="validpass")
 
     # Act: Call the Login method
-    servicer = UserServicer()
+    servicer = UserAccessServicer()
     response = servicer.Login(request, fake_context)
 
     # Assert: Check the response
@@ -75,7 +75,7 @@ def test_empty_password(fake_context: grpc.aio.ServicerContext) -> None:
     request = UserEmailPasswordLogin(email="user@example.com", password="")
 
     # Act: Call the Login method
-    service = UserServicer()
+    service = UserAccessServicer()
     response = service.Login(request, fake_context)
 
     # Assert: Check the response
@@ -94,7 +94,7 @@ def test_user_not_found(
     mocked_user_repo.return_value.get_user.return_value = None
 
     # Act: Call the Login method
-    servicer = UserServicer()
+    servicer = UserAccessServicer()
     response = servicer.Login(request, fake_context)
 
     # Assert: Check the response
@@ -127,7 +127,7 @@ def test_successful_login(
     )
 
     # Act: Call the Login method
-    servicer = UserServicer()
+    servicer = UserAccessServicer()
     response = servicer.Login(request, fake_context)
 
     # Assert: Check the response
