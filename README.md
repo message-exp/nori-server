@@ -10,7 +10,7 @@
 
 3. Open the project directory.
 
-4. Duplicate `.env.sample` and rename as `.env`.
+4. Duplicate `.env.devcontainer` and rename as `.env`.
 
 5. Select "Reopen in Container" and wait until the process is complete.
 
@@ -40,6 +40,14 @@
     ```
 
 ## Start the server
+
+### Docker Compose
+
+1. Duplicate `.env.production` and rename as `.env`.
+
+2. Run `scripts/build.sh`.
+
+### Local
 
 1. Activate the Python virtual environment.
 
