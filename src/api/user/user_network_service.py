@@ -40,7 +40,6 @@ class UserNetworkServicer(UserNetworkServiceServicer):
                 room_basic_info.custom_name = room_member.room_name
             else:
                 room_basic_info.shared_name = room_member.room.name
-
             if room_member.room_avatar_url:
                 room_basic_info.custom_avatar_url = room_member.room_avatar_url
             else:

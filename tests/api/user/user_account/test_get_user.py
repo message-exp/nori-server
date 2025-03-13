@@ -1,23 +1,15 @@
 import grpc
 import pytest
 from unittest.mock import MagicMock
-from pytest_mock import MockerFixture
 from types import SimpleNamespace
-from typing import Generator
+from typing import Tuple
 
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.user.account.user_pb2 import User
 
 from src.utils.token_helper import generate_jwt_token
 from src.api.user import user_service
-
-
-@pytest.fixture
-def fake_context(mocker: MockerFixture) -> grpc.aio.ServicerContext:
-    context: MagicMock = mocker.MagicMock(grpc.aio.ServicerContext)
-    token = generate_jwt_token(subject="test")
-    context.invocation_metadata.return_value = (("authorization", token),)
-    return context
+from mock_repo import grpc_context, mock_repositories
 
 
 @pytest.fixture
@@ -31,17 +23,6 @@ def fake_user_only_ids() -> SimpleNamespace:
         email="test@example.com",
         rooms=[fake_room],
     )
-
-
-@pytest.fixture
-def mock_user_repo(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
-    """Mock UserRepository"""
-    mock_db_session = MagicMock()
-    mocker.patch("src.api.user.user_service.get_db", return_value=mock_db_session)
-
-    mock_user_repo: MagicMock = mocker.patch("src.api.user.user_service.UserRepo")
-
-    yield mock_user_repo
 
 
 # @pytest.fixture(autouse=True)
@@ -60,21 +41,21 @@ def mock_user_repo(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
 
 
 def test_get_user_success(
-    mock_user_repo: MagicMock,
-    fake_context: grpc.aio.ServicerContext,
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: grpc.aio.ServicerContext,
     fake_user_only_ids: SimpleNamespace,
 ) -> None:
     # Arrange: Create a fake request with id=1
     request = UserId(id=fake_user_only_ids.id)
 
     # Set the return value for get_user_only_ids on the patched UserRepository
-    mocked_user_repo = mock_user_repo
+    mocked_user_repo , _ , _ = mock_repositories
     mocked_user_repo.return_value.get_user_only_ids.return_value = fake_user_only_ids
 
     service = user_service.UserServicer()
 
     # Act: Call GetUser
-    response = service.GetUser(request, fake_context)
+    response = service.GetUser(request, grpc_context)
 
     # Assert: Ensure the repository method was called once with the correct argument.
     mocked_user_repo.return_value.get_user_only_ids.assert_called_once_with(
@@ -95,25 +76,25 @@ def test_get_user_success(
 
 
 def test_get_user_not_found(
-    mock_user_repo: MagicMock,
-    fake_context: grpc.aio.ServicerContext,
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: grpc.aio.ServicerContext,
 ) -> None:
     # Arrange: Create a request for a non-existent user (e.g., id 999)
     user_id = 999
     request = UserId(id=user_id)
 
     # Patch the repository method to return None.
-    mocked_user_repo = mock_user_repo
+    mocked_user_repo , _ , _ = mock_repositories
     mocked_user_repo.return_value.get_user_only_ids.return_value = None
 
     service = user_service.UserServicer()
 
     # Act: Call GetUser
-    response = service.GetUser(request, fake_context)
+    response = service.GetUser(request, grpc_context)
 
     # Assert: Verify that context was updated with NOT_FOUND status.
-    fake_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
-    fake_context.set_details.assert_called_once_with(
+    grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
+    grpc_context.set_details.assert_called_once_with(
         f"User with ID {user_id} not found."
     )
 

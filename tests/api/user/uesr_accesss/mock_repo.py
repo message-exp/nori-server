@@ -32,10 +32,10 @@ def mock_repositories(
 def mock_refresh_token_repo(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     """Mock RefreshTokenRepository"""
     mock_db_session = MagicMock()
-    mocker.patch("src.api.user.user_service.get_db", return_value=mock_db_session)
+    mocker.patch("src.api.user.user_access_service.get_db", return_value=mock_db_session)
 
     mock_refresh_token_repo: MagicMock = mocker.patch(
-        "src.api.user.user_service.RefreshTokenRepo"
+        "src.api.user.user_access_service.RefreshTokenRepo"
     )
 
     yield mock_refresh_token_repo
