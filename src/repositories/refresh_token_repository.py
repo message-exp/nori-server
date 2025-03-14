@@ -14,7 +14,7 @@ class RefreshTokenRepository:
         refresh_token_found = self.db.exec(
             select(RefreshToken).where(
                 RefreshToken.refresh_token == refresh_token,
-                RefreshToken.user_id == user_id
+                RefreshToken.user_id == user_id,
             )
         ).first()
         return refresh_token_found is not None
@@ -30,7 +30,8 @@ class RefreshTokenRepository:
         # use old refresh token to find the RefreshToken in the database
         refresh_token_found = self.db.exec(
             select(RefreshToken).where(
-                RefreshToken.user_id == user_id , RefreshToken.refresh_token == old_refresh_token
+                RefreshToken.user_id == user_id,
+                RefreshToken.refresh_token == old_refresh_token,
             )
         ).first()
         if refresh_token_found:
