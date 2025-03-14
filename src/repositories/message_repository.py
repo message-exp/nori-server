@@ -24,8 +24,7 @@ class MessageRepository:
             return list(
                 self.db.exec(
                     select(Messages)
-                    .where(Messages.room_id == room_id)
-                    .where(Messages.id < baseline)
+                    .where(Messages.room_id == room_id , Messages.id < baseline)
                     .order_by(desc(Messages.id))
                     .limit(limit)
                 ).all()
