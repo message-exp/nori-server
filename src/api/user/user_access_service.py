@@ -93,13 +93,13 @@ class UserAccessServicer(UserAccessServiceServicer):
             context.set_code(grpc.StatusCode.UNAUTHENTICATED)
             context.set_details("Invalid refresh token")
             return UserTokenPair()
-        
+
         new_refresh_token = generate_refresh_token()
         refresh_token_repo = RefreshTokenRepo(next(get_db()))
         refresh_token_repo.update_refresh_token(
-            user_id=user_id ,
+            user_id=user_id,
             old_refresh_token=old_refresh_token,
-            new_refresh_token=new_refresh_token
+            new_refresh_token=new_refresh_token,
         )
         access_token = generate_jwt_token(subject=user_id)
 

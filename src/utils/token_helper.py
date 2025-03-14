@@ -90,7 +90,7 @@ def generate_jwt_token(
         expire = datetime.now(timezone.utc) + timedelta(minutes=30)
     if token_id is None:
         token_id = secrets.token_urlsafe(8)
-    
+
     payload: dict[str, Any] = dict()
 
     if subject is not None:
