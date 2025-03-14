@@ -78,24 +78,36 @@ class UserAccessServicer(UserAccessServiceServicer):
         # TODO: ...... (implement logout logic)
         return Empty()
 
-    @auth_required
     def RefreshUserToken(
         self, request: UserRefreshToken, context: ServicerContext
-    ) -> AccessToken:
+    ) -> UserTokenPair:
         user_id = request.user_id.id
-        refresh_token = request.refresh_token.refresh_token
+        old_refresh_token = request.refresh_token.refresh_token
         user_repo = UserRepo(next(get_db()))
         if not user_repo.exists_user(user_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("User not found")
-            return AccessToken()
+            return UserTokenPair()
         refresh_token_repo = RefreshTokenRepo(next(get_db()))
-        if not refresh_token_repo.exists_refresh_token(user_id, refresh_token):
+        if not refresh_token_repo.exists_refresh_token(user_id, old_refresh_token):
             context.set_code(grpc.StatusCode.UNAUTHENTICATED)
             context.set_details("Invalid refresh token")
-            return AccessToken()
+            return UserTokenPair()
+
+        new_refresh_token = generate_refresh_token()
+        refresh_token_repo = RefreshTokenRepo(next(get_db()))
+        refresh_token_repo.update_refresh_token(
+            user_id=user_id,
+            old_refresh_token=old_refresh_token,
+            new_refresh_token=new_refresh_token,
+        )
         access_token = generate_jwt_token(subject=user_id)
-        return AccessToken(access_token=access_token)
+
+        return UserTokenPair(
+            user_id=UserId(id=user_id),
+            access_token=AccessToken(access_token=access_token),
+            refresh_token=RefreshToken(refresh_token=new_refresh_token),
+        )
 
     @auth_required
     def ResetUserPassword(

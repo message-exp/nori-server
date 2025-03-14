@@ -1,8 +1,8 @@
 """Init users, rooms, room_members, messages and refresh_token tables
 
-Revision ID: b28870e02aef
+Revision ID: 7ba506a67b1a
 Revises:
-Create Date: 2025-03-03 13:12:54.040314
+Create Date: 2025-03-14 14:15:10.192709
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "b28870e02aef"
+revision: str = "7ba506a67b1a"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -88,7 +88,12 @@ def upgrade() -> None:
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("refresh_token"),
+    )
+    op.create_index(
+        op.f("ix_refresh_token_refresh_token"),
+        "refresh_token",
+        ["refresh_token"],
+        unique=True,
     )
     op.create_index(
         op.f("ix_refresh_token_user_id"), "refresh_token", ["user_id"], unique=False
@@ -134,6 +139,7 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_room_members_room_id"), table_name="room_members")
     op.drop_table("room_members")
     op.drop_index(op.f("ix_refresh_token_user_id"), table_name="refresh_token")
+    op.drop_index(op.f("ix_refresh_token_refresh_token"), table_name="refresh_token")
     op.drop_table("refresh_token")
     op.drop_index(op.f("ix_messages_user_id"), table_name="messages")
     op.drop_index(op.f("ix_messages_room_id"), table_name="messages")
