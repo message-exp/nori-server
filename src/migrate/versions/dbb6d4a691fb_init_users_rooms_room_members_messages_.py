@@ -1,4 +1,4 @@
-"""{Init users, rooms, room_members, messages and refresh_token tables}
+"""Init users, rooms, room_members, messages and refresh_token tables
 
 Revision ID: dbb6d4a691fb
 Revises:
