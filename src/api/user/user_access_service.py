@@ -9,6 +9,7 @@ from google.protobuf.empty_pb2 import Empty
 from proto_generated.nori.v0.user.access.user_login_pb2 import UserEmailPasswordLogin
 from proto_generated.nori.v0.user.user_id_pb2 import UserId
 from proto_generated.nori.v0.user.access.token_pairs_pb2 import (
+    TokenPair,
     UserTokenPair,
     UserRefreshToken,
 )
@@ -80,19 +81,19 @@ class UserAccessServicer(UserAccessServiceServicer):
 
     def RefreshUserToken(
         self, request: UserRefreshToken, context: ServicerContext
-    ) -> UserTokenPair:
+    ) -> TokenPair:
         user_id = request.user_id.id
         old_refresh_token = request.refresh_token.refresh_token
         user_repo = UserRepo(next(get_db()))
         if not user_repo.exists_user(user_id):
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("User not found")
-            return UserTokenPair()
+            return TokenPair()
         refresh_token_repo = RefreshTokenRepo(next(get_db()))
         if not refresh_token_repo.exists_refresh_token(user_id, old_refresh_token):
             context.set_code(grpc.StatusCode.UNAUTHENTICATED)
             context.set_details("Invalid refresh token")
-            return UserTokenPair()
+            return TokenPair()
 
         new_refresh_token = generate_refresh_token()
         refresh_token_repo = RefreshTokenRepo(next(get_db()))
@@ -103,7 +104,7 @@ class UserAccessServicer(UserAccessServiceServicer):
         )
         access_token = generate_jwt_token(subject=user_id)
 
-        return UserTokenPair(
+        return TokenPair(
             user_id=UserId(id=user_id),
             access_token=AccessToken(access_token=access_token),
             refresh_token=RefreshToken(refresh_token=new_refresh_token),
