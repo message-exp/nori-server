@@ -23,7 +23,7 @@ from proto_generated.nori.v0.user.account.user_account_service_pb2_grpc import (
 )
 
 from model import RefreshToken as DBRefreshToken, Users
-from repositories import UserRepo, RefreshTokenRepo
+from repositories import UserRepo, RefreshTokenRepo , RoomRepo , RoomMemberRepo
 
 
 class UserAccountServicer(UserAccountServiceServicer):

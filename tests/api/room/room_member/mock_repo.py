@@ -20,7 +20,7 @@ def mock_repositories(
 ) -> Generator[Tuple[MagicMock, MagicMock, MagicMock], None, None]:
     """Mock UserRepository, RoomRepository, RoomMemberRepository"""
     mock_db_session = MagicMock()
-    mocker.patch("src.api.room.room_general_service.get_db", return_value=mock_db_session)
+    mocker.patch("src.api.room.room_member_service.get_db", return_value=mock_db_session)
 
     mock_user_repo: MagicMock = mocker.patch("src.api.room.room_member_service.UserRepo")
     mock_room_repo: MagicMock = mocker.patch("src.api.room.room_member_service.RoomRepo")

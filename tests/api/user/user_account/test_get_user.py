@@ -41,7 +41,7 @@ def fake_user_only_ids() -> SimpleNamespace:
 
 
 def test_get_user_success(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock , MagicMock],
     grpc_context: grpc.aio.ServicerContext,
     fake_user_only_ids: SimpleNamespace,
 ) -> None:
@@ -49,7 +49,7 @@ def test_get_user_success(
     request = UserId(id=fake_user_only_ids.id)
 
     # Set the return value for get_user_only_ids on the patched UserRepository
-    mocked_user_repo , _ , _ = mock_repositories
+    mocked_user_repo , _ , _ , _ = mock_repositories
     mocked_user_repo.return_value.get_user_only_ids.return_value = fake_user_only_ids
 
     service = user_service.UserServicer()
@@ -76,7 +76,7 @@ def test_get_user_success(
 
 
 def test_get_user_not_found(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock],
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock , MagicMock],
     grpc_context: grpc.aio.ServicerContext,
 ) -> None:
     # Arrange: Create a request for a non-existent user (e.g., id 999)
@@ -84,7 +84,7 @@ def test_get_user_not_found(
     request = UserId(id=user_id)
 
     # Patch the repository method to return None.
-    mocked_user_repo , _ , _ = mock_repositories
+    mocked_user_repo , _ , _ , _ = mock_repositories
     mocked_user_repo.return_value.get_user_only_ids.return_value = None
 
     service = user_service.UserServicer()
