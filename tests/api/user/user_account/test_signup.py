@@ -6,10 +6,10 @@ from typing import Tuple
 from src.proto_generated.nori.v0.user.account.signup_request_pb2 import SignUpRequest
 
 # from src.proto_generated.nori.v0.user.user_pb2 import User
-from src.proto_generated.nori.v0.user.access.token_pairs_pb2 import TokenPair
+from src.proto_generated.nori.v0.user.access.token_pairs_pb2 import UserTokenPair
 
 from src.api.user.user_account_service import UserAccountServicer
-from mock_repo import grpc_context,mock_repositories
+from tests.api.user.user_account.mock_repo import grpc_context,mock_repositories
 
 
 
@@ -24,7 +24,7 @@ def test_invalid_email(grpc_context: grpc.aio.ServicerContext) -> None:
     # Assert
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.INVALID_ARGUMENT)
     grpc_context.set_details.assert_called_once_with("Invalid email format")
-    assert isinstance(response, TokenPair)
+    assert isinstance(response, UserTokenPair)
 
 
 def test_email_already_exists(
@@ -48,7 +48,7 @@ def test_email_already_exists(
     # Assert
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.ALREADY_EXISTS)
     grpc_context.set_details.assert_called_once_with("Email already in use")
-    assert isinstance(response, TokenPair)
+    assert isinstance(response, UserTokenPair)
 
 
 def test_username_already_exists(
@@ -78,7 +78,7 @@ def test_username_already_exists(
     # Assert
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.ALREADY_EXISTS)
     grpc_context.set_details.assert_called_once_with("Username already in use")
-    assert isinstance(response, TokenPair)
+    assert isinstance(response, UserTokenPair)
 
 
 def test_successful_signup(

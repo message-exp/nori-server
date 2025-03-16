@@ -21,7 +21,6 @@ def mock_repositories(
     """Mock UserRepository, RoomRepository, RoomMemberRepository"""
     mock_db_session = MagicMock()
     mocker.patch("src.api.room.room_member_service.get_db", return_value=mock_db_session)
-
     mock_user_repo: MagicMock = mocker.patch("src.api.room.room_member_service.UserRepo")
     mock_room_repo: MagicMock = mocker.patch("src.api.room.room_member_service.RoomRepo")
     mock_room_member_repo: MagicMock = mocker.patch("src.api.room.room_member_service.RoomMemberRepo")

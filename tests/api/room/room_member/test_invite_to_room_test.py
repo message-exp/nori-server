@@ -12,7 +12,7 @@ from src.proto_generated.nori.v0.room.member.invite_user_to_room_request_pb2 imp
     InviteUserToRoomRequest,
 )
 from google.protobuf.empty_pb2 import Empty
-from mock_repo import mock_repositories, grpc_context
+from tests.api.room.room_member.mock_repo import mock_repositories, grpc_context
 
 
 

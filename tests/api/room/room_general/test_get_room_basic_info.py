@@ -10,7 +10,7 @@ from src.api.room.room_general_service import RoomGeneralServicer, RoomMembers, 
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from google.protobuf.empty_pb2 import Empty
-from mock_repo import grpc_context, mock_repositories
+from tests.api.room.room_general.mock_repo import grpc_context, mock_repositories
 def test_get_room_basic_info_success(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:

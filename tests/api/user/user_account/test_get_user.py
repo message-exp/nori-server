@@ -4,12 +4,12 @@ from unittest.mock import MagicMock
 from types import SimpleNamespace
 from typing import Tuple
 
+from src.api.user.user_account_service import UserAccountServicer
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.user.account.user_pb2 import User
 
-from src.utils.token_helper import generate_jwt_token
 from src.api.user import user_service
-from mock_repo import grpc_context, mock_repositories
+from tests.api.user.user_account.mock_repo import grpc_context, mock_repositories
 
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def test_get_user_success(
     mocked_user_repo , _ , _ , _ = mock_repositories
     mocked_user_repo.return_value.get_user_only_ids.return_value = fake_user_only_ids
 
-    service = user_service.UserServicer()
+    service = UserAccountServicer()
 
     # Act: Call GetUser
     response = service.GetUser(request, grpc_context)

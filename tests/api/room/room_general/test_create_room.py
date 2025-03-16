@@ -7,7 +7,7 @@ from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.room.general.room_create_request_pb2 import (
     RoomCreateRequest,
 )
-from mock_repo import grpc_context, mock_repositories
+from tests.api.room.room_general.mock_repo import grpc_context, mock_repositories
 def test_create_room_success(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:

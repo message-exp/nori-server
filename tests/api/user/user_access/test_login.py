@@ -11,7 +11,7 @@ from src.proto_generated.nori.v0.user.access.token_pairs_pb2 import TokenPair, U
 
 from src.utils.token_helper import generate_jwt_token
 from src.api.user.user_access_service import UserAccessServicer
-from mock_repo import grpc_context ,mock_repositories
+from tests.api.user.user_access.mock_repo import grpc_context ,mock_repositories
 
 
 
