@@ -19,7 +19,7 @@ class MessageRepository:
                     .order_by(desc(Messages.id))
                     .limit(limit)
                 ).all()
-            )
+            )[::-1]
         else:
             return list(
                 self.db.exec(
@@ -28,7 +28,7 @@ class MessageRepository:
                     .order_by(desc(Messages.id))
                     .limit(limit)
                 ).all()
-            )
+            )[::-1]
 
     def add_message(self, message: Messages) -> None:
         self.db.add(message)
