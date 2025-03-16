@@ -1,13 +1,14 @@
 import grpc
 from unittest.mock import MagicMock
-from typing import  Tuple
+from typing import Tuple
 from src.api.room.room_general_service import RoomGeneralServicer, RoomMembers, Rooms
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.room.general.room_create_request_pb2 import (
     RoomCreateRequest,
 )
-from tests.api.room.room_general.mock_repo import grpc_context, mock_repositories
+
+
 def test_create_room_success(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
@@ -55,4 +56,3 @@ def test_create_room_user_not_found(
     assert response.id == 0
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("User with ID 999 not found.")
-

@@ -14,16 +14,27 @@ def grpc_context() -> MagicMock:
     context.invocation_metadata.return_value = (("authorization", token),)
     return context
 
+
 @pytest.fixture
 def mock_repositories(
     mocker: MockerFixture,
-) -> Generator[Tuple[MagicMock, MagicMock, MagicMock,MagicMock], None, None]:
+) -> Generator[Tuple[MagicMock, MagicMock, MagicMock, MagicMock], None, None]:
     """Mock UserRepository, RoomRepository, RoomMemberRepository"""
     mock_db_session = MagicMock()
-    mocker.patch("src.api.user.user_access_service.get_db", return_value=mock_db_session)
+    mocker.patch(
+        "src.api.user.user_access_service.get_db", return_value=mock_db_session
+    )
 
-    mock_user_repo: MagicMock = mocker.patch("src.api.user.user_access_service.UserRepo")
-    mock_room_repo: MagicMock = mocker.patch("src.api.user.user_access_service.RoomRepo")
-    mock_room_member_repo: MagicMock = mocker.patch("src.api.user.user_access_service.RoomMemberRepo")
-    mock_refresh_token_repo: MagicMock = mocker.patch("src.api.user.user_access_service.RefreshTokenRepo")
-    yield mock_user_repo, mock_room_repo, mock_room_member_repo , mock_refresh_token_repo
+    mock_user_repo: MagicMock = mocker.patch(
+        "src.api.user.user_access_service.UserRepo" , create= True
+    )
+    mock_room_repo: MagicMock = mocker.patch(
+        "src.api.user.user_access_service.RoomRepo" , create= True
+    )
+    mock_room_member_repo: MagicMock = mocker.patch(
+        "src.api.user.user_access_service.RoomMemberRepo" , create= True
+    ) 
+    mock_refresh_token_repo: MagicMock = mocker.patch(
+        "src.api.user.user_access_service.RefreshTokenRepo" , create= True
+    )
+    yield mock_user_repo, mock_room_repo, mock_room_member_repo, mock_refresh_token_repo

@@ -9,9 +9,6 @@ from src.proto_generated.nori.v0.user.account.signup_request_pb2 import SignUpRe
 from src.proto_generated.nori.v0.user.access.token_pairs_pb2 import UserTokenPair
 
 from src.api.user.user_account_service import UserAccountServicer
-from tests.api.user.user_account.mock_repo import grpc_context,mock_repositories
-
-
 
 def test_invalid_email(grpc_context: grpc.aio.ServicerContext) -> None:
     # Arrange: invalid email format
@@ -29,13 +26,13 @@ def test_invalid_email(grpc_context: grpc.aio.ServicerContext) -> None:
 
 def test_email_already_exists(
     grpc_context: grpc.aio.ServicerContext,
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock,MagicMock],
+    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
 ) -> None:
     # Arrange: valid email, but email exists
     request = SignUpRequest(
         username="newuser", email="user@example.com", display_name="New User"
     )
-    mock_user_repo, _, _ , _= mock_repositories
+    mock_user_repo, _, _, _ = mock_repositories_for_user_account
     instance = mock_user_repo.return_value
     instance.exists_user.side_effect = (
         lambda **kwargs: True if kwargs.get("email") else False
@@ -53,13 +50,13 @@ def test_email_already_exists(
 
 def test_username_already_exists(
     grpc_context: grpc.aio.ServicerContext,
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
 ) -> None:
     # Arrange: valid email and username; email not used but username exists
     request = SignUpRequest(
         username="existinguser", email="new@example.com", display_name="New User"
     )
-    mock_user_repo, _, _ , _ = mock_repositories
+    mock_user_repo, _, _, _ = mock_repositories_for_user_account
     instance = mock_user_repo.return_value
 
     def exists_side_effect(**kwargs: str) -> bool:
@@ -84,13 +81,13 @@ def test_username_already_exists(
 def test_successful_signup(
     mocker: MockerFixture,
     grpc_context: grpc.aio.ServicerContext,
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock , MagicMock]
+    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
 ) -> None:
     # Arrange: valid signup info
     request = SignUpRequest(
         username="user1", email="user@example.com", display_name="User One"
     )
-    mock_user_repo, _, _ , mock_refresh_token_repo = mock_repositories
+    mock_user_repo, _, _, mock_refresh_token_repo = mock_repositories_for_user_account
     user_repo_instance = mock_user_repo.return_value
     refresh_repo_instance = mock_refresh_token_repo.return_value
 
@@ -101,7 +98,8 @@ def test_successful_signup(
 
     # Patch token generators
     mocker.patch(
-        "src.api.user.user_account_service.generate_refresh_token", return_value="refresh123"
+        "src.api.user.user_account_service.generate_refresh_token",
+        return_value="refresh123",
     )
     mocker.patch(
         "src.api.user.user_account_service.generate_jwt_token", return_value="access123"

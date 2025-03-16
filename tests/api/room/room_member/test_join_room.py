@@ -9,7 +9,6 @@ from src.proto_generated.nori.v0.room.room_user_request_pb2 import RoomUserReque
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from google.protobuf.empty_pb2 import Empty
-from tests.api.room.room_member.mock_repo import mock_repositories, grpc_context
 
 
 def test_join_room_success(
@@ -61,4 +60,3 @@ def test_join_room_user_not_found(
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("User with ID 1 not found.")
     assert isinstance(response, Empty)
-

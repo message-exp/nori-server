@@ -13,16 +13,7 @@ from src.proto_generated.nori.v0.room.general.room_basic_info_response_pb2 impor
 )
 
 from src.utils.token_helper import generate_jwt_token
-from src.api.user.user_service import UserServicer
-from tests.api.user.user_network.mock_repo import mock_repositories , grpc_context
-
-
-@pytest.fixture
-def grpc_context(mocker: MockerFixture) -> grpc.aio.ServicerContext:
-    context: MagicMock = mocker.MagicMock(grpc.aio.ServicerContext)
-    token = generate_jwt_token(subject="test")
-    context.invocation_metadata.return_value = (("authorization", token),)
-    return context
+from tests.api.user.user_network.mock_repo import grpc_context , mock_repositories
 
 
 @pytest.fixture
@@ -57,17 +48,16 @@ def fake_room_member_shared() -> SimpleNamespace:
     )
 
 
-
 def test_get_user_room_list_success(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
-    grpc_context : grpc.aio.ServicerContext,
+    grpc_context: grpc.aio.ServicerContext,
     fake_room_member: SimpleNamespace,
 ) -> None:
     # Arrange: setup fake request and patch RoomMemberRepository to return a fake room member with custom values
     user_id = fake_room_member.user_id
     request = UserId(id=user_id)
     fake_room_members = [fake_room_member]
-    _ , _ , mock_room_member_repo , _ = mock_repositories
+    _, _, mock_room_member_repo, _ = mock_repositories
 
     mock_room_member_repo.return_value.get_user_room_members.return_value = (
         fake_room_members
@@ -96,14 +86,14 @@ def test_get_user_room_list_success(
 
 def test_get_user_room_list_success_shared_values(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
-    grpc_context : grpc.aio.ServicerContext,
+    grpc_context: grpc.aio.ServicerContext,
     fake_room_member_shared: SimpleNamespace,
 ) -> None:
     # Arrange: setup fake request and patch RoomMemberRepository to return a fake room member without custom values
     user_id = fake_room_member_shared.user_id
     request = UserId(id=user_id)
     fake_room_members = [fake_room_member_shared]
-    _ , _ , mock_room_member_repo , _ = mock_repositories
+    _, _, mock_room_member_repo, _ = mock_repositories
     mock_room_member_repo.return_value.get_user_room_members.return_value = (
         fake_room_members
     )
@@ -130,12 +120,13 @@ def test_get_user_room_list_success_shared_values(
 
 
 def test_get_user_room_list_not_found(
-    mock_repositories: Tuple[MagicMock , MagicMock , MagicMock , MagicMock], grpc_context: grpc.aio.ServicerContext
+    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    grpc_context: grpc.aio.ServicerContext,
 ) -> None:
     # Arrange: simulate no room members found
     user_id = 999
     request = UserId(id=user_id)
-    _ , _ , mock_room_member_repo , _ = mock_repositories
+    _, _, mock_room_member_repo, _ = mock_repositories
     mock_room_member_repo.return_value.get_user_room_members.return_value = None
 
     service = UserNetworkServicer()

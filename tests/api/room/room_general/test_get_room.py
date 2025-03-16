@@ -1,4 +1,3 @@
-
 import grpc
 from unittest.mock import MagicMock
 from typing import Tuple
@@ -7,7 +6,7 @@ from src.api.room.room_general_service import RoomGeneralServicer
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.room.member.room_member_pb2 import RoomMemberStatus
 from google.protobuf.empty_pb2 import Empty
-from tests.api.room.room_general.mock_repo import grpc_context, mock_repositories
+
 
 def test_get_room_success(
     mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
@@ -53,4 +52,3 @@ def test_get_room_not_found(
     grpc_context.set_code.assert_called_once_with(grpc.StatusCode.NOT_FOUND)
     grpc_context.set_details.assert_called_once_with("Room with ID 1 not found.")
     assert isinstance(response, Empty)
- 

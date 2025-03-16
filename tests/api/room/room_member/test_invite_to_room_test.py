@@ -3,7 +3,6 @@ from unittest.mock import MagicMock
 from typing import Tuple
 
 
-
 from src.api.room.room_member_service import RoomMemberServicer
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
@@ -12,11 +11,6 @@ from src.proto_generated.nori.v0.room.member.invite_user_to_room_request_pb2 imp
     InviteUserToRoomRequest,
 )
 from google.protobuf.empty_pb2 import Empty
-from tests.api.room.room_member.mock_repo import mock_repositories, grpc_context
-
-
-
-
 
 
 def test_invite_to_room_room_not_found(

@@ -3,7 +3,6 @@ import pytest
 import grpc
 from unittest.mock import MagicMock
 from typing import Generator, Tuple
-from grpc import ServicerContext
 from pytest_mock import MockerFixture
 
 from src.proto_generated.nori.v0.message.get_message_requests_pb2 import (
@@ -15,48 +14,17 @@ from src.proto_generated.nori.v0.message.message_list_pb2 import MessageList
 from src.proto_generated.nori.v0.room.room_id_pb2 import RoomId
 from src.proto_generated.nori.v0.message.message_pb2 import Message
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
-from src.utils.token_helper import generate_jwt_token
 from src.api.message.message_service import MessageServicer, db
 from src.api.user.user_service import Users
 
 
-@pytest.fixture
-def mock_repositories(
-    mocker: MockerFixture,
-) -> Generator[Tuple[MagicMock, MagicMock], None, None]:
-    mock_db_session = MagicMock()
-    mocker.patch("src.api.room.room_service.get_db", return_value=mock_db_session)
-
-    mock_message_repo: MagicMock = mocker.patch(
-        "src.api.message.message_service.MessageRepo"
-    )
-    mock_room_repository = mocker.patch("src.api.message.message_service.RoomRepo")
-
-    yield mock_message_repo, mock_room_repository
-
-
-@pytest.fixture
-def grpc_context() -> MagicMock:
-    """Mock gRPC context with valid authorization metadata"""
-    context: MagicMock = MagicMock(spec=ServicerContext)
-    token = generate_jwt_token(subject="test")
-    context.invocation_metadata.return_value = (("authorization", token),)
-    return context
-
-
-@pytest.fixture
-def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
-    """Mock KafkaProducer to prevent real Kafka interactions"""
-    mock_producer = mocker.patch("src.api.message.message_service.KafkaProducer")
-    yield mock_producer
-
 
 def test_get_history_message_success(
-    mock_repositories: Tuple[MagicMock, MagicMock],
+    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    mock_message_repo, mock_room_repo = mock_repositories
+    _ , mock_room_repo , _ , _ , mock_message_repo = mock_repositories_for_message
     mock_message_repo.return_value.get_message_by_roomId.return_value = [
         db.Messages(
             id=1,
@@ -192,11 +160,11 @@ def test_get_history_message_success(
 
 
 def test_get_history_message_roomNotFound(
-    mock_repositories: Tuple[MagicMock, MagicMock],
+    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    _, mock_room_repo = mock_repositories
+    _, mock_room_repo , _ , _ , _ = mock_repositories_for_message
     mock_room_repo.return_value.exists_room.return_value = False
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
     request: GetHistoryMessageRequest = GetHistoryMessageRequest(
