@@ -13,9 +13,9 @@ from google.protobuf.empty_pb2 import Empty
 
 
 def test_get_room_basic_info_success(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
-    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories
+    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories_for_room_general
     room_service = RoomGeneralServicer()
 
     mock_user_repo.return_value.exists_user.return_value = True
@@ -41,9 +41,9 @@ def test_get_room_basic_info_success(
 
 
 def test_get_room_basic_info_user_not_found(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
-    mock_user_repo, _, _ = mock_repositories
+    mock_user_repo, _, _ = mock_repositories_for_room_general
     room_service = RoomGeneralServicer()
 
     mock_user_repo.return_value.exists_user.return_value = False
@@ -57,9 +57,9 @@ def test_get_room_basic_info_user_not_found(
 
 
 def test_get_room_basic_info_room_not_found(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
-    mock_user_repo, mock_room_repo, _ = mock_repositories
+    mock_user_repo, mock_room_repo, _ = mock_repositories_for_room_general
     room_service = RoomGeneralServicer()
 
     mock_user_repo.return_value.exists_user.return_value = True
@@ -74,9 +74,9 @@ def test_get_room_basic_info_room_not_found(
 
 
 def test_get_room_basic_info_user_not_in_room(
-    mock_repositories: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
 ) -> None:
-    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories
+    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories_for_room_general
     room_service = RoomGeneralServicer()
 
     mock_user_repo.return_value.exists_user.return_value = True

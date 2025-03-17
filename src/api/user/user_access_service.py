@@ -21,9 +21,8 @@ from proto_generated.nori.v0.user.access.user_reset_password_request_pb2 import 
 from proto_generated.nori.v0.user.access.user_access_service_pb2_grpc import (
     UserAccessServiceServicer,
 )
-
 from model import RefreshToken as DBRefreshToken
-from repositories import UserRepo, RefreshTokenRepo
+from repositories import UserRepo, RefreshTokenRepo ,RoomRepo , RoomMemberRepo 
 
 
 class UserAccessServicer(UserAccessServiceServicer):
