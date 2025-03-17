@@ -43,7 +43,7 @@
 
 ### Docker Compose
 
-1. Duplicate `.env.production` and rename as `.env`.
+1. Duplicate `.env.stage` and rename as `.env`.
 
 2. Run `scripts/build.sh`.
 
