@@ -12,9 +12,12 @@ from google.protobuf.empty_pb2 import Empty
 
 
 def test_join_room_success(
-    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
-    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories_for_room_member
+    mock_user_repo, mock_room_repo, mock_room_member_repo = (
+        mock_repositories_for_room_member
+    )
     room_service = RoomMemberServicer()
 
     mock_room_repo.return_value.exists_room.return_value = True
@@ -30,7 +33,8 @@ def test_join_room_success(
 
 
 def test_join_room_room_not_found(
-    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     _, mock_room_repo, _ = mock_repositories_for_room_member
     room_service = RoomMemberServicer()
@@ -46,7 +50,8 @@ def test_join_room_room_not_found(
 
 
 def test_join_room_user_not_found(
-    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     mock_user_repo, mock_room_repo, _ = mock_repositories_for_room_member
     room_service = RoomMemberServicer()

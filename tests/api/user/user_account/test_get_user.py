@@ -40,7 +40,9 @@ def fake_user_only_ids() -> SimpleNamespace:
 
 
 def test_get_user_success(
-    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_account: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: grpc.aio.ServicerContext,
     fake_user_only_ids: SimpleNamespace,
 ) -> None:
@@ -75,7 +77,9 @@ def test_get_user_success(
 
 
 def test_get_user_not_found(
-    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_account: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: grpc.aio.ServicerContext,
 ) -> None:
     # Arrange: Create a request for a non-existent user (e.g., id 999)

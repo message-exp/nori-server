@@ -10,9 +10,12 @@ from src.proto_generated.nori.v0.room.general.room_create_request_pb2 import (
 
 
 def test_create_room_success(
-    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
-    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories_for_room_general
+    mock_user_repo, mock_room_repo, mock_room_member_repo = (
+        mock_repositories_for_room_general
+    )
     mock_user_repo.return_value.get_user.return_value = MagicMock(
         display_name="Test User"
     )
@@ -41,7 +44,8 @@ def test_create_room_success(
 
 
 def test_create_room_user_not_found(
-    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     mock_user_repo, _, _ = mock_repositories_for_room_general
     mock_user_repo.return_value.get_user.return_value = None

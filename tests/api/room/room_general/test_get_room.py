@@ -9,7 +9,8 @@ from google.protobuf.empty_pb2 import Empty
 
 
 def test_get_room_success(
-    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     _, mock_room_repo, _ = mock_repositories_for_room_general
     mock_room = MagicMock()
@@ -40,7 +41,8 @@ def test_get_room_success(
 
 
 def test_get_room_not_found(
-    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_general: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     _, mock_room_repo, _ = mock_repositories_for_room_general
     mock_room_repo.return_value.get_room.return_value = None

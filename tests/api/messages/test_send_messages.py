@@ -22,14 +22,18 @@ def mock_messages(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
 
 def test_send_message_success(
     mock_messages: MagicMock,
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
     fake_message = MagicMock(
         id=1, room_id=123, message="abc", user_id=66, created_at=datetime.now()
     )
-    mock_user_repo, mock_room_repository , _ , _ ,mock_message_repo  = mock_repositories_for_message
+    mock_user_repo, mock_room_repository, _, _, mock_message_repo = (
+        mock_repositories_for_message
+    )
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc", created_at=fake_message.created_at
     )  # Message
@@ -49,11 +53,15 @@ def test_send_message_success(
 
 
 def test_send_message_userNotFound(
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    mock_user_repo, mock_room_repository , _ , _ , mock_message_repo = mock_repositories_for_message
+    mock_user_repo, mock_room_repository, _, _, mock_message_repo = (
+        mock_repositories_for_message
+    )
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message
@@ -75,11 +83,15 @@ def test_send_message_userNotFound(
 
 
 def test_send_message_roomNotFound(
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    mock_user_repo, mock_room_repository, _ , _ , mock_message_repo = mock_repositories_for_message
+    mock_user_repo, mock_room_repository, _, _, mock_message_repo = (
+        mock_repositories_for_message
+    )
     mock_message_repo.return_value.add_message.return_value = MagicMock(
         id=1, room_id=123, text="abc"
     )  # Message

@@ -1,9 +1,7 @@
 from datetime import datetime
-import pytest
 import grpc
 from unittest.mock import MagicMock
-from typing import Generator, Tuple
-from pytest_mock import MockerFixture
+from typing import Tuple
 
 from src.proto_generated.nori.v0.message.get_message_requests_pb2 import (
     GetHistoryMessageRequest,
@@ -18,13 +16,14 @@ from src.api.message.message_service import MessageServicer, db
 from src.api.user.user_service import Users
 
 
-
 def test_get_history_message_success(
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    _ , mock_room_repo , _ , _ , mock_message_repo = mock_repositories_for_message
+    _, mock_room_repo, _, _, mock_message_repo = mock_repositories_for_message
     mock_message_repo.return_value.get_message_by_roomId.return_value = [
         db.Messages(
             id=1,
@@ -160,11 +159,13 @@ def test_get_history_message_success(
 
 
 def test_get_history_message_roomNotFound(
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    _, mock_room_repo , _ , _ , _ = mock_repositories_for_message
+    _, mock_room_repo, _, _, _ = mock_repositories_for_message
     mock_room_repo.return_value.exists_room.return_value = False
     servicer: MessageServicer = MessageServicer(mock_kafka_producer)
     request: GetHistoryMessageRequest = GetHistoryMessageRequest(

@@ -54,7 +54,9 @@ def test_empty_password(grpc_context: grpc.aio.ServicerContext) -> None:
 
 
 def test_user_not_found(
-    mock_repositories_for_user_access: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_access: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: grpc.aio.ServicerContext,
 ) -> None:
     # Arrange: Create a fake request with a valid email and password
@@ -75,14 +77,18 @@ def test_user_not_found(
 
 def test_successful_login(
     mocker: MockerFixture,
-    mock_repositories_for_user_access: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_access: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: grpc.aio.ServicerContext,
     fake_user: MagicMock,
 ) -> None:
     # Arrange: Create a fake request with a valid email and password
     request = UserEmailPasswordLogin(email="user@example.com", password="validpass")
 
-    mocked_user_repo, _, _, mocked_refresh_token_repo = mock_repositories_for_user_access
+    mocked_user_repo, _, _, mocked_refresh_token_repo = (
+        mock_repositories_for_user_access
+    )
     mocked_user_repo.return_value.get_user.return_value = fake_user
     mocked_refresh_token_repo.return_value.save_refresh_token.return_value = 1
 

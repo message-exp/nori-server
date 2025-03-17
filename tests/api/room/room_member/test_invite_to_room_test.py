@@ -14,7 +14,8 @@ from google.protobuf.empty_pb2 import Empty
 
 
 def test_invite_to_room_room_not_found(
-    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     _, mock_room_repo, _ = mock_repositories_for_room_member
     mock_room_repo.return_value.exists_room.return_value = False
@@ -31,7 +32,8 @@ def test_invite_to_room_room_not_found(
 
 
 def test_invite_to_room_inviter_not_found(
-    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     mock_user_repo, mock_room_repo, _ = mock_repositories_for_room_member
     mock_room_repo.return_value.exists_room.return_value = True
@@ -49,7 +51,8 @@ def test_invite_to_room_inviter_not_found(
 
 
 def test_invite_to_room_invitees_not_found(
-    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
     mock_user_repo, mock_room_repo, _ = mock_repositories_for_room_member
     mock_room_repo.return_value.exists_room.return_value = True
@@ -70,9 +73,12 @@ def test_invite_to_room_invitees_not_found(
 
 
 def test_invite_to_room_success(
-    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock], grpc_context: MagicMock
+    mock_repositories_for_room_member: Tuple[MagicMock, MagicMock, MagicMock],
+    grpc_context: MagicMock,
 ) -> None:
-    mock_user_repo, mock_room_repo, mock_room_member_repo = mock_repositories_for_room_member
+    mock_user_repo, mock_room_repo, mock_room_member_repo = (
+        mock_repositories_for_room_member
+    )
     mock_room_repo.return_value.exists_room.return_value = True
     mock_user_repo.return_value.exists_user.return_value = True
     mock_user_repo.return_value.exists_all_users.return_value = True

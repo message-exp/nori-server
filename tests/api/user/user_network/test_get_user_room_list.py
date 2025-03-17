@@ -1,7 +1,6 @@
 import grpc
 import pytest
 from unittest.mock import MagicMock
-from pytest_mock import MockerFixture
 from types import SimpleNamespace
 from typing import Tuple
 
@@ -46,7 +45,9 @@ def fake_room_member_shared() -> SimpleNamespace:
 
 
 def test_get_user_room_list_success(
-    mock_repositories_for_user_network: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_network: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: grpc.aio.ServicerContext,
     fake_room_member: SimpleNamespace,
 ) -> None:
@@ -82,7 +83,9 @@ def test_get_user_room_list_success(
 
 
 def test_get_user_room_list_success_shared_values(
-    mock_repositories_for_user_network: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_network: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: grpc.aio.ServicerContext,
     fake_room_member_shared: SimpleNamespace,
 ) -> None:
@@ -117,7 +120,9 @@ def test_get_user_room_list_success_shared_values(
 
 
 def test_get_user_room_list_not_found(
-    mock_repositories_for_user_network: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_network: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: grpc.aio.ServicerContext,
 ) -> None:
     # Arrange: simulate no room members found

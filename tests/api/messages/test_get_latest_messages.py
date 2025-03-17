@@ -12,13 +12,14 @@ from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.api.message.message_service import MessageServicer
 
 
-
 def test_get_latest_messages_user_not_found(
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    mock_user_repo, _, _ , _ , _= mock_repositories_for_message
+    mock_user_repo, _, _, _, _ = mock_repositories_for_message
     mock_user_repo.return_value.exists_user.return_value = False
 
     request = GetLatestMessageRequest(user_id=UserId(id=1), room_id=RoomId(id=1))
@@ -33,11 +34,13 @@ def test_get_latest_messages_user_not_found(
 
 
 def test_get_latest_messages_room_not_found(
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
 ) -> None:
-    mock_user_repo, mock_room_repo, _  , _ , _ = mock_repositories_for_message
+    mock_user_repo, mock_room_repo, _, _, _ = mock_repositories_for_message
     mock_user_repo.return_value.exists_user.return_value = True
     mock_room_repo.return_value.exists_room.return_value = False
 
@@ -53,12 +56,14 @@ def test_get_latest_messages_room_not_found(
 
 
 def test_get_latest_messages_success(
-    mock_repositories_for_message: Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock],
+    mock_repositories_for_message: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock, MagicMock
+    ],
     grpc_context: MagicMock,
     mock_kafka_producer: MagicMock,
     mocker: MockerFixture,
 ) -> None:
-    mock_user_repo, mock_room_repo, _ , _ , _ = mock_repositories_for_message
+    mock_user_repo, mock_room_repo, _, _, _ = mock_repositories_for_message
     mock_user_repo.return_value.exists_user.return_value = True
     mock_room_repo.return_value.exists_room.return_value = True
 

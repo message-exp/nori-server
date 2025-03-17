@@ -10,6 +10,7 @@ from src.proto_generated.nori.v0.user.access.token_pairs_pb2 import UserTokenPai
 
 from src.api.user.user_account_service import UserAccountServicer
 
+
 def test_invalid_email(grpc_context: grpc.aio.ServicerContext) -> None:
     # Arrange: invalid email format
     request = SignUpRequest(username="user1", email="invalid", display_name="User One")
@@ -26,7 +27,9 @@ def test_invalid_email(grpc_context: grpc.aio.ServicerContext) -> None:
 
 def test_email_already_exists(
     grpc_context: grpc.aio.ServicerContext,
-    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_account: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
 ) -> None:
     # Arrange: valid email, but email exists
     request = SignUpRequest(
@@ -50,7 +53,9 @@ def test_email_already_exists(
 
 def test_username_already_exists(
     grpc_context: grpc.aio.ServicerContext,
-    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_account: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
 ) -> None:
     # Arrange: valid email and username; email not used but username exists
     request = SignUpRequest(
@@ -81,7 +86,9 @@ def test_username_already_exists(
 def test_successful_signup(
     mocker: MockerFixture,
     grpc_context: grpc.aio.ServicerContext,
-    mock_repositories_for_user_account: Tuple[MagicMock, MagicMock, MagicMock, MagicMock],
+    mock_repositories_for_user_account: Tuple[
+        MagicMock, MagicMock, MagicMock, MagicMock
+    ],
 ) -> None:
     # Arrange: valid signup info
     request = SignUpRequest(

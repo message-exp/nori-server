@@ -14,6 +14,8 @@ def grpc_context() -> MagicMock:
     context.invocation_metadata.return_value = (("authorization", token),)
 
     return context
+
+
 @pytest.fixture
 def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     """Mock KafkaProducer to prevent real Kafka interactions"""
@@ -24,30 +26,36 @@ def mock_kafka_producer(mocker: MockerFixture) -> Generator[MagicMock, None, Non
 @pytest.fixture
 def mock_repositories_for_message(
     mocker: MockerFixture,
-) -> Generator[Tuple[MagicMock, MagicMock, MagicMock, MagicMock , MagicMock], None, None]:
+) -> Generator[
+    Tuple[MagicMock, MagicMock, MagicMock, MagicMock, MagicMock], None, None
+]:
     """Mock UserRepository, RoomRepository, RoomMemberRepository"""
     mock_db_session = MagicMock()
-    mocker.patch(
-        "src.api.message.message_service.get_db", return_value=mock_db_session
-    )
+    mocker.patch("src.api.message.message_service.get_db", return_value=mock_db_session)
     mock_user_repo: MagicMock = mocker.patch(
-        "src.api.message.message_service.UserRepo" , create= True
+        "src.api.message.message_service.UserRepo", create=True
     )
     mock_room_repo: MagicMock = mocker.patch(
-        "src.api.message.message_service.RoomRepo" , create= True
+        "src.api.message.message_service.RoomRepo", create=True
     )
     mock_room_member_repo: MagicMock = mocker.patch(
-        "src.api.message.message_service.RoomMemberRepo" , create= True
+        "src.api.message.message_service.RoomMemberRepo", create=True
     )
     mock_refresh_token_repo: MagicMock = mocker.patch(
-        "src.api.message.message_service.RefreshTokenRepo" , create= True
+        "src.api.message.message_service.RefreshTokenRepo", create=True
     )
     mock_message_repo = mocker.patch(
-        "src.api.message.message_service.MessageRepo" ,create= True
+        "src.api.message.message_service.MessageRepo", create=True
     )
-    yield mock_user_repo, mock_room_repo, mock_room_member_repo, mock_refresh_token_repo , mock_message_repo
+    yield (
+        mock_user_repo,
+        mock_room_repo,
+        mock_room_member_repo,
+        mock_refresh_token_repo,
+        mock_message_repo,
+    )
 
-    
+
 @pytest.fixture
 def mock_repositories_for_room_general(
     mocker: MockerFixture,
@@ -59,17 +67,16 @@ def mock_repositories_for_room_general(
     )
 
     mock_user_repo: MagicMock = mocker.patch(
-        "src.api.room.room_general_service.UserRepo" , create= True
+        "src.api.room.room_general_service.UserRepo", create=True
     )
     mock_room_repo: MagicMock = mocker.patch(
-        "src.api.room.room_general_service.RoomRepo" , create= True
+        "src.api.room.room_general_service.RoomRepo", create=True
     )
     mock_room_member_repo: MagicMock = mocker.patch(
-        "src.api.room.room_general_service.RoomMemberRepo" , create= True
+        "src.api.room.room_general_service.RoomMemberRepo", create=True
     )
 
     yield mock_user_repo, mock_room_repo, mock_room_member_repo
-    
 
 
 @pytest.fixture
@@ -82,13 +89,13 @@ def mock_repositories_for_room_member(
         "src.api.room.room_member_service.get_db", return_value=mock_db_session
     )
     mock_user_repo: MagicMock = mocker.patch(
-        "src.api.room.room_member_service.UserRepo" , create= True
+        "src.api.room.room_member_service.UserRepo", create=True
     )
     mock_room_repo: MagicMock = mocker.patch(
-        "src.api.room.room_member_service.RoomRepo" , create= True
+        "src.api.room.room_member_service.RoomRepo", create=True
     )
     mock_room_member_repo: MagicMock = mocker.patch(
-        "src.api.room.room_member_service.RoomMemberRepo" , create= True
+        "src.api.room.room_member_service.RoomMemberRepo", create=True
     )
 
     yield mock_user_repo, mock_room_repo, mock_room_member_repo
@@ -105,18 +112,19 @@ def mock_repositories_for_user_access(
     )
 
     mock_user_repo: MagicMock = mocker.patch(
-        "src.api.user.user_access_service.UserRepo" , create= True
+        "src.api.user.user_access_service.UserRepo", create=True
     )
     mock_room_repo: MagicMock = mocker.patch(
-        "src.api.user.user_access_service.RoomRepo" , create= True
+        "src.api.user.user_access_service.RoomRepo", create=True
     )
     mock_room_member_repo: MagicMock = mocker.patch(
-        "src.api.user.user_access_service.RoomMemberRepo" , create= True
-    ) 
+        "src.api.user.user_access_service.RoomMemberRepo", create=True
+    )
     mock_refresh_token_repo: MagicMock = mocker.patch(
-        "src.api.user.user_access_service.RefreshTokenRepo" , create= True
+        "src.api.user.user_access_service.RefreshTokenRepo", create=True
     )
     yield mock_user_repo, mock_room_repo, mock_room_member_repo, mock_refresh_token_repo
+
 
 @pytest.fixture
 def mock_repositories_for_user_account(
@@ -129,18 +137,19 @@ def mock_repositories_for_user_account(
     )
 
     mock_user_repo: MagicMock = mocker.patch(
-        "src.api.user.user_account_service.UserRepo" , create= True
+        "src.api.user.user_account_service.UserRepo", create=True
     )
     mock_room_repo: MagicMock = mocker.patch(
-        "src.api.user.user_account_service.RoomRepo" , create= True
+        "src.api.user.user_account_service.RoomRepo", create=True
     )
     mock_room_member_repo: MagicMock = mocker.patch(
-        "src.api.user.user_account_service.RoomMemberRepo" , create= True
-    ) 
+        "src.api.user.user_account_service.RoomMemberRepo", create=True
+    )
     mock_refresh_token_repo: MagicMock = mocker.patch(
-        "src.api.user.user_account_service.RefreshTokenRepo" , create= True
+        "src.api.user.user_account_service.RefreshTokenRepo", create=True
     )
     yield mock_user_repo, mock_room_repo, mock_room_member_repo, mock_refresh_token_repo
+
 
 @pytest.fixture
 def mock_repositories_for_user_network(
@@ -152,16 +161,15 @@ def mock_repositories_for_user_network(
         "src.api.user.user_network_service.get_db", return_value=mock_db_session
     )
     mock_user_repo: MagicMock = mocker.patch(
-        "src.api.user.user_network_service.UserRepo" , create= True
+        "src.api.user.user_network_service.UserRepo", create=True
     )
     mock_room_repo: MagicMock = mocker.patch(
-        "src.api.user.user_network_service.RoomRepo" , create= True
+        "src.api.user.user_network_service.RoomRepo", create=True
     )
     mock_room_member_repo: MagicMock = mocker.patch(
-        "src.api.user.user_network_service.RoomMemberRepo" , create= True
+        "src.api.user.user_network_service.RoomMemberRepo", create=True
     )
     mock_refresh_token_repo: MagicMock = mocker.patch(
-        "src.api.user.user_network_service.RefreshTokenRepo" , create= True
+        "src.api.user.user_network_service.RefreshTokenRepo", create=True
     )
     yield mock_user_repo, mock_room_repo, mock_room_member_repo, mock_refresh_token_repo
-
