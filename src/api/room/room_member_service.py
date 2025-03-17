@@ -60,7 +60,7 @@ class RoomMemberServicer(RoomMemberServiceServicer):
         for room_member in room_members:
             appendResult = RoomMember(
                 user_id=UserId(id=room_member.user_id),
-                room_nickname=room_member.room_name,
+                room_nickname=room_member.user_name,
                 status=RoomMemberStatus.JOINED,  # TODO: implement status
             )
             result.append(appendResult)
