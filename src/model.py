@@ -132,7 +132,7 @@ class RefreshToken(SQLModel, table=True):  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id", index=True, sa_type=BIGINT)
     refresh_token: str = Field(
-        sa_column=Column(String(128), nullable=False, unique=True)
+        sa_column=Column(String(128), nullable=False, unique=True, index=True)
     )
     expires_at: datetime = Field(
         default_factory=lambda: datetime.now() + timedelta(days=30)
