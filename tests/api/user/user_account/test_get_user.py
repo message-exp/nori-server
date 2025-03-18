@@ -8,8 +8,6 @@ from src.api.user.user_account_service import UserAccountServicer
 from src.proto_generated.nori.v0.user.user_id_pb2 import UserId
 from src.proto_generated.nori.v0.user.account.user_pb2 import User
 
-from src.api.user import user_service
-
 
 @pytest.fixture
 def fake_user_only_ids() -> SimpleNamespace:
