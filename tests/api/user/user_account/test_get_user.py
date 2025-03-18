@@ -90,7 +90,7 @@ def test_get_user_not_found(
     mocked_user_repo, _, _, _ = mock_repositories_for_user_account
     mocked_user_repo.return_value.get_user_only_ids.return_value = None
 
-    service = user_service.UserServicer()
+    service = UserAccountServicer()
 
     # Act: Call GetUser
     response = service.GetUser(request, grpc_context)
