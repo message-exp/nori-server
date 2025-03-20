@@ -1,2 +1,2 @@
 [run]
-omit = src/proto_generated/*,tests/*
+omit = src/proto_generated/*,tests/* ,src/migrate/*
