@@ -43,7 +43,7 @@ class UserNetworkServicer(UserNetworkServiceServicer):
             if room_member.room_avatar_url:
                 room_basic_info.custom_avatar_url = room_member.room_avatar_url
             else:
-                room_basic_info.shared_avatar_url = room_member.room.avatar_url
+                room_basic_info.shared_avatar_url = room_member.room.avatar_url or ""
             rooms.append(room_basic_info)
 
         return RoomList(rooms=rooms)

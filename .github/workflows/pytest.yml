@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: poetry sync --extras dev
       - name: Setup .env
-        run: cp .env.sample .env
+        run: cp .env.stage .env
       - name: Generate files from protos
         run: poetry run python scripts/generate.py
       - name: Test with pytest

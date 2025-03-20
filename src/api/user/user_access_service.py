@@ -104,7 +104,6 @@ class UserAccessServicer(UserAccessServiceServicer):
         access_token = generate_jwt_token(subject=user_id)
 
         return TokenPair(
-            user_id=UserId(id=user_id),
             access_token=AccessToken(access_token=access_token),
             refresh_token=RefreshToken(refresh_token=new_refresh_token),
         )
